@@ -44,6 +44,12 @@ const state = {
     { id: 'visa', name: 'Visa Signature', detail: 'Card-linked offer active', balanceMinor: 42000, safe: false, feeMinor: 250 }
   ],
   session: null,
+  onboarding: {
+    waitlist: [],
+    role: null,
+    permissions: {},
+    qr: null
+  },
   audit: []
 };
 
@@ -104,6 +110,68 @@ async function body(req) {
 }
 
 async function api(req, res, pathname) {
+  if (req.method === 'POST' && pathname === '/api/waitlist') {
+    const payload = await body(req);
+    if (!payload.email || !String(payload.email).includes('@')) {
+      return json(res, 422, { error: 'A valid email is required.' });
+    }
+    const entry = {
+      id: `wait-${randomUUID().slice(0, 8)}`,
+      email: String(payload.email).trim().toLowerCase(),
+      createdAt: new Date().toISOString(),
+      gold: { amount: 1, unit: 'mg', status: 'processing' }
+    };
+    state.onboarding.waitlist.push(entry);
+    state.audit.push({ event: 'WAITLIST_JOINED', id: entry.id, at: entry.createdAt });
+    return json(res, 201, entry);
+  }
+
+  if (req.method === 'POST' && pathname === '/api/onboarding/permission') {
+    const payload = await body(req);
+    if (!['buyer', 'seller'].includes(payload.role) || !payload.id) {
+      return json(res, 422, { error: 'Role and permission id are required.' });
+    }
+    state.onboarding.role = payload.role;
+    state.onboarding.permissions[payload.id] = Boolean(payload.enabled);
+    state.audit.push({
+      event: payload.enabled ? 'PERMISSION_CONNECTED' : 'PERMISSION_REVOKED',
+      role: payload.role,
+      permission: payload.id,
+      at: new Date().toISOString()
+    });
+    return json(res, 200, {
+      role: payload.role,
+      permissions: state.onboarding.permissions
+    });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/onboarding/qr') {
+    const payload = await body(req);
+    if (!payload.value || !['buyer', 'seller'].includes(payload.role)) {
+      return json(res, 422, { error: 'Role and QR value are required.' });
+    }
+    state.onboarding.role = payload.role;
+    state.onboarding.qr = {
+      value: String(payload.value),
+      status: 'ACTIVE',
+      revocable: true,
+      createdAt: new Date().toISOString()
+    };
+    state.audit.push({ event: 'UNIVERSAL_QR_CREATED', at: state.onboarding.qr.createdAt });
+    return json(res, 201, state.onboarding.qr);
+  }
+
+  if (req.method === 'GET' && pathname === '/api/onboarding/readiness') {
+    const permissions = Object.values(state.onboarding.permissions).filter(Boolean).length;
+    return json(res, 200, {
+      waitlist: state.onboarding.waitlist.length > 0,
+      gold: { amount: 1, unit: 'mg', status: 'processing' },
+      permissions,
+      universalQr: state.onboarding.qr,
+      kyc: { status: 'NOT_AVAILABLE_IN_SANDBOX', liveUnlock: true }
+    });
+  }
+
   if (req.method === 'GET' && pathname === '/api/bootstrap') {
     return json(res, 200, {
       mode: 'SANDBOX',
@@ -188,7 +256,16 @@ const server = createServer(async (req, res) => {
   }
   try {
     const content = await readFile(file);
-    const type = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript' }[extname(file)] ?? 'application/octet-stream';
+    const type = {
+      '.html': 'text/html',
+      '.css': 'text/css',
+      '.js': 'text/javascript',
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.svg': 'image/svg+xml',
+      '.ico': 'image/x-icon'
+    }[extname(file)] ?? 'application/octet-stream';
     res.writeHead(200, { 'content-type': `${type}; charset=utf-8` });
     res.end(content);
   } catch {

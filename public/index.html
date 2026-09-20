@@ -3,35 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0b0b0c" />
-    <title>Kanzpay PACT sandbox</title>
+    <meta name="theme-color" content="#07110f" />
+    <title>Kanzpay · your rewarding money life</title>
+    <link rel="icon" href="/assets/kanzpay-mark.png" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
-    <div class="app-shell">
-      <aside class="sidebar">
-        <div class="brand"><span class="brand-mark">K</span><span>Kanzpay</span></div>
-        <div class="mode-pill"><span class="live-dot"></span> Sandbox mode</div>
-        <nav>
-          <button class="nav-item active" data-view="buyer"><span>◈</span> PACT buyer</button>
-          <button class="nav-item" data-view="seller"><span>⌁</span> Seller studio</button>
-          <button class="nav-item" data-view="insights"><span>◌</span> Expense insights</button>
-          <button class="nav-item" data-view="audit"><span>⊙</span> Audit trail</button>
-        </nav>
-        <div class="sidebar-bottom">
-          <div class="profile-mini"><div class="avatar">MK</div><div><strong>Maya Khan</strong><small>Adult buyer</small></div><span>⌄</span></div>
-          <div class="secure-note"><span>♢</span><span>Money data stays<br />in the sandbox.</span></div>
-        </div>
-      </aside>
-
-      <main class="main">
-        <header class="topbar">
-          <div><span class="eyebrow">Sunday · 20 September 2026</span><h1 id="page-title">Good afternoon, Maya</h1></div>
-          <div class="top-actions"><button class="icon-button" title="Notifications">♢<i></i></button><button class="avatar-button">MK</button></div>
-        </header>
-        <div id="app"></div>
-      </main>
-    </div>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <main id="app" aria-live="polite"></main>
     <div id="toast" class="toast" role="status"></div>
     <script type="module" src="/app.js"></script>
   </body>

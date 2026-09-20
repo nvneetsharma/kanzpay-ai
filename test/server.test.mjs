@@ -51,3 +51,38 @@ test('reconciliation returns line-item confidence and categories', async () => {
   assert.equal(result.confidence, 0.98);
   assert.equal(result.categories.length, 3);
 });
+
+test('waitlist creates a processing Gold allocation', async () => {
+  const response = await request('/api/waitlist', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ email: 'maya@example.com' })
+  });
+  const result = await response.json();
+  assert.equal(response.status, 201);
+  assert.equal(result.gold.status, 'processing');
+  assert.equal(result.gold.amount, 1);
+  assert.equal(result.gold.unit, 'mg');
+});
+
+test('onboarding permissions and Universal QR are sandboxed and reversible', async () => {
+  const permission = await request('/api/onboarding/permission', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ role: 'buyer', id: 'money', enabled: true })
+  });
+  assert.equal(permission.status, 200);
+  const qr = await request('/api/onboarding/qr', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ role: 'buyer', value: 'KZ-TEST-QR' })
+  });
+  const qrResult = await qr.json();
+  assert.equal(qr.status, 201);
+  assert.equal(qrResult.status, 'ACTIVE');
+  const readiness = await request('/api/onboarding/readiness');
+  const result = await readiness.json();
+  assert.equal(result.permissions, 1);
+  assert.equal(result.universalQr.value, 'KZ-TEST-QR');
+  assert.equal(result.kyc.liveUnlock, true);
+});
