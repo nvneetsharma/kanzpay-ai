@@ -13,10 +13,12 @@ const state = {
   qr: null,
   waitlist: false,
   gold: { amount: 1, unit: 'mg', status: 'processing' }
+  ,tourIndex: 0
 };
 
 const esc = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
 const money = (minor) => `AED ${(minor / 100).toFixed(2)}`;
+let tourTimer;
 const notify = (message, kind = '') => {
   toast.className = `toast show ${kind}`;
   toast.textContent = message;
@@ -39,7 +41,7 @@ function chrome(content, { dark = false } = {}) {
     </header>
     <div class="journey-progress"><span style="width:${Math.max(6, pct())}%"></span></div>
     ${content}
-    <footer class="journey-footer"><span>Built for a calmer, more rewarding money life.</span><span>Sandbox · no live money movement</span></footer>
+    <footer class="journey-footer"><span>Built with <b>♥</b> in UAE <b>🇦🇪</b> by OXY Technologies, ADGM, Abu Dhabi.</span><span>Sandbox · no live money movement</span></footer>
   </div>`;
 }
 
@@ -47,13 +49,31 @@ function welcome() {
   return chrome(`<section class="welcome-stage">
     <div class="welcome-copy">
       <div class="eyebrow"><span class="gold-dot"></span> a new way to move through money</div>
-      <h1>Make every payment<br /><em>worth more.</em></h1>
-      <p class="lead">Tap once. Pay less. Earn Gold. Kanzpay turns the benefits you already have into a calmer checkout.</p>
-      <div class="welcome-actions"><button class="gold-button" data-action="waitlist">Join free · Get 1 mg Gold <span>↗</span></button><button class="text-button" data-action="tour">See the 15-second story</button></div>
-      <div class="trust-row"><span>✦</span><span>Private by design</span><span>·</span><span>UAE first</span><span>·</span><span>Human when it matters</span></div>
+      <h1>Pay less.<br /><em>Earn Gold.</em></h1>
+      <p class="lead">Your benefits do the searching. You make the final choice.</p>
+      <div class="welcome-actions"><button class="gold-button" data-action="waitlist">Join free · Get 1 mg Gold <span>↗</span></button><button class="text-button" data-action="tour">Watch the 15-second story <span>◉</span></button></div>
+      <div class="trust-row"><span>✦</span><span>Tap</span><span>→</span><span>Save</span><span>→</span><span>Earn</span></div>
     </div>
     <div class="orb-scene" aria-hidden="true"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="gold-orb"><span>1</span><small>mg</small></div><div class="orb-caption">A little gold<br /><strong>to begin with.</strong></div><div class="ray ray-a"></div><div class="ray ray-b"></div><div class="ray ray-c"></div></div>
-    <div class="welcome-note"><span class="note-icon">◌</span><span>Start with a profile. Grow into a richer picture of your money.</span></div>
+    <div class="welcome-note"><span class="note-icon">◌</span><span>One tap. One clear next step.</span></div>
+  </section>`);
+}
+
+const tourScenes = [
+  { kicker: '01 · your start', title: 'Get Gold.', visual: '<div class="tour-coin">1<small>mg</small></div>', note: 'Your first 1 mg begins processing.' },
+  { kicker: '02 · at the counter', title: 'Tap once.', visual: '<div class="tour-tap"><span>⌁</span><i></i><b>K·TAG</b></div>', note: 'Your approved benefits travel with you.' },
+  { kicker: '03 · before pay', title: 'Save first.', visual: '<div class="tour-invoice"><span>− AED 6.00</span><b>AED 66.00</b></div>', note: 'Membership and card offers lower the bill.' },
+  { kicker: '04 · after pay', title: 'Earn back.', visual: '<div class="tour-reward"><b>+66</b><small>points</small><i>+0.066 mg Gold</i></div>', note: 'Your points and Gold move into the vault.' },
+  { kicker: '05 · every day', title: 'See more.', visual: '<div class="tour-cockpit"><i></i><i></i><i></i><i></i></div>', note: 'Receipts become a calmer money picture.' }
+];
+
+function tour() {
+  const scene = tourScenes[state.tourIndex];
+  return chrome(`<section class="tour-stage">
+    <div class="tour-top"><span class="eyebrow"><span class="gold-dot"></span> Kanzpay in 15 seconds</span><button class="quiet-button" data-action="tour-exit">Skip story</button></div>
+    <div class="tour-scene" data-tour-scene><div class="tour-copy"><span class="step-label">${scene.kicker}</span><h1>${scene.title}</h1><p>${scene.note}</p></div><div class="tour-visual">${scene.visual}</div></div>
+    <div class="tour-line">${tourScenes.map((_, index) => `<span class="${index === state.tourIndex ? 'active' : index < state.tourIndex ? 'done' : ''}"></span>`).join('')}</div>
+    <div class="tour-bottom"><span>Watch how value flows</span><button class="gold-button" data-action="tour-next">${state.tourIndex === tourScenes.length - 1 ? 'Join free · Get 1 mg Gold' : 'Next moment'} <span>↗</span></button></div>
   </section>`);
 }
 
@@ -61,8 +81,8 @@ function waitlist() {
   return chrome(`<section class="center-stage">
     <div class="step-label">01 / 06 · Your first hello</div>
     <div class="mini-orb"><span>1</span><small>mg</small></div>
-    <h1>Be among the first<br /><em>to get more back.</em></h1>
-    <p class="lead narrow">Join the Kanzpay waitlist and we’ll start your Gold journey with <strong>1 mg of Gold</strong>—processing now, ready when you are.</p>
+    <h1>Start with Gold.</h1>
+    <p class="lead narrow">Create your account. Your first <strong>1 mg</strong> starts processing now.</p>
     <form class="waitlist-form account-form" data-form="waitlist"><input name="name" placeholder="Your name" value="${esc(state.name)}" required /><input name="mobile" type="tel" placeholder="Mobile number" value="${esc(state.mobile)}" required /><input name="email" type="email" placeholder="Email" value="${esc(state.email)}" required /><button class="gold-button" type="submit">Create account · Get Gold <span>↗</span></button></form>
     <div class="role-hint">Joining as a <button data-action="choose-role">buyer or seller?</button> You can switch later.</div>
     <div class="privacy-line">Your sandbox account starts with 1 mg Gold processing.</div>
@@ -85,14 +105,14 @@ function role() {
 const profileCopy = {
   buyer: {
     label: 'A little about you',
-    title: 'Who should I be<br /><em>looking after?</em>',
-    sub: 'Your answer changes the way I protect your money and surface opportunities. Nothing here is a box to fit into.',
+    title: 'Your money<br /><em>in one view.</em>',
+    sub: 'Choose the picture that feels closest.',
     options: [['adult', 'Adult life', 'Everyday money, memberships and goals'], ['family', 'Household', 'Shared money, family plans and care'], ['employee', 'Work life', 'Salary cycles, reimbursements and benefits'], ['young', 'Young adult', 'A confident start with gentle guardrails']]
   },
   seller: {
     label: 'A little about your business',
-    title: 'Tell me where your<br /><em>customers find you.</em>',
-    sub: 'I’ll shape your workspace around the rhythm of your business—not force you into a generic dashboard.',
+    title: 'Your business<br /><em>in one view.</em>',
+    sub: 'Choose the rhythm that feels closest.',
     options: [['grocery', 'Grocery', 'Stock, repeat baskets and daily volume'], ['cafe', 'Cafe / restaurant', 'Orders, tables, loyalty and busy periods'], ['services', 'Services', 'Appointments, invoices and payables'], ['education', 'Education / care', 'Plans, approvals and recurring collections']]
   }
 };
@@ -128,7 +148,7 @@ function connections() {
   const completed = Object.values(state.permissions).filter(Boolean).length;
   return chrome(`<section class="connection-stage">
     <div class="step-label">04 / 06 · Your connections</div>
-    <div class="connection-layout"><div class="connection-copy"><h1>Let’s connect the<br /><em>good stuff.</em></h1><p class="lead">I’ll explain every permission before I ask for it. You can skip anything and come back whenever you’re ready.</p><div class="permission-meter"><div class="meter-label"><span>${completed} of 3 connected</span><span>${Math.round(completed / 3 * 100)}%</span></div><div class="meter"><span style="width:${completed / 3 * 100}%"></span></div></div><div class="ai-note"><span class="ai-face">✦</span><span><strong>I’m your K-assistant.</strong><br />I’ll keep the useful things close and the complicated things in the background.</span></div></div><div class="connection-list">${items.map(([id, title, desc, cta, detail]) => `<button class="connection-card ${state.permissions[id] ? 'connected' : ''}" data-connection="${id}"><span class="connection-mark ${id}">${id === 'money' ? '◌' : id === 'rewards' ? '✦' : '⌁'}</span><span class="connection-main"><strong>${title}</strong><small>${desc}</small><em>${detail}</em></span><span class="connection-action">${state.permissions[id] ? 'Connected ✓' : cta + ' ↗'}</span></button>`).join('')}<button class="skip-link" data-action="connections-next">${completed === 3 ? 'Continue to your Universal QR ↗' : 'Skip for now'}</button></div></div>
+    <div class="connection-layout"><div class="connection-copy"><h1>Choose your<br /><em>power.</em></h1><p class="lead">Each tap adds one useful layer. You can skip and return.</p><div class="permission-meter"><div class="meter-label"><span>${completed} of 3 connected</span><span>${Math.round(completed / 3 * 100)}%</span></div><div class="meter"><span style="width:${completed / 3 * 100}%"></span></div></div><div class="ai-note"><span class="ai-face">✦</span><span><strong>Nice choice.</strong><br />I’ll use only the signals you approve.</span></div></div><div class="connection-list">${items.map(([id, title, desc, cta, detail]) => `<button class="connection-card ${state.permissions[id] ? 'connected' : ''}" data-connection="${id}"><span class="connection-mark ${id}">${id === 'money' ? '◌' : id === 'rewards' ? '✦' : '⌁'}</span><span class="connection-main"><strong>${title}</strong><small>${desc}</small><em>${detail}</em></span><span class="connection-action">${state.permissions[id] ? 'Connected ✓' : cta + ' ↗'}</span></button>`).join('')}<button class="skip-link" data-action="connections-next">${completed === 3 ? 'Continue to your Universal QR ↗' : 'Skip for now'}</button></div></div>
   </section>`, { dark: true });
 }
 
@@ -147,7 +167,7 @@ function readiness() {
   const completed = Object.values(state.permissions).filter(Boolean).length;
   return chrome(`<section class="ready-stage">
     <div class="step-label">06 / 06 · Your Kanzpay readiness</div>
-    <div class="ready-header"><div><h1>You’re on your way<br /><em>to more back.</em></h1><p class="lead narrow">Here’s what’s ready, what’s processing, and the one thing that unlocks live Gold.</p></div><div class="ready-orb"><span>1</span><small>mg</small><em>processing</em></div></div>
+    <div class="ready-header"><div><h1>Ready to<br /><em>move more.</em></h1><p class="lead narrow">Your Gold, profile and approved powers in one calm view.</p></div><div class="ready-orb"><span>1</span><small>mg</small><em>processing</em></div></div>
     <div class="readiness-grid"><div class="readiness-list">${[
       ['Profile', 'Built around ' + (state.persona || 'your life'), true],
       ['Bank & card connections', completed > 0 ? 'Sandbox connections ready' : 'Connect when you’re ready', completed > 0],
@@ -215,11 +235,13 @@ function sellerDashboard() {
 }
 
 function dashboardShell(role, content) {
-  return `<div class="dashboard-frame"><header class="dash-nav"><button class="wordmark" data-action="home"><img src="/assets/kanzpay-mark.png" alt="" /><span>Kanzpay</span></button><div class="dash-nav-center"><button class="dash-nav-active">${role === 'buyer' ? 'My money' : 'My business'}</button><button>Rewards</button><button>Activity</button><button>Ask K</button></div><div class="dash-user"><div class="dash-qr" data-action="qr">⌁</div><div class="dash-avatar">${initials()}</div><button class="nav-menu">⋮</button></div></header><div class="dashboard-content">${content}</div><footer class="dash-footer"><span>Private beta · sandbox data</span><span data-action="ready">Readiness 80% · View</span></footer></div>`;
+  return `<div class="dashboard-frame"><header class="dash-nav"><button class="wordmark" data-action="home"><img src="/assets/kanzpay-mark.png" alt="" /><span>Kanzpay</span></button><div class="dash-nav-center"><button class="dash-nav-active">${role === 'buyer' ? 'My money' : 'My business'}</button><button>Rewards</button><button>Activity</button><button>Ask K</button></div><div class="dash-user"><div class="dash-qr" data-action="qr">⌁</div><div class="dash-avatar">${initials()}</div><button class="nav-menu">⋮</button></div></header><div class="dashboard-content">${content}</div><footer class="dash-footer"><span>Built with <b>♥</b> in UAE <b>🇦🇪</b> by OXY Technologies, ADGM, Abu Dhabi.</span><span data-action="ready">Readiness 80% · View</span></footer></div>`;
 }
 
 function render() {
+  window.clearTimeout(tourTimer);
   if (state.step === 'welcome') app.innerHTML = welcome();
+  if (state.step === 'tour') app.innerHTML = tour();
   if (state.step === 'waitlist') app.innerHTML = waitlist();
   if (state.step === 'role') app.innerHTML = role();
   if (state.step === 'profile') app.innerHTML = profile();
@@ -231,6 +253,18 @@ function render() {
   if (state.step === 'invoice') app.innerHTML = invoice();
   if (state.step === 'dashboard') app.innerHTML = state.role === 'seller' ? sellerDashboard() : buyerDashboard();
   bind();
+  if (state.step === 'tour') {
+    tourTimer = window.setTimeout(() => {
+      if (state.tourIndex < tourScenes.length - 1) {
+        state.tourIndex += 1;
+        render();
+      } else {
+        state.step = 'waitlist';
+        state.tourIndex = 0;
+        render();
+      }
+    }, 3000);
+  }
 }
 
 async function joinWaitlist(form) {
@@ -264,7 +298,16 @@ function bind() {
   document.querySelectorAll('[data-action]').forEach((element) => element.addEventListener('click', async () => {
     const action = element.dataset.action;
     if (action === 'waitlist') state.step = 'waitlist';
-    if (action === 'tour') { notify('I’ll take you one thoughtful step at a time.'); state.step = 'waitlist'; }
+    if (action === 'tour') { state.tourIndex = 0; state.step = 'tour'; }
+    if (action === 'tour-exit') state.step = 'welcome';
+    if (action === 'tour-next') {
+      if (state.tourIndex < tourScenes.length - 1) {
+        state.tourIndex += 1;
+      } else {
+        state.step = 'waitlist';
+        state.tourIndex = 0;
+      }
+    }
     if (action === 'choose-role') state.step = 'role';
     if (action === 'home') { state.step = 'welcome'; state.role = null; }
     if (action === 'help') notify('K-assistant is here. Nothing is permanent in this sandbox.');

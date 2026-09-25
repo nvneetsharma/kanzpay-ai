@@ -32,3 +32,7 @@ Open `http://localhost:3000/`.
 The demo deliberately has no live payment capability, raw payment credentials, or external provider secrets. Money is represented as integer minor units. Tier C evidence is displayed as possible savings and cannot affect the guaranteed price.
 
 The tap exchange only carries derived/tokenized eligibility labels such as membership, reward identity, voucher/promo availability, card/BIN eligibility and safe payment-rail availability. It never carries PAN, CVV, bank credentials or payment secrets.
+
+## Provider boundary
+
+The current app is a local sandbox: OTPs, app/SMS/email permissions, BIN intelligence, reward balances, offer discovery, print-share ingestion, barcode matching and catalogue enrichment are fixtures, not live fetches. A production implementation must add separately authenticated provider adapters with explicit consent, source timestamps, revocation, rate limits and user review before any signal is shared with a seller or applied to an invoice.
