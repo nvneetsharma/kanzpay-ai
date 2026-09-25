@@ -358,6 +358,10 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(port, () => {
-  console.log(`Kanzpay PACT sandbox listening on http://localhost:${port}`);
-});
+export { api };
+
+if (process.env.VERCEL !== '1') {
+  server.listen(port, () => {
+    console.log(`Kanzpay PACT sandbox listening on http://localhost:${port}`);
+  });
+}
