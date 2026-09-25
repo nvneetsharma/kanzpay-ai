@@ -48,7 +48,9 @@ const state = {
     waitlist: [],
     role: null,
     permissions: {},
-    qr: null
+    qr: null,
+    account: null,
+    exchange: null
   },
   audit: []
 };
@@ -126,6 +128,79 @@ async function api(req, res, pathname) {
     return json(res, 201, entry);
   }
 
+  if (req.method === 'POST' && pathname === '/api/account/create') {
+    const payload = await body(req);
+    if (!payload.name || !payload.mobile || !payload.email) {
+      return json(res, 422, { error: 'Name, mobile and email are required.' });
+    }
+    state.onboarding.account = {
+      id: `acct-${randomUUID().slice(0, 8)}`,
+      name: String(payload.name).trim(),
+      mobile: String(payload.mobile).trim(),
+      email: String(payload.email).trim().toLowerCase(),
+      status: 'ACTIVE_SANDBOX',
+      createdAt: new Date().toISOString()
+    };
+    state.audit.push({ event: 'ACCOUNT_CREATED', id: state.onboarding.account.id, at: state.onboarding.account.createdAt });
+    return json(res, 201, state.onboarding.account);
+  }
+
+  if (req.method === 'POST' && pathname === '/api/tap/exchange') {
+    const payload = await body(req);
+    if (!payload.kTag || !payload.buyerId || !Array.isArray(payload.capabilities)) {
+      return json(res, 422, { error: 'K-Tag, buyer identity and approved capabilities are required.' });
+    }
+    state.onboarding.exchange = {
+      id: `tap-${randomUUID().slice(0, 8)}`,
+      kTag: String(payload.kTag),
+      buyerId: String(payload.buyerId),
+      capabilities: payload.capabilities.map((item) => String(item)),
+      approvedAt: new Date().toISOString(),
+      status: 'READY_FOR_INVOICE'
+    };
+    state.audit.push({
+      event: 'BUYER_TAPPED_SELLER_KTAG',
+      id: state.onboarding.exchange.id,
+      capabilities: state.onboarding.exchange.capabilities,
+      at: state.onboarding.exchange.approvedAt
+    });
+    return json(res, 201, {
+      exchange: state.onboarding.exchange,
+      seller: state.seller,
+      message: 'Buyer-approved benefit and payment signals are ready for invoice pricing.'
+    });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/invoice/create') {
+    if (!state.onboarding.exchange) {
+      return json(res, 409, { error: 'Tap exchange must be completed before invoice creation.' });
+    }
+    const preview = buildPreview();
+    const invoice = {
+      id: `inv-${randomUUID().slice(0, 8)}`,
+      reference: state.basket.reference,
+      status: 'PENDING_BUYER_APPROVAL',
+      seller: state.seller,
+      items: state.basket.items,
+      grossMinor: preview.grossMinor,
+      discounts: preview.evidence.filter((item) => item.status === 'ready').map((item) => ({
+        name: item.name,
+        valueMinor: item.valueMinor,
+        evidence: item.evidence
+      })),
+      guaranteedSavingsMinor: preview.guaranteedMinor,
+      possibleSavingsMinor: preview.possibleMinor,
+      payableMinor: preview.netMinor,
+      pointsEarned: preview.points,
+      pointsAfterPurchase: state.buyer.points + preview.points,
+      goldEarnedMinor: preview.goldMinor,
+      selectedRail: preview.selectedRail,
+      exchangeId: state.onboarding.exchange.id
+    };
+    state.audit.push({ event: 'INVOICE_SHARED_TO_BUYER', id: invoice.id, at: new Date().toISOString() });
+    return json(res, 201, invoice);
+  }
+
   if (req.method === 'POST' && pathname === '/api/onboarding/permission') {
     const payload = await body(req);
     if (!['buyer', 'seller'].includes(payload.role) || !payload.id) {
@@ -168,7 +243,9 @@ async function api(req, res, pathname) {
       gold: { amount: 1, unit: 'mg', status: 'processing' },
       permissions,
       universalQr: state.onboarding.qr,
-      kyc: { status: 'NOT_AVAILABLE_IN_SANDBOX', liveUnlock: true }
+      account: state.onboarding.account,
+      exchange: state.onboarding.exchange,
+      accountCreation: { required: true, status: state.onboarding.account ? 'ACTIVE_SANDBOX' : 'NOT_STARTED' }
     });
   }
 
@@ -199,6 +276,8 @@ async function api(req, res, pathname) {
     }
     const preview = buildPreview();
     state.session.status = 'SETTLED';
+    state.buyer.points += preview.points;
+    state.buyer.goldMinor += preview.goldMinor;
     state.audit.push({ event: 'APPROVED', quoteId: state.session.quoteId, at: new Date().toISOString() });
     state.audit.push({ event: 'SETTLED', quoteId: state.session.quoteId, at: new Date().toISOString() });
     return json(res, 200, {
@@ -207,7 +286,12 @@ async function api(req, res, pathname) {
       quoteId: state.session.quoteId,
       paidMinor: preview.netMinor,
       rail: preview.selectedRail,
-      rewards: { points: preview.points, goldMinor: preview.goldMinor },
+      rewards: {
+        points: preview.points,
+        pointsBalance: state.buyer.points,
+        goldMinor: preview.goldMinor,
+        goldBalanceMinor: state.buyer.goldMinor
+      },
       receipt: { reference: state.basket.reference, matched: true, confidence: 0.98 }
     });
   }

@@ -84,5 +84,39 @@ test('onboarding permissions and Universal QR are sandboxed and reversible', asy
   const result = await readiness.json();
   assert.equal(result.permissions, 1);
   assert.equal(result.universalQr.value, 'KZ-TEST-QR');
-  assert.equal(result.kyc.liveUnlock, true);
+  assert.equal(result.accountCreation.required, true);
+  assert.equal(result.accountCreation.status, 'NOT_STARTED');
+});
+
+test('K-Tag tap exchanges approved benefit signals and creates a priced invoice', async () => {
+  const account = await request('/api/account/create', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ name: 'Maya Khan', mobile: '+971500000000', email: 'maya@example.com' })
+  });
+  assert.equal(account.status, 201);
+  const exchange = await request('/api/tap/exchange', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      kTag: 'KZ-KTAG-LUMA',
+      buyerId: 'acct-test',
+      capabilities: ['membership cards', 'reward-point identity', 'eligible cards / BIN', 'safe payment accounts']
+    })
+  });
+  const exchangeResult = await exchange.json();
+  assert.equal(exchange.status, 201);
+  assert.deepEqual(exchangeResult.exchange.capabilities, ['membership cards', 'reward-point identity', 'eligible cards / BIN', 'safe payment accounts']);
+  const invoice = await request('/api/invoice/create', { method: 'POST' });
+  const invoiceResult = await invoice.json();
+  assert.equal(invoice.status, 201);
+  assert.equal(invoiceResult.payableMinor, 6600);
+  assert.equal(invoiceResult.guaranteedSavingsMinor, 600);
+  assert.equal(invoiceResult.pointsEarned, 66);
+  assert.equal(invoiceResult.pointsAfterPurchase, 1906);
+  await request('/api/solver/preview', { method: 'POST' });
+  const approval = await request('/api/checkout/approve', { method: 'POST' });
+  const approvalResult = await approval.json();
+  assert.equal(approval.status, 200);
+  assert.equal(approvalResult.rewards.pointsBalance, 1906);
 });

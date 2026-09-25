@@ -5,7 +5,9 @@ const state = {
   role: null,
   step: 'welcome',
   email: '',
+  mobile: '',
   name: '',
+  account: null,
   persona: null,
   permissions: {},
   qr: null,
@@ -14,6 +16,7 @@ const state = {
 };
 
 const esc = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
+const money = (minor) => `AED ${(minor / 100).toFixed(2)}`;
 const notify = (message, kind = '') => {
   toast.className = `toast show ${kind}`;
   toast.textContent = message;
@@ -24,7 +27,7 @@ const post = async (path, payload = {}) => {
   const response = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
   return response.json();
 };
-const pct = () => Math.max(0, Math.round((['welcome', 'waitlist', 'role', 'profile', 'connections', 'qr', 'ready'].indexOf(state.step) / 6) * 100));
+const pct = () => Math.max(0, Math.round((['welcome', 'waitlist', 'role', 'profile', 'connections', 'qr', 'ready', 'tap', 'invoice', 'dashboard'].indexOf(state.step) / 9) * 100));
 const initials = () => (state.name || 'K').split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase();
 
 function chrome(content, { dark = false } = {}) {
@@ -44,9 +47,9 @@ function welcome() {
   return chrome(`<section class="welcome-stage">
     <div class="welcome-copy">
       <div class="eyebrow"><span class="gold-dot"></span> a new way to move through money</div>
-      <h1>Your money,<br /><em>with more back.</em></h1>
-      <p class="lead">Kanzpay brings your accounts, rewards, memberships and everyday decisions into one intelligent, rewarding life.</p>
-      <div class="welcome-actions"><button class="gold-button" data-action="waitlist">Join the waitlist <span>↗</span></button><button class="text-button" data-action="tour">Take the 60-second tour</button></div>
+      <h1>Make every payment<br /><em>worth more.</em></h1>
+      <p class="lead">Tap once. Pay less. Earn Gold. Kanzpay turns the benefits you already have into a calmer checkout.</p>
+      <div class="welcome-actions"><button class="gold-button" data-action="waitlist">Join free · Get 1 mg Gold <span>↗</span></button><button class="text-button" data-action="tour">See the 15-second story</button></div>
       <div class="trust-row"><span>✦</span><span>Private by design</span><span>·</span><span>UAE first</span><span>·</span><span>Human when it matters</span></div>
     </div>
     <div class="orb-scene" aria-hidden="true"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="gold-orb"><span>1</span><small>mg</small></div><div class="orb-caption">A little gold<br /><strong>to begin with.</strong></div><div class="ray ray-a"></div><div class="ray ray-b"></div><div class="ray ray-c"></div></div>
@@ -60,9 +63,9 @@ function waitlist() {
     <div class="mini-orb"><span>1</span><small>mg</small></div>
     <h1>Be among the first<br /><em>to get more back.</em></h1>
     <p class="lead narrow">Join the Kanzpay waitlist and we’ll start your Gold journey with <strong>1 mg of Gold</strong>—processing now, ready when you are.</p>
-    <form class="waitlist-form" data-form="waitlist"><input name="email" type="email" placeholder="Your email address" value="${esc(state.email)}" required /><button class="gold-button" type="submit">Reserve my place <span>↗</span></button></form>
+    <form class="waitlist-form account-form" data-form="waitlist"><input name="name" placeholder="Your name" value="${esc(state.name)}" required /><input name="mobile" type="tel" placeholder="Mobile number" value="${esc(state.mobile)}" required /><input name="email" type="email" placeholder="Email" value="${esc(state.email)}" required /><button class="gold-button" type="submit">Create account · Get Gold <span>↗</span></button></form>
     <div class="role-hint">Joining as a <button data-action="choose-role">buyer or seller?</button> You can switch later.</div>
-    <div class="privacy-line">No noise. No selling your data. Just your place in line.</div>
+    <div class="privacy-line">Your sandbox account starts with 1 mg Gold processing.</div>
   </section>`);
 }
 
@@ -150,8 +153,8 @@ function readiness() {
       ['Bank & card connections', completed > 0 ? 'Sandbox connections ready' : 'Connect when you’re ready', completed > 0],
       [state.role === 'buyer' ? 'Memberships & points' : 'Accepted rewards', completed > 1 ? 'Permission captured · review anytime' : 'Optional · not connected', completed > 1],
       ['Universal QR', state.qr ? 'Generated · revocable anytime' : 'Waiting for generation', Boolean(state.qr)],
-      ['KYC', 'Unlocks live Gold when Kanzpay goes live', false]
-    ].map(([name, desc, done], index) => `<div class="ready-row ${done ? 'done' : ''} ${name === 'KYC' ? 'locked' : ''}"><span class="ready-index">${done ? '✓' : String(index + 1).padStart(2, '0')}</span><span><strong>${name}</strong><small>${desc}</small></span><span class="ready-state">${done ? 'Ready' : name === 'KYC' ? 'Coming soon' : 'Open'}</span></div>`).join('')}</div><div class="ready-side"><div class="gold-panel"><span class="eyebrow">Your welcome Gold</span><div class="gold-amount">1 <small>mg</small></div><p>We’re keeping it safe in processing until your profile is complete and KYC is available.</p><button class="text-button" data-action="gold-info">How Gold works ↗</button></div><div class="ready-next"><span class="ai-face">✦</span><div><strong>Next, I’ll make your home feel like yours.</strong><small>Your ${state.role} dashboard is ready.</small></div><button class="gold-button" data-action="dashboard">Enter Kanzpay <span>↗</span></button></div></div></div>
+      ['Account activation', 'Keeps your Gold Vault and payment preferences together', Boolean(state.account)]
+    ].map(([name, desc, done], index) => `<div class="ready-row ${done ? 'done' : ''}"><span class="ready-index">${done ? '✓' : String(index + 1).padStart(2, '0')}</span><span><strong>${name}</strong><small>${desc}</small></span><span class="ready-state">${done ? 'Ready' : 'Open'}</span></div>`).join('')}</div><div class="ready-side"><div class="gold-panel"><span class="eyebrow">Your welcome Gold</span><div class="gold-amount">1 <small>mg</small></div><p>Your Gold is processing in the sandbox vault. Complete account activation and connect your benefits to make checkout more valuable.</p><button class="text-button" data-action="gold-info">How Gold works ↗</button></div><div class="ready-next"><span class="ai-face">✦</span><div><strong>Next, I’ll make your home feel like yours.</strong><small>Your ${state.role} dashboard is ready.</small></div><button class="gold-button" data-action="dashboard">Enter Kanzpay <span>↗</span></button></div></div></div>
   </section>`);
 }
 
@@ -175,17 +178,37 @@ function checkout() {
   </section>`, { dark: true });
 }
 
+function tapExchange() {
+  const capabilities = ['reward-point identity', 'membership cards', 'promo codes & vouchers', 'eligible cards / BIN', 'safe payment accounts'];
+  return chrome(`<section class="tap-stage">
+    <div class="step-label">Tap exchange · seller K-Tag</div>
+    <div class="tap-hero"><div class="tap-copy"><span class="eyebrow"><span class="gold-dot"></span> one tap, only what you approve</span><h1>Let your benefits<br /><em>arrive before the bill.</em></h1><p class="lead">Tap the seller’s K-Tag and Kanzpay shares your benefit identity—not passwords or raw account details. The seller can now price your invoice intelligently.</p><button class="gold-button" data-action="tap-now">Tap Luma K-Tag <span>↗</span></button><button class="back-link" data-action="dashboard">Back to cockpit</button></div><div class="tap-device"><div class="tag-wave"></div><div class="ktag">K<span>·</span>TAG<small>LUMA MARKET</small></div><div class="tap-phone"><span>⌁</span><strong>Tap to exchange</strong><small>Buyer-approved signals only</small></div></div></div>
+    <div class="capability-row">${capabilities.map((item, index) => `<span style="--i:${index}">${item}</span>`).join('')}</div>
+  </section>`, { dark: true });
+}
+
+function invoice() {
+  const preview = state.invoicePreview || { grossMinor: 7200, guaranteedSavingsMinor: 600, possibleSavingsMinor: 300, payableMinor: 6600, pointsEarned: 66, pointsAfterPurchase: 1906, goldEarnedMinor: 66 };
+  const money = (minor) => `AED ${(minor / 100).toFixed(2)}`;
+  return chrome(`<section class="invoice-stage">
+    <div class="invoice-head"><div><span class="eyebrow"><span class="green-dot"></span> invoice from Luma Market</span><h1>Your benefits made<br /><em>this bill smaller.</em></h1><p class="lead">Review the discount elements you approved during the tap. Nothing is paid until you choose.</p></div><div class="invoice-badge">#1048<small>buyer review</small></div></div>
+    <div class="invoice-layout"><div class="invoice-paper"><div class="paper-top"><strong>Luma Market</strong><span>Signed invoice · #1048</span></div><div class="paper-items"><div><span>Ethiopian cold brew</span><b>AED 24.00</b></div><div><span>Granola cup × 2</span><b>AED 36.00</b></div><div><span>Luma membership</span><b>AED 12.00</b></div></div><div class="paper-benefits"><span>Applied from your tap</span><div><span>Fazaa membership</span><b>− AED 4.20</b></div><div><span>Visa BIN offer</span><b>− AED 1.80</b></div></div><div class="paper-total"><span>Final amount to pay</span><strong>${money(preview.payableMinor)}</strong></div></div><div class="invoice-side"><div class="points-card"><span class="card-label">Reward points</span><strong>+${preview.pointsEarned}</strong><small>${preview.pointsAfterPurchase} points after this checkout</small><div class="progress-line"><span style="width:72%"></span></div></div><div class="gold-card"><span class="card-label">Gold from this checkout</span><strong>+${(preview.goldEarnedMinor / 1000).toFixed(3)} mg</strong><small>Added after settlement · sandbox ledger</small></div><button class="gold-button" data-action="approve-invoice">Approve ${money(preview.payableMinor)} <span>↗</span></button><button class="soft-button full" data-action="stop-invoice">Stop and review later</button></div></div>
+  </section>`, { dark: true });
+}
+
 function buyerDashboard() {
   return dashboardShell('buyer', `<div class="dash-hero buyer-hero"><div><span class="eyebrow">Good morning, ${esc(state.name || 'Maya')}</span><h1>Your money is<br /><em>starting to give back.</em></h1><p>Here’s the calm view of what’s moving, what’s protected and what’s earning. I’ll keep the next useful thing close.</p></div><div class="dash-orb"><div class="dash-gold">1 <small>mg</small></div><span>processing</span></div></div>
     <div class="today-strip"><span class="green-dot"></span><strong>Today’s gentle nudge</strong><span>Your welcome Gold is processing. Connect one more benefit to make your first guided checkout smarter.</span><button data-action="checkout">Try the guided checkout ↗</button></div>
-    <div class="dash-grid top-cards"><article class="glass-card balance-card"><span class="card-label">Total balance</span><strong>AED 42,680<span class="verified">●</span></strong><small>Across 3 connected accounts</small><div class="balance-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></article><article class="glass-card"><span class="card-label">Gold earned</span><strong class="gold-text">0.00 <small>mg</small></strong><small>1 mg processing · KYC pending</small><button class="card-link" data-action="gold-info">View Gold journey ↗</button></article><article class="glass-card"><span class="card-label">Rewards found</span><strong>AED 384 <small>this month</small></strong><small>Across 7 memberships and offers</small><button class="card-link">Open rewards wallet ↗</button></article></div>
+    <div class="quick-actions"><button data-action="tap"><span>⌁</span><strong>Tap merchant K-Tag</strong><small>Use your benefit identity</small></button><button data-action="qr"><span>▦</span><strong>Show Universal QR</strong><small>Reward identity in one code</small></button><button><span>◌</span><strong>Open Gold Vault</strong><small>See processing and earned Gold</small></button></div>
+    <div class="dash-grid top-cards"><article class="glass-card balance-card"><span class="card-label">Total balance</span><strong>AED 42,680<span class="verified">●</span></strong><small>Across 3 connected accounts</small><div class="balance-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></article><article class="glass-card"><span class="card-label">Gold earned</span><strong class="gold-text">0.00 <small>mg</small></strong><small>1 mg processing · account active</small><button class="card-link" data-action="gold-info">View Gold journey ↗</button></article><article class="glass-card"><span class="card-label">Rewards found</span><strong>AED 384 <small>this month</small></strong><small>Across 7 memberships and offers</small><button class="card-link">Open rewards wallet ↗</button></article></div>
     <div class="dash-grid split-dash"><article class="glass-card"><div class="dash-section-head"><span>Spending rhythm</span><button>See trends ↗</button></div><div class="spend-chart"><div class="chart-y"><span>AED 4k</span><span>2k</span><span>0</span></div><div class="chart-bars">${['M','T','W','T','F','S','S'].map((day, i) => `<div><i style="height:${[46,70,34,82,62,52,38][i]}%"></i><small>${day}</small></div>`).join('')}</div></div><div class="chart-note"><span class="green-dot"></span> You’re spending 12% less than last week.</div></article><article class="glass-card"><div class="dash-section-head"><span>Coming up</span><button>Manage bills ↗</button></div><div class="bill-row"><span class="bill-icon">⌂</span><span><strong>Home rent</strong><small>Due in 8 days</small></span><b>AED 5,200</b></div><div class="bill-row"><span class="bill-icon">≋</span><span><strong>DEWA</strong><small>Auto-detected · 15 Oct</small></span><b>AED 386</b></div><div class="bill-row"><span class="bill-icon">◌</span><span><strong>Careem Plus</strong><small>Recurring · 19 Oct</small></span><b>AED 24</b></div></article></div>
     <div class="dash-grid split-dash"><article class="glass-card"><div class="dash-section-head"><span>Recent transactions</span><button>View all ↗</button></div><div class="transaction"><span class="merchant merchant-grocery">C</span><span><strong>Carrefour</strong><small>Groceries · matched receipt</small></span><b>AED 72.60</b></div><div class="transaction"><span class="merchant merchant-cafe">L</span><span><strong>Luma Market</strong><small>Membership benefit applied</small></span><b>AED 66.00</b></div><div class="transaction"><span class="merchant merchant-transport">C</span><span><strong>Careem</strong><small>Transport · Tuesday</small></span><b>AED 42.00</b></div></article><article class="glass-card reward-card"><span class="eyebrow">A thought from K-assistant</span><h3>“Your Luma membership could have saved you AED 18 more this month.”</h3><p>Let me keep looking for moments like this?</p><button class="gold-button">Yes, keep me ahead ↗</button></article></div>`);
 }
 
 function sellerDashboard() {
   return dashboardShell('seller', `<div class="dash-hero seller-hero"><div><span class="eyebrow">Luma Market · ${esc(state.persona || 'cafe')}</span><h1>Your business,<br /><em>in its best light.</em></h1><p>One view for the orders, stock, rewards and cash movement that keep today running.</p></div><div class="seller-status"><span class="green-dot"></span><strong>Ready to accept PACT</strong><small>Universal QR active · 3 rewards connected</small></div></div>
-    <div class="today-strip seller-strip"><span class="gold-dot"></span><strong>Today’s growth move</strong><span>Preview the customer checkout story before you publish your next reward rule.</span><button data-action="checkout">Preview guided checkout ↗</button></div>
+    <div class="today-strip seller-strip"><span class="gold-dot"></span><strong>Today’s growth move</strong><span>Receive a buyer tap, price the invoice and settle on the calmest rail.</span><button data-action="seller-tap">Open K-Tag inbox ↗</button></div>
+    <div class="seller-rail"><span class="ktag-mini">K</span><div><strong>Luma K-Tag is live</strong><small>Ready for buyer identity exchange · 4 benefit categories accepted</small></div><button data-action="seller-tap">Simulate buyer tap ↗</button></div>
     <div class="dash-grid top-cards"><article class="glass-card"><span class="card-label">Today’s order value</span><strong>AED 8,420 <small class="positive">+12.8%</small></strong><small>vs AED 7,470 same day last week</small><div class="micro-spark"><i></i><i></i><i></i><i></i><i></i><i></i></div></article><article class="glass-card"><span class="card-label">Orders</span><strong>126 <small class="positive">+8.4%</small></strong><small>31 PACT-ready · 4 awaiting payment</small><button class="card-link">Open orders ↗</button></article><article class="glass-card"><span class="card-label">Stock health</span><strong class="gold-text">86<span>%</span></strong><small>2 low-stock SKUs · 1 stock-out risk</small><button class="card-link">Review inventory ↗</button></article></div>
     <div class="dash-grid split-dash"><article class="glass-card"><div class="dash-section-head"><span>Orders at a glance</span><button>Open order book ↗</button></div><div class="order-row"><span class="order-status live"></span><span><strong>#1048 · Maya Khan</strong><small>3 items · PACT quote ready</small></span><b>AED 66.00</b><span class="status-pill">Awaiting pay</span></div><div class="order-row"><span class="order-status done"></span><span><strong>#1047 · Sarah Ahmed</strong><small>5 items · receipt matched</small></span><b>AED 128.40</b><span class="status-pill done-pill">Complete</span></div><div class="order-row"><span class="order-status done"></span><span><strong>#1046 · Omar Ali</strong><small>2 items · Aani settled</small></span><b>AED 44.00</b><span class="status-pill done-pill">Complete</span></div></article><article class="glass-card"><div class="dash-section-head"><span>Stock intelligence</span><button>Catalogue ↗</button></div><div class="stock-row"><span class="stock-dot warn"></span><span><strong>Ethiopian cold brew</strong><small>SKU CB-220 · 2 days left</small></span><b>18 left</b></div><div class="stock-row"><span class="stock-dot danger-dot"></span><span><strong>Granola cup</strong><small>SKU GC-101 · stock-out risk</small></span><b>4 left</b></div><div class="stock-row"><span class="stock-dot good-dot"></span><span><strong>Still water 500ml</strong><small>SKU SW-018 · 12 days left</small></span><b>148 left</b></div></article></div>
     <div class="dash-grid split-dash"><article class="glass-card"><div class="dash-section-head"><span>Rewards issued</span><button>Manage rules ↗</button></div><div class="reward-stat"><strong>AED 384</strong><small>customer savings · this month</small><div class="progress-line"><span style="width:68%"></span></div><small>68% of your AED 560 rewards budget used</small></div></article><article class="glass-card reward-card seller-reward"><span class="eyebrow">K-assistant suggestion</span><h3>“Your Saturday breakfast basket is winning. Want a QR offer for slow Mondays?”</h3><button class="gold-button">Create an offer ↗</button></article></div>`);
@@ -204,14 +227,20 @@ function render() {
   if (state.step === 'qr') app.innerHTML = qr();
   if (state.step === 'ready') app.innerHTML = readiness();
   if (state.step === 'checkout') app.innerHTML = checkout();
+  if (state.step === 'tap') app.innerHTML = tapExchange();
+  if (state.step === 'invoice') app.innerHTML = invoice();
   if (state.step === 'dashboard') app.innerHTML = state.role === 'seller' ? sellerDashboard() : buyerDashboard();
   bind();
 }
 
 async function joinWaitlist(form) {
+  state.name = form.name.value;
+  state.mobile = form.mobile.value;
   state.email = form.email.value;
   state.waitlist = true;
   await post('/api/waitlist', { email: state.email });
+  const account = await post('/api/account/create', { name: state.name, mobile: state.mobile, email: state.email });
+  state.account = account;
   notify('Your place is reserved. Your Gold is now processing.', 'success');
   state.step = 'role';
   render();
@@ -248,6 +277,31 @@ function bind() {
     if (action === 'connections-next') state.step = 'qr';
     if (action === 'generate-qr') { state.qr = `KZ-${crypto.randomUUID().slice(0, 8).toUpperCase()}`; await post('/api/onboarding/qr', { role: state.role, value: state.qr }); notify('Your Universal QR is ready to share.', 'success'); }
     if (action === 'dashboard') state.step = 'dashboard';
+    if (action === 'tap' || action === 'seller-tap') state.step = 'tap';
+    if (action === 'tap-now') {
+      const result = await post('/api/tap/exchange', {
+        kTag: 'KZ-KTAG-LUMA',
+        buyerId: state.account?.id || 'buyer-sandbox',
+        capabilities: ['reward-point identity', 'membership cards', 'promo codes & vouchers', 'eligible cards / BIN', 'safe payment accounts']
+      });
+      state.exchange = result.exchange;
+      const invoiceResult = await post('/api/invoice/create');
+      state.invoicePreview = invoiceResult;
+      notify('Tap exchanged. Luma has your approved benefit signals.', 'success');
+      state.step = 'invoice';
+    }
+    if (action === 'approve-invoice') {
+      const preview = await post('/api/solver/preview');
+      state.checkoutPreview = preview;
+      const settled = await post('/api/checkout/approve');
+      notify(`Paid ${money(settled.paidMinor)} · +${settled.rewards.points} points · Gold added.`, 'success');
+      state.step = 'dashboard';
+    }
+    if (action === 'stop-invoice') {
+      await post('/api/checkout/stop');
+      notify('No payment was attempted. Your invoice stays available.', '');
+      state.step = 'dashboard';
+    }
     if (action === 'checkout') { state.checkoutStep = 0; state.step = 'checkout'; }
     if (action === 'checkout-next') {
       if (state.checkoutStep < 3) state.checkoutStep += 1;
@@ -258,7 +312,7 @@ function bind() {
       }
     }
     if (action === 'checkout-back') state.checkoutStep = Math.max(0, (state.checkoutStep || 0) - 1);
-    if (action === 'gold-info') notify('Gold is processing in sandbox. KYC unlocks live use when Kanzpay launches.');
+    if (action === 'gold-info') notify('Gold is processing in the sandbox ledger. Account activation unlocks the reward vault journey.');
     if (action === 'qr') state.step = 'qr';
     if (action === 'ready') state.step = 'ready';
     if (action === 'readiness') state.step = 'ready';
