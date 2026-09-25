@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240">
+  <defs><linearGradient id="bg" x1="0" x2="1"><stop stop-color="#f9e4b6"/><stop offset="1" stop-color="#d8eddf"/></linearGradient></defs>
+  <rect width="320" height="240" rx="32" fill="url(#bg)"/>
+  <circle cx="155" cy="130" r="70" fill="#e3ad50"/>
+  <ellipse cx="155" cy="103" rx="70" ry="29" fill="#fff1c5"/>
+  <g fill="#9a632c"><circle cx="124" cy="99" r="8"/><circle cx="153" cy="115" r="7"/><circle cx="181" cy="96" r="9"/><circle cx="143" cy="87" r="6"/></g>
+  <text x="28" y="39" font-family="Arial" font-size="18" fill="#24513d">GRANOLA CUP</text>
+</svg>

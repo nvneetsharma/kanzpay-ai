@@ -23,6 +23,11 @@ const state = {
     location: 'Dubai Marina',
     rulesVersion: 'v12'
   },
+  catalogue: [
+    { id: 'sku-coffee', barcode: '6291100002201', name: 'Ethiopian cold brew', category: 'Cafe', priceMinor: 2400, stock: 18, daysStock: 2, image: '/assets/catalogue-coffee.svg' },
+    { id: 'sku-granola', barcode: '6291100000101', name: 'Granola cup', category: 'Grocery', priceMinor: 1800, stock: 4, daysStock: 1, image: '/assets/catalogue-granola.svg' },
+    { id: 'sku-water', barcode: '6291100000018', name: 'Still water 500ml', category: 'Grocery', priceMinor: 500, stock: 148, daysStock: 12, image: '/assets/catalogue-water.svg' }
+  ],
   basket: {
     id: 'basket-1048',
     reference: 'LM-1048',
@@ -260,6 +265,42 @@ async function api(req, res, pathname) {
       preview: buildPreview(),
       audit: state.audit
     });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/catalogue') {
+    return json(res, 200, { seller: state.seller, items: state.catalogue });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/catalogue/upload') {
+    const payload = await body(req);
+    const items = Array.isArray(payload.items) ? payload.items : [];
+    const imported = items.filter((item) => item?.barcode && item?.name).map((item) => ({
+      id: `sku-${randomUUID().slice(0, 8)}`,
+      barcode: String(item.barcode),
+      name: String(item.name),
+      category: String(item.category || 'General'),
+      priceMinor: Math.max(0, Number(item.priceMinor || 0)),
+      stock: Math.max(0, Number(item.stock || 0)),
+      daysStock: Math.max(0, Number(item.daysStock || 0)),
+      image: String(item.image || '/assets/catalogue-water.svg')
+    }));
+    state.catalogue.push(...imported);
+    state.audit.push({ event: 'CATALOGUE_IMPORTED', count: imported.length, at: new Date().toISOString() });
+    return json(res, 201, { imported, total: state.catalogue.length });
+  }
+
+  if (req.method === 'PATCH' && pathname.startsWith('/api/catalogue/')) {
+    const id = pathname.split('/').pop();
+    const item = state.catalogue.find((candidate) => candidate.id === id);
+    if (!item) return json(res, 404, { error: 'SKU not found.' });
+    const payload = await body(req);
+    for (const key of ['name', 'category', 'image']) {
+      if (payload[key] !== undefined) item[key] = String(payload[key]);
+    }
+    for (const key of ['priceMinor', 'stock', 'daysStock']) {
+      if (payload[key] !== undefined) item[key] = Math.max(0, Number(payload[key]));
+    }
+    return json(res, 200, item);
   }
 
   if (req.method === 'POST' && pathname === '/api/solver/preview') {

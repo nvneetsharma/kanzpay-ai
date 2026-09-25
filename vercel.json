@@ -9,6 +9,7 @@
     { "src": "/assets/(.*)", "dest": "/public/assets/$1" },
     { "src": "/app.js", "dest": "/public/app.js" },
     { "src": "/styles.css", "dest": "/public/styles.css" },
+    { "src": "/visual-overrides.css", "dest": "/public/visual-overrides.css" },
     { "src": "/", "dest": "/public/index.html" }
   ]
 }

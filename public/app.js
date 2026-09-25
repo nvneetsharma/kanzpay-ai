@@ -48,14 +48,15 @@ function chrome(content, { dark = false } = {}) {
 function welcome() {
   return chrome(`<section class="welcome-stage">
     <div class="welcome-copy">
-      <div class="eyebrow"><span class="gold-dot"></span> a new way to move through money</div>
-      <h1>Pay less.<br /><em>Earn Gold.</em></h1>
-      <p class="lead">Your benefits do the searching. You make the final choice.</p>
-      <div class="welcome-actions"><button class="gold-button" data-action="waitlist">Join free · Get 1 mg Gold <span>↗</span></button><button class="text-button" data-action="tour">Watch the 15-second story <span>◉</span></button></div>
-      <div class="trust-row"><span>✦</span><span>Tap</span><span>→</span><span>Save</span><span>→</span><span>Earn</span></div>
+      <div class="eyebrow"><span class="gold-dot"></span> Kanzpay</div>
+      <h1>Spend<br /><em>brighter.</em></h1>
+      <p class="lead">One tap. A smaller bill. Gold that comes back.</p>
+      <div class="welcome-actions"><button class="gold-button" data-action="waitlist">Join free <span>+ 1 mg</span></button><button class="story-button" data-action="tour"><span class="story-play">▶</span> See it happen</button></div>
+      <div class="life-path"><span class="path-dot active"></span><span class="path-line"></span><span class="path-dot"></span><span class="path-line"></span><span class="path-dot"></span><span class="path-line"></span><span class="path-dot"></span></div>
+      <div class="path-labels"><span>Start</span><span>Tap</span><span>Save</span><span>Earn</span></div>
     </div>
-    <div class="orb-scene" aria-hidden="true"><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="gold-orb"><span>1</span><small>mg</small></div><div class="orb-caption">A little gold<br /><strong>to begin with.</strong></div><div class="ray ray-a"></div><div class="ray ray-b"></div><div class="ray ray-c"></div></div>
-    <div class="welcome-note"><span class="note-icon">◌</span><span>One tap. One clear next step.</span></div>
+    <div class="orb-scene human-scene" aria-hidden="true"><div class="sun-glow"></div><div class="life-card life-card-back"><span>+ 66</span><small>points</small></div><div class="life-card life-card-front"><span>− AED 6</span><small>saved today</small></div><div class="human human-main"><i class="head"></i><i class="body"></i><i class="arm arm-left"></i><i class="arm arm-right"></i></div><div class="gold-orb"><span>1</span><small>mg</small></div><div class="orbit orbit-a"></div><div class="orbit orbit-b"></div><div class="ray ray-a"></div><div class="ray ray-b"></div><div class="ray ray-c"></div><div class="scene-caption"><strong>Your money,</strong><span>with a little more life.</span></div></div>
+    <div class="welcome-note"><span class="note-icon">✦</span><span>Made for real life.</span></div>
   </section>`);
 }
 
@@ -229,9 +230,18 @@ function sellerDashboard() {
   return dashboardShell('seller', `<div class="dash-hero seller-hero"><div><span class="eyebrow">Luma Market · ${esc(state.persona || 'cafe')}</span><h1>Your business,<br /><em>in its best light.</em></h1><p>One view for the orders, stock, rewards and cash movement that keep today running.</p></div><div class="seller-status"><span class="green-dot"></span><strong>Ready to accept PACT</strong><small>Universal QR active · 3 rewards connected</small></div></div>
     <div class="today-strip seller-strip"><span class="gold-dot"></span><strong>Today’s growth move</strong><span>Receive a buyer tap, price the invoice and settle on the calmest rail.</span><button data-action="seller-tap">Open K-Tag inbox ↗</button></div>
     <div class="seller-rail"><span class="ktag-mini">K</span><div><strong>Luma K-Tag is live</strong><small>Ready for buyer identity exchange · 4 benefit categories accepted</small></div><button data-action="seller-tap">Simulate buyer tap ↗</button></div>
-    <div class="dash-grid top-cards"><article class="glass-card"><span class="card-label">Today’s order value</span><strong>AED 8,420 <small class="positive">+12.8%</small></strong><small>vs AED 7,470 same day last week</small><div class="micro-spark"><i></i><i></i><i></i><i></i><i></i><i></i></div></article><article class="glass-card"><span class="card-label">Orders</span><strong>126 <small class="positive">+8.4%</small></strong><small>31 PACT-ready · 4 awaiting payment</small><button class="card-link">Open orders ↗</button></article><article class="glass-card"><span class="card-label">Stock health</span><strong class="gold-text">86<span>%</span></strong><small>2 low-stock SKUs · 1 stock-out risk</small><button class="card-link">Review inventory ↗</button></article></div>
-    <div class="dash-grid split-dash"><article class="glass-card"><div class="dash-section-head"><span>Orders at a glance</span><button>Open order book ↗</button></div><div class="order-row"><span class="order-status live"></span><span><strong>#1048 · Maya Khan</strong><small>3 items · PACT quote ready</small></span><b>AED 66.00</b><span class="status-pill">Awaiting pay</span></div><div class="order-row"><span class="order-status done"></span><span><strong>#1047 · Sarah Ahmed</strong><small>5 items · receipt matched</small></span><b>AED 128.40</b><span class="status-pill done-pill">Complete</span></div><div class="order-row"><span class="order-status done"></span><span><strong>#1046 · Omar Ali</strong><small>2 items · Aani settled</small></span><b>AED 44.00</b><span class="status-pill done-pill">Complete</span></div></article><article class="glass-card"><div class="dash-section-head"><span>Stock intelligence</span><button>Catalogue ↗</button></div><div class="stock-row"><span class="stock-dot warn"></span><span><strong>Ethiopian cold brew</strong><small>SKU CB-220 · 2 days left</small></span><b>18 left</b></div><div class="stock-row"><span class="stock-dot danger-dot"></span><span><strong>Granola cup</strong><small>SKU GC-101 · stock-out risk</small></span><b>4 left</b></div><div class="stock-row"><span class="stock-dot good-dot"></span><span><strong>Still water 500ml</strong><small>SKU SW-018 · 12 days left</small></span><b>148 left</b></div></article></div>
+    <div class="dash-grid top-cards"><article class="glass-card"><span class="card-label">Today’s order value</span><strong>AED 8,420 <small class="positive">+12.8%</small></strong><small>vs AED 7,470 same day last week</small><div class="micro-spark"><i></i><i></i><i></i><i></i><i></i><i></i></div></article><article class="glass-card"><span class="card-label">Orders</span><strong>126 <small class="positive">+8.4%</small></strong><small>31 PACT-ready · 4 awaiting payment</small><button class="card-link">Open orders ↗</button></article><article class="glass-card"><span class="card-label">Stock health</span><strong class="gold-text">86<span>%</span></strong><small>2 low-stock SKUs · 1 stock-out risk</small><button class="card-link" data-action="seller-store">Open catalogue ↗</button></article></div>
+    <div class="dash-grid split-dash"><article class="glass-card"><div class="dash-section-head"><span>Orders at a glance</span><button>Open order book ↗</button></div><div class="order-row"><span class="order-status live"></span><span><strong>#1048 · Maya Khan</strong><small>3 items · PACT quote ready</small></span><b>AED 66.00</b><span class="status-pill">Awaiting pay</span></div><div class="order-row"><span class="order-status done"></span><span><strong>#1047 · Sarah Ahmed</strong><small>5 items · receipt matched</small></span><b>AED 128.40</b><span class="status-pill done-pill">Complete</span></div><div class="order-row"><span class="order-status done"></span><span><strong>#1046 · Omar Ali</strong><small>2 items · Aani settled</small></span><b>AED 44.00</b><span class="status-pill done-pill">Complete</span></div></article><article class="glass-card"><div class="dash-section-head"><span>Stock intelligence</span><button data-action="seller-store">Catalogue ↗</button></div><div class="stock-row"><span class="stock-dot warn"></span><span><strong>Ethiopian cold brew</strong><small>SKU CB-220 · 2 days left</small></span><b>18 left</b></div><div class="stock-row"><span class="stock-dot danger-dot"></span><span><strong>Granola cup</strong><small>SKU GC-101 · stock-out risk</small></span><b>4 left</b></div><div class="stock-row"><span class="stock-dot good-dot"></span><span><strong>Still water 500ml</strong><small>SKU SW-018 · 12 days left</small></span><b>148 left</b></div></article></div>
     <div class="dash-grid split-dash"><article class="glass-card"><div class="dash-section-head"><span>Rewards issued</span><button>Manage rules ↗</button></div><div class="reward-stat"><strong>AED 384</strong><small>customer savings · this month</small><div class="progress-line"><span style="width:68%"></span></div><small>68% of your AED 560 rewards budget used</small></div></article><article class="glass-card reward-card seller-reward"><span class="eyebrow">K-assistant suggestion</span><h3>“Your Saturday breakfast basket is winning. Want a QR offer for slow Mondays?”</h3><button class="gold-button">Create an offer ↗</button></article></div>`);
+}
+
+function sellerStore() {
+  const items = state.catalogue || [
+    { id: 'sku-coffee', name: 'Ethiopian cold brew', category: 'Cafe', priceMinor: 2400, stock: 18, daysStock: 2, image: '/assets/catalogue-coffee.svg' },
+    { id: 'sku-granola', name: 'Granola cup', category: 'Grocery', priceMinor: 1800, stock: 4, daysStock: 1, image: '/assets/catalogue-granola.svg' },
+    { id: 'sku-water', name: 'Still water 500ml', category: 'Grocery', priceMinor: 500, stock: 148, daysStock: 12, image: '/assets/catalogue-water.svg' }
+  ];
+  return chrome(`<section class="store-stage"><div class="store-head"><div><span class="eyebrow"><span class="gold-dot"></span> Luma online store</span><h1>Ready<br /><em>to share.</em></h1><p class="lead">Every scanned SKU becomes a shoppable card.</p></div><div class="store-person"><div class="human human-small"><i class="head"></i><i class="body"></i><i class="arm arm-left"></i><i class="arm arm-right"></i></div><span>Good work.<br /><strong>Your shelf is alive.</strong></span></div></div><div class="store-actions"><button class="gold-button" data-action="store-upload">Upload inventory <span>↗</span></button><button class="soft-button" data-action="store-scan">Scan barcode</button><button class="back-link" data-action="dashboard">Back to business</button></div><div class="catalogue-grid">${items.map((item) => `<article class="sku-card"><img src="${esc(item.image)}" alt="" /><div class="sku-copy"><span class="sku-category">${esc(item.category)}</span><h3>${esc(item.name)}</h3><strong>${money(item.priceMinor)}</strong><small>${item.stock} left · ${item.daysStock} days of stock</small><div class="sku-actions"><button data-action="edit-sku">Edit</button><button data-action="share-sku">Share</button></div></div></article>`).join('')}</div></section>`);
 }
 
 function dashboardShell(role, content) {
@@ -252,6 +262,7 @@ function render() {
   if (state.step === 'tap') app.innerHTML = tapExchange();
   if (state.step === 'invoice') app.innerHTML = invoice();
   if (state.step === 'dashboard') app.innerHTML = state.role === 'seller' ? sellerDashboard() : buyerDashboard();
+  if (state.step === 'seller-store') app.innerHTML = sellerStore();
   bind();
   if (state.step === 'tour') {
     tourTimer = window.setTimeout(() => {
@@ -320,6 +331,17 @@ function bind() {
     if (action === 'connections-next') state.step = 'qr';
     if (action === 'generate-qr') { state.qr = `KZ-${crypto.randomUUID().slice(0, 8).toUpperCase()}`; await post('/api/onboarding/qr', { role: state.role, value: state.qr }); notify('Your Universal QR is ready to share.', 'success'); }
     if (action === 'dashboard') state.step = 'dashboard';
+    if (action === 'seller-store') {
+      state.step = 'seller-store';
+      if (!state.catalogue) {
+        const catalogue = await fetch('/api/catalogue').then((response) => response.json());
+        state.catalogue = catalogue.items;
+      }
+    }
+    if (action === 'store-upload') notify('Inventory import is ready for CSV and barcode rows.', 'success');
+    if (action === 'store-scan') notify('Barcode scanner ready to match a shelf item.', 'success');
+    if (action === 'edit-sku') notify('SKU editing is ready in the catalogue workspace.', 'success');
+    if (action === 'share-sku') notify('Catalogue card ready to share.', 'success');
     if (action === 'tap' || action === 'seller-tap') state.step = 'tap';
     if (action === 'tap-now') {
       const result = await post('/api/tap/exchange', {
