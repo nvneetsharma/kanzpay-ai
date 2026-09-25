@@ -57,6 +57,14 @@ const state = {
     account: null,
     exchange: null
   },
+  savingsSources: [
+    { id: 'cards', label: 'Cards & BIN offers', icon: '◇', benefit: 'Find issuer discounts before you pay.', status: 'discoverable', expectedMinor: 180 },
+    { id: 'memberships', label: 'Memberships', icon: '✦', benefit: 'Apply member pricing automatically.', status: 'discoverable', expectedMinor: 420 },
+    { id: 'rewards', label: 'Reward programmes', icon: '◎', benefit: 'Use points and keep balances together.', status: 'discoverable', expectedMinor: 240 },
+    { id: 'email', label: 'Email offers', icon: '✉', benefit: 'Find vouchers and promo codes.', status: 'locked', expectedMinor: 160 },
+    { id: 'sms', label: 'SMS offers', icon: '◌', benefit: 'Read time-limited merchant offers.', status: 'locked', expectedMinor: 90 },
+    { id: 'notifications', label: 'App notifications', icon: '⌁', benefit: 'Catch offers from installed apps.', status: 'locked', expectedMinor: 110 }
+  ],
   audit: []
 };
 
@@ -269,6 +277,26 @@ async function api(req, res, pathname) {
 
   if (req.method === 'GET' && pathname === '/api/catalogue') {
     return json(res, 200, { seller: state.seller, items: state.catalogue });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/savings-map') {
+    const sources = state.savingsSources.map((source) => ({ ...source, status: source.status === 'connected' ? 'connected' : source.status }));
+    return json(res, 200, {
+      status: 'READY_TO_CONNECT',
+      discovered: sources,
+      connectedSavingsMinor: sources.filter((source) => source.status === 'connected').reduce((sum, source) => sum + source.expectedMinor, 0),
+      lockedOpportunityMinor: sources.filter((source) => source.status === 'locked').reduce((sum, source) => sum + source.expectedMinor, 0)
+    });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/savings-map/connect') {
+    const payload = await body(req);
+    const source = state.savingsSources.find((candidate) => candidate.id === payload.sourceId);
+    if (!source) return json(res, 404, { error: 'Savings source not found.' });
+    source.status = 'connected';
+    source.connectedAt = new Date().toISOString();
+    state.audit.push({ event: 'SAVINGS_SOURCE_CONNECTED', source: source.id, at: source.connectedAt });
+    return json(res, 200, { source, message: 'Source connected. Derived eligibility can now be checked.' });
   }
 
   if (req.method === 'POST' && pathname === '/api/catalogue/upload') {

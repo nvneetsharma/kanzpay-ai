@@ -13,7 +13,8 @@ const state = {
   qr: null,
   waitlist: false,
   gold: { amount: 1, unit: 'mg', status: 'processing' }
-  ,tourIndex: 0
+  ,tourIndex: 0,
+  savingsSources: null
 };
 
 const esc = (value) => String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[char]));
@@ -220,7 +221,7 @@ function invoice() {
 function buyerDashboard() {
   return dashboardShell('buyer', `<div class="dash-hero buyer-hero"><div><span class="eyebrow">Good morning, ${esc(state.name || 'Maya')}</span><h1>Your money is<br /><em>starting to give back.</em></h1><p>Here’s the calm view of what’s moving, what’s protected and what’s earning. I’ll keep the next useful thing close.</p></div><div class="dash-orb"><div class="dash-gold">1 <small>mg</small></div><span>processing</span></div></div>
     <div class="today-strip"><span class="green-dot"></span><strong>Today’s gentle nudge</strong><span>Your welcome Gold is processing. Connect one more benefit to make your first guided checkout smarter.</span><button data-action="checkout">Try the guided checkout ↗</button></div>
-    <div class="quick-actions"><button data-action="tap"><span>⌁</span><strong>Tap merchant K-Tag</strong><small>Use your benefit identity</small></button><button data-action="qr"><span>▦</span><strong>Show Universal QR</strong><small>Reward identity in one code</small></button><button><span>◌</span><strong>Open Gold Vault</strong><small>See processing and earned Gold</small></button></div>
+    <div class="quick-actions"><button data-action="tap"><span>⌁</span><strong>Tap merchant K-Tag</strong><small>Use your benefit identity</small></button><button data-action="savings-map"><span>✦</span><strong>Find my savings</strong><small>Connect useful sources only</small></button><button data-action="qr"><span>▦</span><strong>Show Universal QR</strong><small>Reward identity in one code</small></button></div>
     <div class="dash-grid top-cards"><article class="glass-card balance-card"><span class="card-label">Total balance</span><strong>AED 42,680<span class="verified">●</span></strong><small>Across 3 connected accounts</small><div class="balance-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></article><article class="glass-card"><span class="card-label">Gold earned</span><strong class="gold-text">0.00 <small>mg</small></strong><small>1 mg processing · account active</small><button class="card-link" data-action="gold-info">View Gold journey ↗</button></article><article class="glass-card"><span class="card-label">Rewards found</span><strong>AED 384 <small>this month</small></strong><small>Across 7 memberships and offers</small><button class="card-link">Open rewards wallet ↗</button></article></div>
     <div class="dash-grid split-dash"><article class="glass-card"><div class="dash-section-head"><span>Spending rhythm</span><button>See trends ↗</button></div><div class="spend-chart"><div class="chart-y"><span>AED 4k</span><span>2k</span><span>0</span></div><div class="chart-bars">${['M','T','W','T','F','S','S'].map((day, i) => `<div><i style="height:${[46,70,34,82,62,52,38][i]}%"></i><small>${day}</small></div>`).join('')}</div></div><div class="chart-note"><span class="green-dot"></span> You’re spending 12% less than last week.</div></article><article class="glass-card"><div class="dash-section-head"><span>Coming up</span><button>Manage bills ↗</button></div><div class="bill-row"><span class="bill-icon">⌂</span><span><strong>Home rent</strong><small>Due in 8 days</small></span><b>AED 5,200</b></div><div class="bill-row"><span class="bill-icon">≋</span><span><strong>DEWA</strong><small>Auto-detected · 15 Oct</small></span><b>AED 386</b></div><div class="bill-row"><span class="bill-icon">◌</span><span><strong>Careem Plus</strong><small>Recurring · 19 Oct</small></span><b>AED 24</b></div></article></div>
     <div class="dash-grid split-dash"><article class="glass-card"><div class="dash-section-head"><span>Recent transactions</span><button>View all ↗</button></div><div class="transaction"><span class="merchant merchant-grocery">C</span><span><strong>Carrefour</strong><small>Groceries · matched receipt</small></span><b>AED 72.60</b></div><div class="transaction"><span class="merchant merchant-cafe">L</span><span><strong>Luma Market</strong><small>Membership benefit applied</small></span><b>AED 66.00</b></div><div class="transaction"><span class="merchant merchant-transport">C</span><span><strong>Careem</strong><small>Transport · Tuesday</small></span><b>AED 42.00</b></div></article><article class="glass-card reward-card"><span class="eyebrow">A thought from K-assistant</span><h3>“Your Luma membership could have saved you AED 18 more this month.”</h3><p>Let me keep looking for moments like this?</p><button class="gold-button">Yes, keep me ahead ↗</button></article></div>`);
@@ -244,6 +245,13 @@ function sellerStore() {
   return chrome(`<section class="store-stage"><div class="store-head"><div><span class="eyebrow"><span class="gold-dot"></span> Luma online store</span><h1>Ready<br /><em>to share.</em></h1><p class="lead">Every scanned SKU becomes a shoppable card.</p></div><div class="store-person"><div class="human human-small"><i class="head"></i><i class="body"></i><i class="arm arm-left"></i><i class="arm arm-right"></i></div><span>Good work.<br /><strong>Your shelf is alive.</strong></span></div></div><div class="store-actions"><button class="gold-button" data-action="store-upload">Upload inventory <span>↗</span></button><button class="soft-button" data-action="store-scan">Scan barcode</button><button class="back-link" data-action="dashboard">Back to business</button></div><div class="catalogue-grid">${items.map((item) => `<article class="sku-card"><img src="${esc(item.image)}" alt="" /><div class="sku-copy"><span class="sku-category">${esc(item.category)}</span><h3>${esc(item.name)}</h3><strong>${money(item.priceMinor)}</strong><small>${item.stock} left · ${item.daysStock} days of stock</small><div class="sku-actions"><button data-action="edit-sku">Edit</button><button data-action="share-sku">Share</button></div></div></article>`).join('')}</div></section>`);
 }
 
+function savingsMap() {
+  const sources = state.savingsSources || [];
+  const connected = sources.filter((source) => source.status === 'connected');
+  const locked = sources.filter((source) => source.status === 'locked');
+  return chrome(`<section class="savings-stage"><div class="savings-head"><div><span class="eyebrow"><span class="gold-dot"></span> K-assistant</span><h1>Find<br /><em>your savings.</em></h1><p class="lead">I found the places your money may be leaving value. Connect only what feels useful.</p></div><div class="savings-orb"><strong>AED ${((connected.reduce((sum, source) => sum + source.expectedMinor, 0)) / 100).toFixed(0)}</strong><small>found so far</small></div></div><div class="source-section"><div class="section-kicker">Ready to connect</div><div class="source-grid">${sources.filter((source) => source.status !== 'locked').map((source) => `<button class="source-card ${source.status === 'connected' ? 'source-connected' : ''}" data-source="${esc(source.id)}" data-action="connect-source"><span class="source-icon">${source.icon}</span><span><strong>${esc(source.label)}</strong><small>${esc(source.benefit)}</small></span><b>${source.status === 'connected' ? 'Connected' : 'Connect'}</b></button>`).join('')}</div></div><div class="source-section muted-section"><div class="section-kicker">More waiting</div><div class="source-grid">${locked.map((source) => `<button class="source-card source-locked" data-source="${esc(source.id)}" data-action="connect-source"><span class="source-icon">${source.icon}</span><span><strong>${esc(source.label)}</strong><small>${esc(source.benefit)}</small></span><b>Unlock</b></button>`).join('')}</div><p class="opportunity-note">Locked sources remain opportunities—not assumptions. Connect them when you want Kanzpay to look again.</p></div><button class="back-link" data-action="dashboard">Back to cockpit</button></section>`);
+}
+
 function dashboardShell(role, content) {
   return `<div class="dashboard-frame"><header class="dash-nav"><button class="wordmark" data-action="home"><img src="/assets/kanzpay-mark.png" alt="" /><span>Kanzpay</span></button><div class="dash-nav-center"><button class="dash-nav-active">${role === 'buyer' ? 'My money' : 'My business'}</button><button>Rewards</button><button>Activity</button><button>Ask K</button></div><div class="dash-user"><div class="dash-qr" data-action="qr">⌁</div><div class="dash-avatar">${initials()}</div><button class="nav-menu">⋮</button></div></header><div class="dashboard-content">${content}</div><footer class="dash-footer"><span>Built with <b>♥</b> in UAE <b>🇦🇪</b> by OXY Technologies, ADGM, Abu Dhabi.</span><span data-action="ready">Readiness 80% · View</span></footer></div>`;
 }
@@ -263,6 +271,7 @@ function render() {
   if (state.step === 'invoice') app.innerHTML = invoice();
   if (state.step === 'dashboard') app.innerHTML = state.role === 'seller' ? sellerDashboard() : buyerDashboard();
   if (state.step === 'seller-store') app.innerHTML = sellerStore();
+  if (state.step === 'savings-map') app.innerHTML = savingsMap();
   bind();
   if (state.step === 'tour') {
     tourTimer = window.setTimeout(() => {
@@ -336,6 +345,22 @@ function bind() {
       if (!state.catalogue) {
         const catalogue = await fetch('/api/catalogue').then((response) => response.json());
         state.catalogue = catalogue.items;
+      }
+    }
+    if (action === 'savings-map') {
+      state.step = 'savings-map';
+      state.savingsSources = (await fetch('/api/savings-map').then((response) => response.json())).discovered;
+    }
+    if (action === 'connect-source') {
+      const sourceId = element.dataset.source;
+      const source = state.savingsSources.find((item) => item.id === sourceId);
+      const approved = window.confirm(`${source.label}\n\n${source.benefit}\n\nContinue with the official connection flow?`);
+      if (approved) {
+        await post('/api/savings-map/connect', { sourceId });
+        state.savingsSources = (await fetch('/api/savings-map').then((response) => response.json())).discovered;
+        notify(`${source.label} connected. I’ll look for value now.`, 'success');
+      } else {
+        notify('No problem. That opportunity stays locked.');
       }
     }
     if (action === 'store-upload') notify('Inventory import is ready for CSV and barcode rows.', 'success');
