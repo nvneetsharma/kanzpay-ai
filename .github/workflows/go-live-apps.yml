@@ -23,12 +23,12 @@ jobs:
           cp go-live/buyer/manifest.json go-live/android/app/src/main/assets/manifest.json
       - name: Build APK
         working-directory: go-live/android
-        run: gradle assembleRelease
+        run: gradle assembleDebug
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
           name: kanzpay-buyer-android
-          path: go-live/android/app/build/outputs/apk/release/app-release.apk
+          path: go-live/android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
 
   seller-desktop:
@@ -59,24 +59,3 @@ jobs:
           path: go-live/seller/dist/**
           retention-days: 30
 
-  buyer-pages:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - name: Prepare Pages site
-        run: |
-          mkdir -p _site/buyer
-          cp go-live/buyer/index.html _site/buyer/
-          cp go-live/buyer/manifest.json _site/buyer/
-          cp go-live/buyer/sw.js _site/buyer/
-          cp go-live/buyer/icon.svg _site/buyer/
-          cat > _site/index.html <<'EOF'
-          <!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KANZPAY Go-Live Apps</title><style>body{background:#070908;color:#f4f0e5;font:18px system-ui;padding:40px}a{color:#f2d98a}</style><h1>KANZPAY</h1><p>Buyer app</p><p><a href="./buyer/">Open Buyer App</a></p>
-          EOF
-      - uses: actions/upload-pages-artifact@v3
-        with: {path: _site}
-      - id: deployment
-        uses: actions/deploy-pages@v4
