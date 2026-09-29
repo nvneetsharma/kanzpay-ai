@@ -1,0 +1,62 @@
+name: KANZPAY Visual Apps V2
+on:
+  push:
+    branches: [visual-apps-v2-journey]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  buyer-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+      - name: Bundle buyer visual app
+        run: |
+          mkdir -p visual-v2/buyer/android/app/src/main/assets
+          cp visual-v2/buyer/index.html visual-v2/buyer/android/app/src/main/assets/index.html
+          cp visual-v2/buyer/manifest.json visual-v2/buyer/android/app/src/main/assets/manifest.json
+      - name: Build APK
+        working-directory: visual-v2/buyer/android
+        run: gradle assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kanzpay-buyer-visual-v2-android
+          path: visual-v2/buyer/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30
+
+  seller-desktop:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: kanzpay-k-assistant-visual-v2-linux
+          - os: windows-latest
+            artifact: kanzpay-k-assistant-visual-v2-windows
+          - os: macos-latest
+            artifact: kanzpay-k-assistant-visual-v2-macos
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: visual-v2/seller/package.json
+      - name: Install
+        working-directory: visual-v2/seller
+        run: npm install
+      - name: Package
+        working-directory: visual-v2/seller
+        run: npm run dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: visual-v2/seller/dist/**
+          retention-days: 30
