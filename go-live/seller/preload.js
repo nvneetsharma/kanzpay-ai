@@ -1,0 +1,1 @@
+const{contextBridge,ipcRenderer}=require('electron');contextBridge.exposeInMainWorld('kassist',{system:()=>ipcRenderer.invoke('system-info'),minimize:()=>ipcRenderer.send('hide-dashboard'),show:()=>ipcRenderer.send('show-dashboard')});
