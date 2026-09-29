@@ -1,0 +1,4 @@
+plugins { id 'com.android.application' }
+android { namespace 'com.kanzpay.buyer.v2'; compileSdk 35
+ defaultConfig { applicationId 'com.kanzpay.buyer.v2'; minSdk 24; targetSdk 35; versionCode 20; versionName '2.0.0' }
+}
