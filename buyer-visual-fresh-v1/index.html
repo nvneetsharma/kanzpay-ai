@@ -237,14 +237,15 @@ button{cursor:pointer;color:inherit}
     $("screen").style.opacity=".2";$("screen").style.transform="translateY(18px) scale(.98)";
     setTimeout(function(){cb();pulseScene()},280);
   }
-  function setUserType(t){S.userType=t;save();render()}\nfunction scene2(){
+  function setUserType(t){S.userType=t;save();render()}
+  function scene2(){
     wallpaper(2);setState("CHECK USER · CONNECTING");
     var existing=S.userType==="existing";
     $("screen").innerHTML=
       '<section class="scene">'+
       '<div class="eyebrow">STEP 2 · CHECK USER</div>'+
       '<div class="h2" style="margin-top:7px">The system knows what to do next.</div>'+
-      '<p class="copy">One visual handoff. No dead ends. The gold path continues into commerce and the Value Vault.</p>'+
+      '<p class="copy">One visual handoff. No dead ends. The gold path continues into commerce and the Value Vault.</p>'+      '<div class="choiceGrid" style="margin-top:14px"><div class="glass choice" onclick="setUserType(\'existing\')" style="min-height:96px"><div class="choiceIcon">U</div><div><div class="eyebrow">EXISTING</div><div class="h3">User found</div><div class="mini">Continue with existing value</div></div></div><div class="glass choice" onclick="setUserType(\'new\')" style="min-height:96px"><div class="choiceIcon">N</div><div><div class="eyebrow">NEW</div><div class="h3">Build from here</div><div class="mini">Mobile + OTP + Email</div></div></div></div>'+
       '<div class="connector"></div>'+
       '<div class="glass identityCard shimmer">'+
         '<div class="avatar">'+(existing?"U":"N")+'</div>'+
