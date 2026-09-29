@@ -1,0 +1,79 @@
+name: KANZPAY Go-Live Builds
+on:
+  push:
+    branches: [go-live-buyer-seller-apps]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  android-buyer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: {distribution: temurin, java-version: '17'}
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Copy buyer web app into Android assets
+        run: |
+          mkdir -p go-live/android/app/src/main/assets
+          cp go-live/buyer/index.html go-live/android/app/src/main/assets/index.html
+          cp go-live/buyer/manifest.json go-live/android/app/src/main/assets/manifest.json
+      - name: Build APK
+        working-directory: go-live/android
+        run: gradle assembleRelease
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanzpay-buyer-android
+          path: go-live/android/app/build/outputs/apk/release/app-release.apk
+          retention-days: 30
+
+  seller-desktop:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: seller-linux
+          - os: windows-latest
+            artifact: seller-windows
+          - os: macos-latest
+            artifact: seller-macos
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22', cache: 'npm', cache-dependency-path: go-live/seller/package.json}
+      - name: Install dependencies
+        working-directory: go-live/seller
+        run: npm install
+      - name: Build desktop app
+        working-directory: go-live/seller
+        run: npm run dist
+      - name: Upload seller installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: go-live/seller/dist/**
+          retention-days: 30
+
+  buyer-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Prepare Pages site
+        run: |
+          mkdir -p _site/buyer
+          cp go-live/buyer/index.html _site/buyer/
+          cp go-live/buyer/manifest.json _site/buyer/
+          cp go-live/buyer/sw.js _site/buyer/
+          cp go-live/buyer/icon.svg _site/buyer/
+          cat > _site/index.html <<'EOF'
+          <!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KANZPAY Go-Live Apps</title><style>body{background:#070908;color:#f4f0e5;font:18px system-ui;padding:40px}a{color:#f2d98a}</style><h1>KANZPAY</h1><p>Buyer app</p><p><a href="./buyer/">Open Buyer App</a></p>
+          EOF
+      - uses: actions/upload-pages-artifact@v3
+        with: {path: _site}
+      - id: deployment
+        uses: actions/deploy-pages@v4
