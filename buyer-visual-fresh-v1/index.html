@@ -237,7 +237,7 @@ button{cursor:pointer;color:inherit}
     $("screen").style.opacity=".2";$("screen").style.transform="translateY(18px) scale(.98)";
     setTimeout(function(){cb();pulseScene()},280);
   }
-  function scene2(){
+  function setUserType(t){S.userType=t;save();render()}\nfunction scene2(){
     wallpaper(2);setState("CHECK USER · CONNECTING");
     var existing=S.userType==="existing";
     $("screen").innerHTML=
