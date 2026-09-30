@@ -7,316 +7,485 @@
 <meta name="theme-color" content="#050705">
 <title>KANZPAY — Living Buyer Journey</title>
 <style>
-:root{--bg:#050705;--glass:rgba(18,22,18,.46);--glass2:rgba(10,13,10,.72);--gold:#c59a2e;--gold2:#f2d789;--gold3:#fff0b5;--ink:#f7f3e9;--muted:#a9a69d;--edge:rgba(242,215,137,.14);--good:#9ed0a5;--r:28px}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-body{overflow:hidden}
-button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
-#app{position:fixed;inset:0;overflow:hidden;background:radial-gradient(circle at 50% 10%,rgba(242,215,137,.09),transparent 28%),radial-gradient(circle at 10% 78%,rgba(70,105,83,.08),transparent 30%),linear-gradient(155deg,#080b08,#040604 72%,#070907)}
-#app:after{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 28% 16%,rgba(255,255,255,.028),transparent 17%),radial-gradient(circle at 78% 70%,rgba(242,215,137,.03),transparent 20%);filter:blur(18px);animation:drift 15s ease-in-out infinite alternate}
-#grain{position:absolute;inset:0;z-index:30;pointer-events:none;opacity:.06;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.88' numOctaves='3' stitchTiles='stitch' type='fractalNoise'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E")}
-#flow{position:absolute;inset:0;z-index:2;pointer-events:none}
-#flow path{fill:none;stroke:rgba(242,215,137,.16);stroke-width:.14;stroke-dasharray:.7 1.4}
-#flow circle{fill:var(--gold2);filter:drop-shadow(0 0 4px rgba(242,215,137,.7))}
-#screens{position:absolute;inset:0;z-index:8}
-.screen{position:absolute;inset:0;display:none;opacity:0;transform:scale(.985);transition:opacity .55s cubic-bezier(.2,.8,.2,1),transform .65s cubic-bezier(.2,.8,.2,1)}
-.screen.active{display:block;opacity:1;transform:scale(1)}
-.inner{height:100%;width:min(460px,100%);margin:auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(105px + env(safe-area-inset-bottom));display:flex;flex-direction:column}
-.top{height:32px;display:flex;align-items:center;justify-content:space-between}
-.brand{font-size:12px;font-weight:950;letter-spacing:.24em}.brand span{color:var(--gold2)}
-.tiny{font-size:9px;color:var(--muted);letter-spacing:.16em;text-transform:uppercase}
-.progress{width:112px;height:4px;border-radius:99px;background:rgba(255,255,255,.06);overflow:hidden}.progress i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#9d7725,#f2d789);box-shadow:0 0 14px rgba(242,215,137,.4)}
-.body{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative}
-.center{text-align:center;align-items:center}
-.eyebrow{font-size:9px;letter-spacing:.22em;color:var(--gold2);text-transform:uppercase;margin-bottom:9px}
-h1{font-size:clamp(40px,11vw,66px);line-height:.92;letter-spacing:-.06em;margin:0 0 10px}
-h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
-.copy{font-size:12px;line-height:1.5;color:var(--muted);max-width:350px}
-.glass{background:linear-gradient(145deg,rgba(255,255,255,.055),rgba(255,255,255,.012));border:1px solid rgba(242,215,137,.13);border-radius:var(--r);box-shadow:0 30px 90px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.03);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);position:relative;overflow:hidden}
-.glass:after{content:"";position:absolute;inset:-45% -20%;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.035) 48%,transparent 60%);transform:translateX(-62%) rotate(9deg);animation:sweep 8s ease-in-out infinite;pointer-events:none}
-.cta{min-height:47px;padding:11px 18px;border-radius:15px;border:1px solid rgba(242,215,137,.19);background:rgba(242,215,137,.06);font-weight:850;box-shadow:0 12px 36px rgba(0,0,0,.22)}
-.cta.primary{background:linear-gradient(135deg,#f7df98,#bd922b);color:#171309;box-shadow:0 14px 42px rgba(197,154,46,.24)}
-.actions{display:flex;gap:9px;justify-content:center;margin-top:18px}
-.touch{width:206px;height:206px;border-radius:50%;display:grid;place-items:center;position:relative;border:1px solid rgba(242,215,137,.38);background:radial-gradient(circle at 50% 40%,rgba(242,215,137,.16),rgba(7,9,7,.48) 54%,rgba(0,0,0,0) 56%);box-shadow:0 0 80px rgba(197,154,46,.10),inset 0 0 45px rgba(242,215,137,.05);animation:breathe 4.2s ease-in-out infinite;margin-bottom:28px}
-.touch:before,.touch:after{content:"";position:absolute;border:1px solid rgba(242,215,137,.12);border-radius:50%;inset:-18px;animation:pulse 4.5s ease-in-out infinite}.touch:after{inset:-40px;opacity:.5;animation-delay:1.3s}
-.person{position:relative;width:64px;height:90px}.head{position:absolute;left:21px;top:2px;width:22px;height:22px;border-radius:50%;background:linear-gradient(145deg,#f4d0b0,#845237)}.torso{position:absolute;left:12px;top:28px;width:40px;height:52px;border-radius:19px 19px 12px 12px;background:linear-gradient(145deg,#34483a,#0c110d);border:1px solid rgba(242,215,137,.15)}.arm{position:absolute;top:35px;width:11px;height:35px;border-radius:11px;background:#25342b}.arm.l{left:4px;transform:rotate(18deg)}.arm.r{right:4px;transform:rotate(-14deg)}
-.hand{position:absolute;right:20px;top:43px;width:26px;height:37px;border-radius:14px;background:#e2b89a;transform:rotate(-32deg);box-shadow:0 0 16px rgba(242,215,137,.1)}.hand:after{content:"";position:absolute;right:-10px;top:4px;width:18px;height:10px;border-radius:6px;background:#e2b89a;transform:rotate(-20deg)}
-.beam{position:absolute;top:42%;left:50%;width:1px;height:28%;background:linear-gradient(transparent,rgba(242,215,137,.8),transparent);animation:beam 2.2s ease-in-out infinite}
-.choiceGrid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:20px}
-.choice{min-height:176px;padding:15px;display:flex;flex-direction:column;justify-content:space-between;text-align:left;transition:.25s}
-.choice:active{transform:scale(.985)}.choice:hover{border-color:rgba(242,215,137,.34)}
-.icon{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:rgba(242,215,137,.055);border:1px solid rgba(242,215,137,.14);color:var(--gold2)}.icon svg{width:29px;height:29px}
-.choiceTitle{font-size:16px;font-weight:900}.choiceSub{font-size:10px;line-height:1.45;color:var(--muted)}
-.scan{width:250px;height:250px;border-radius:34px;display:grid;place-items:center;position:relative;background:rgba(5,8,6,.48);border:1px solid rgba(242,215,137,.19);box-shadow:0 28px 80px rgba(0,0,0,.45);overflow:hidden}.scan:before{content:"";position:absolute;inset:22px;border:1px dashed rgba(242,215,137,.22);border-radius:22px}.scanline{position:absolute;left:17px;right:17px;height:2px;background:linear-gradient(90deg,transparent,#f2d789,transparent);box-shadow:0 0 15px rgba(242,215,137,.55);animation:scan 2.4s linear infinite}
-.qr{width:90px;height:90px;display:grid;grid-template-columns:repeat(9,1fr);gap:3px;opacity:.95}.qr i{background:#f2d789;border-radius:1px}.qr i.off{opacity:.08}
-.identity{padding:14px;display:grid;grid-template-columns:59px 1fr 27px;gap:11px;align-items:center;margin-top:15px}.avatar{width:59px;height:59px;border-radius:20px;display:grid;place-items:center;background:linear-gradient(145deg,#2b4033,#0d120e);border:1px solid rgba(242,215,137,.16)}.avatar .person{transform:scale(.54)}.check{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--good);color:#0b130d;font-size:14px;font-weight:950}
-.duo{height:235px;width:210px;position:relative;margin-bottom:4px}.duo .person{position:absolute;bottom:0}.p1{left:25px;transform:scale(1.14)}.p2{left:104px;transform:scale(.88);filter:brightness(.92)}.heart{position:absolute;left:50%;top:27px;transform:translateX(-50%);color:var(--gold2);font-size:39px;animation:float 3.3s ease-in-out infinite;text-shadow:0 0 20px rgba(242,215,137,.26)}
-.vault{width:250px;height:250px;border-radius:39px;margin:0 auto 17px;position:relative;display:grid;place-items:center;background:radial-gradient(circle at 50% 43%,rgba(242,215,137,.18),rgba(9,12,9,.72) 43%,rgba(4,6,4,.94) 78%);border:1px solid rgba(242,215,137,.22);box-shadow:0 0 85px rgba(197,154,46,.1),inset 0 0 55px rgba(242,215,137,.05);animation:breathe 4.7s ease-in-out infinite}.vaultDoor{width:135px;height:135px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(242,215,137,.48);background:conic-gradient(#8b6720,#2a210e,#d1ad4d,#2a210e,#8b6720);box-shadow:0 0 32px rgba(242,215,137,.15)}.vaultCore{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#fff0b5,#efd477 20%,#af7c22 57%,#3e2c0b);color:#523907;font-weight:950;font-size:26px;box-shadow:0 0 35px rgba(242,215,137,.28)}
-.asset{position:absolute;width:54px;height:54px;border-radius:17px;display:grid;place-items:center;background:rgba(5,8,6,.74);border:1px solid rgba(242,215,137,.13);box-shadow:0 15px 40px rgba(0,0,0,.36);animation:float 4s ease-in-out infinite}.asset svg{width:29px;height:29px;color:var(--gold2)}.a1{left:-18px;top:27px}.a2{right:-18px;top:75px;animation-delay:1s}.a3{left:24px;bottom:-9px;animation-delay:1.7s}.a4{right:31px;bottom:-7px;animation-delay:2.5s}
-.assetLabel{position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);font-size:8px;color:var(--muted);white-space:nowrap}
-.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:11px}.module{padding:11px;min-height:138px;text-align:left}.module.wide{grid-column:1/-1}.moduleArt{height:68px;border-radius:19px;position:relative;overflow:hidden;background:rgba(3,5,3,.34);border:1px solid rgba(242,215,137,.08);margin-bottom:9px}.moduleTitle{font-size:14px;font-weight:900}.moduleMeta{font-size:10px;color:var(--muted);margin-top:4px}
-.miniCard{position:absolute;left:11px;top:10px;width:122px;height:60px;border-radius:14px;background:linear-gradient(145deg,#2d352f,#0d110f);border:1px solid rgba(242,215,137,.17);transform:rotate(-7deg);box-shadow:0 16px 30px rgba(0,0,0,.38)}.miniCard:after{content:"KANZPAY";position:absolute;right:10px;top:9px;font-size:7px;letter-spacing:.16em;color:var(--gold2)}
-.miniVault{position:absolute;left:13px;bottom:-5px;width:67px;height:67px;border-radius:50%;background:radial-gradient(circle,#f0d57e 0 8%,#8f691f 12% 35%,#1c170b 38%);border:1px solid rgba(242,215,137,.44);box-shadow:0 0 26px rgba(242,215,137,.16)}.miniVault:after{content:"";position:absolute;inset:15px;border-radius:50%;border:1px solid rgba(242,215,137,.35)}
-.token{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 25%,#fff1b8,#efcf73 30%,#956d20 69%,#3a290a);box-shadow:0 0 16px rgba(242,215,137,.35);animation:token 5s ease-in-out infinite}.t1{left:17%;top:63%}.t2{left:54%;top:22%;animation-delay:1.2s}.t3{left:81%;top:57%;animation-delay:2s}
-.faces{position:absolute;inset:0}.face{position:absolute;width:33px;height:33px;border-radius:50%;border:3px solid #0d120e;background:linear-gradient(145deg,#f3c8a9,#955d43);box-shadow:0 0 0 1px rgba(242,215,137,.14);animation:bob 4s ease-in-out infinite}.f1{left:12%;top:33%}.f2{left:36%;top:53%;animation-delay:.7s}.f3{left:61%;top:24%;animation-delay:1.4s}.f4{left:77%;top:55%;animation-delay:2.1s}.arc{position:absolute;left:20%;right:20%;top:42%;height:42px;border:1px solid rgba(242,215,137,.34);border-bottom-color:transparent;border-radius:50% 50% 0 0;transform:rotate(-9deg)}
-.chart{position:absolute;left:9px;right:9px;bottom:9px;height:53px;display:flex;align-items:flex-end;gap:8px}.bar{flex:1;border-radius:7px 7px 2px 2px;background:linear-gradient(#f2d789,#7a5a1b);animation:bar 3.4s ease-in-out infinite}.bar:nth-child(1){height:30%}.bar:nth-child(2){height:47%;animation-delay:.4s}.bar:nth-child(3){height:61%;animation-delay:.8s}.bar:nth-child(4){height:39%;animation-delay:1.1s}.bar:nth-child(5){height:79%;animation-delay:1.5s}
-.bank{position:absolute;left:10px;right:10px;top:9px;height:50px;border-radius:16px;border:1px solid rgba(242,215,137,.15);background:linear-gradient(145deg,#202a23,#0b0e0b);padding:10px}.chip{position:absolute;right:11px;top:10px;width:27px;height:20px;border-radius:5px;background:linear-gradient(145deg,#e8d487,#70521a)}.bankName{font-size:10px;letter-spacing:.15em;color:var(--gold2)}.bankValue{font-size:14px;font-weight:900;margin-top:5px}
-.cardFace{height:126px;border-radius:20px;padding:13px;position:relative;overflow:hidden;border:1px solid rgba(242,215,137,.14);box-shadow:0 17px 39px rgba(0,0,0,.3)}.cardFace.executive{background:radial-gradient(circle at 78% 18%,#3e3016,#0c100c 62%)}.cardFace.professional{background:radial-gradient(circle at 15% 21%,#314239,#0b100d 66%)}.cardFace.minimal{background:#eee6d6;color:#181712}.cardFace.social{background:radial-gradient(circle at 20% 15%,#37254a,#0e0c13 68%)}.cardFace.family{background:radial-gradient(circle at 82% 15%,#4e2f1d,#100d0b 66%)}.cardFace.creative{background:radial-gradient(circle at 22% 20%,#1d4e57,#091315 68%)}.cardFace.custom{background:radial-gradient(circle at 48% 16%,#493a20,#0c0d0b 68%)}.cfBrand{font-size:7px;letter-spacing:.2em;font-weight:950;color:var(--gold2)}.cfName{font-size:17px;font-weight:900;margin-top:28px}.cfRole{font-size:8px;opacity:.72;margin-top:3px}.cfLine{position:absolute;right:-3%;bottom:18px;width:58%;height:1px;background:var(--gold2);transform:rotate(-10deg);opacity:.75}
-.templates{display:flex;gap:11px;overflow:auto;padding:5px 1px 10px;margin-top:8px}.template{flex:0 0 150px;text-align:left}.template.selected .cardFace{border-color:var(--gold2);box-shadow:0 19px 44px rgba(197,154,46,.14);transform:translateY(-3px)}.templateName{text-align:center;font-size:9px;color:var(--muted);margin-top:7px}.template.selected .templateName{color:var(--gold2)}
-.shareGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.share{padding:10px 5px;border-radius:15px;background:rgba(255,255,255,.02);border:1px solid rgba(242,215,137,.1);font-size:9px;color:var(--muted)}.share svg{width:22px;height:22px;display:block;margin:0 auto 5px;color:var(--gold2)}.share.active{background:rgba(242,215,137,.07);border-color:rgba(242,215,137,.38);color:var(--gold2)}
-.store{height:305px;position:relative}.shop{position:absolute;left:5%;right:5%;bottom:15px;height:125px;border-radius:30px;background:linear-gradient(180deg,#202920,#0a0d0a);border:1px solid rgba(242,215,137,.13);box-shadow:0 25px 70px rgba(0,0,0,.42)}.awning{position:absolute;left:8%;right:8%;top:31px;height:40px;border-radius:15px 15px 9px 9px;background:repeating-linear-gradient(90deg,#d8bc63 0 18px,#44391a 18px 36px)}.window{position:absolute;left:18%;right:18%;top:75px;height:102px;border-radius:18px;background:rgba(8,12,9,.67);border:1px solid rgba(242,215,137,.1)}.shelf{position:absolute;left:12px;right:12px;height:1px;background:rgba(242,215,137,.15)}.s1{top:35px}.s2{top:67px}.prod{position:absolute;width:25px;height:25px;border-radius:7px;border:1px solid rgba(242,215,137,.17);background:linear-gradient(145deg,#5a4b25,#18160f);animation:bob 3.7s ease-in-out infinite}.pr1{left:15%;top:9%}.pr2{left:35%;top:9%;animation-delay:.8s}.pr3{left:56%;top:15%;animation-delay:1.3s}.pr4{left:74%;top:7%;animation-delay:2s}.cart{position:absolute;right:8%;bottom:55px;width:48px;height:35px;border:2px solid var(--gold2);border-top:0;transform:skewX(-12deg);animation:cart 4s ease-in-out infinite}.cart:before,.cart:after{content:"";position:absolute;bottom:-9px;width:8px;height:8px;border-radius:50%;background:var(--gold2)}.cart:before{left:4px}.cart:after{right:3px}
-.receiptStage{height:300px;position:relative}.receipt{position:absolute;left:50%;top:10px;transform:translateX(-50%) rotate(-2deg);width:238px;min-height:250px;padding:18px 17px;background:#eee9dc;color:#181711;border-radius:9px 9px 13px 13px;box-shadow:0 28px 70px rgba(0,0,0,.5);animation:paper 4s ease-in-out infinite}.rbrand{font-size:9px;font-weight:950;letter-spacing:.2em;color:#8f6d28}.rline{height:1px;background:#d2cab6;margin:12px 0}.rrow{display:flex;justify-content:space-between;font-size:10px;margin:8px 0}.rtotal{display:flex;justify-content:space-between;font-size:17px;font-weight:950;margin-top:15px}.pay{position:absolute;width:67px;height:45px;border-radius:11px;border:1px solid rgba(242,215,137,.21);background:linear-gradient(145deg,#2a312b,#080b08);display:grid;place-items:center;color:var(--gold2);box-shadow:0 14px 35px rgba(0,0,0,.35);animation:float 4s ease-in-out infinite}.pay.p1{left:4%;top:58px}.pay.p2{right:3%;top:108px;animation-delay:1.2s}.pay.p3{left:11%;bottom:34px;animation-delay:2s}
-.success{width:220px;height:220px;border-radius:50%;display:grid;place-items:center;position:relative;background:radial-gradient(circle,rgba(242,215,137,.14),transparent 64%);margin:0 auto 13px}.success i{position:absolute;inset:12px;border:1px solid rgba(242,215,137,.3);border-radius:50%;animation:pulse 2.5s ease-in-out infinite}.success i:nth-child(2){inset:-11px;opacity:.45;animation-delay:.45s}.success i:nth-child(3){inset:-37px;opacity:.2;animation-delay:.9s}.coin{width:98px;height:98px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 32% 26%,#fff0b5,#f0d173 19%,#b17d20 55%,#4a350d);box-shadow:0 0 55px rgba(242,215,137,.42);font-size:24px;font-weight:950;color:#543b09;animation:coin 5s linear infinite}.conf{position:absolute;width:7px;height:16px;border-radius:3px;background:var(--gold2);animation:conf 3.2s ease-in-out infinite}.c1{left:11%;top:30%;transform:rotate(22deg)}.c2{left:80%;top:21%;transform:rotate(-20deg);animation-delay:.5s}.c3{left:84%;top:64%;transform:rotate(30deg);animation-delay:1s}.c4{left:17%;top:74%;transform:rotate(-31deg);animation-delay:1.5s}
-.goldRoom{height:286px;position:relative}.weight{position:absolute;left:50%;top:12px;transform:translateX(-50%);text-align:center}.weight strong{display:block;font-size:50px;letter-spacing:-.08em;color:var(--gold2)}.weight span{font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}.pile{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:210px;height:125px}.pile i{position:absolute;width:63px;height:27px;border-radius:50%;background:linear-gradient(180deg,#ffe9a6,#b98626);border:2px solid #8b641b;box-shadow:0 10px 18px rgba(0,0,0,.33)}.g1{left:7px;bottom:12px}.g2{left:56px;bottom:27px}.g3{left:109px;bottom:13px}.g4{left:28px;bottom:50px}.g5{left:81px;bottom:61px}.g6{left:137px;bottom:48px}.g7{left:62px;bottom:77px}
-.actions4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.act{padding:11px 5px;border-radius:15px;border:1px solid rgba(242,215,137,.1);background:rgba(255,255,255,.02);font-size:9px;color:var(--muted)}.act strong{display:block;color:var(--gold2);font-size:18px;margin-bottom:2px}
-.pieStage{height:286px;position:relative}.pie{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:170px;height:170px;border-radius:50%;background:conic-gradient(#f0d57b 0 36%,#6e9178 36% 58%,#7c653a 58% 76%,#3d493f 76%);box-shadow:0 0 36px rgba(242,215,137,.08)}.pie:after{content:"";position:absolute;inset:43px;border-radius:50%;background:#0b0e0b}.legend{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}.legend span{font-size:10px;color:var(--muted);display:flex;align-items:center;gap:7px}.legend b{width:8px;height:8px;border-radius:50%;background:#e6c976}.legend b.g{background:#6e9178}.legend b.b{background:#7c653a}.legend b.d{background:#3d493f}
-.instStage{height:296px;position:relative}.inst{position:absolute;width:190px;height:104px;border-radius:20px;border:1px solid rgba(242,215,137,.17);background:linear-gradient(145deg,#2b352e,#090c09);box-shadow:0 19px 44px rgba(0,0,0,.38);padding:13px}.i1{left:4%;top:17px;transform:rotate(-8deg)}.i2{right:4%;top:73px;transform:rotate(7deg)}.i3{left:31%;top:181px;transform:rotate(-3deg);opacity:.34;filter:saturate(.4)}.instTitle{font-size:9px;letter-spacing:.16em;color:var(--gold2)}.instValue{font-size:18px;font-weight:900;margin-top:22px}.inst .chip{top:14px}.approve{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);padding:9px 13px;border-radius:999px;background:rgba(242,215,137,.08);border:1px solid rgba(242,215,137,.23);font-size:10px;color:var(--gold2)}
-.kyc{height:292px;position:relative}.id{position:absolute;left:50%;top:5px;transform:translateX(-50%) rotate(-4deg);width:248px;height:150px;border-radius:18px;background:linear-gradient(135deg,#d8d3c4,#91977f);box-shadow:0 26px 56px rgba(0,0,0,.43);padding:15px;color:#283027;animation:doc 4.4s ease-in-out infinite}.photo{position:absolute;left:13px;top:14px;width:55px;height:72px;border-radius:9px;background:linear-gradient(145deg,#b68267,#56382b)}.idlines{position:absolute;left:83px;right:15px;top:20px}.idlines i{display:block;height:5px;background:#72776a;border-radius:3px;margin-bottom:8px;opacity:.72}.seal{position:absolute;right:14px;bottom:12px;width:27px;height:27px;border:2px solid rgba(40,48,39,.5);border-radius:50%;display:grid;place-items:center;font-size:7px;font-weight:950}.camera{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);width:125px;height:125px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,rgba(242,215,137,.1),rgba(7,9,7,.76) 66%);border:1px solid rgba(242,215,137,.34);box-shadow:0 0 46px rgba(242,215,137,.1);animation:breathe 3.8s ease-in-out infinite}.camera:before{content:"";width:77px;height:77px;border-radius:50%;border:1px dashed rgba(242,215,137,.42)}.live{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--good);box-shadow:0 0 16px rgba(158,208,165,.5)}
-.section{padding:14px;margin-top:11px}.metric{display:flex;align-items:center;justify-content:space-between}.goldText{color:var(--gold2)}.pills{display:flex;gap:7px;overflow:auto;padding-bottom:3px;margin-top:10px}.pill{padding:7px 9px;border-radius:999px;background:rgba(242,215,137,.05);border:1px solid rgba(242,215,137,.12);font-size:9px;color:var(--muted);white-space:nowrap}.pill.on{color:var(--gold2);border-color:rgba(242,215,137,.36);background:rgba(242,215,137,.08)}
-.nav{position:absolute;z-index:20;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(442px,calc(100% - 22px));display:flex;gap:6px;padding:7px;border-radius:20px;background:rgba(7,9,7,.76);border:1px solid rgba(242,215,137,.12);backdrop-filter:blur(22px);box-shadow:0 22px 70px rgba(0,0,0,.42)}.nav button{flex:1;min-height:43px;border-radius:14px;font-size:9px;color:var(--muted)}.nav button.active{background:rgba(242,215,137,.08);color:var(--gold2)}.nav svg{width:18px;height:18px;display:block;margin:0 auto 2px}
-.toast{position:absolute;z-index:50;left:50%;bottom:calc(87px + env(safe-area-inset-bottom));transform:translate(-50%,14px);opacity:0;padding:10px 14px;border-radius:999px;background:rgba(8,11,8,.9);border:1px solid rgba(242,215,137,.23);box-shadow:0 20px 50px rgba(0,0,0,.45);font-size:10px;color:var(--gold2);transition:.35s;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
-
-/* HUMAN-LIFE EXPERIENCE LAYER */
-.lifeCard{display:grid;grid-template-columns:1.08fr .92fr;min-height:118px;border-radius:24px;overflow:hidden;border:1px solid rgba(242,215,137,.15);background:rgba(12,15,12,.58);box-shadow:0 24px 66px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.035);backdrop-filter:blur(20px);margin:12px 0 4px;position:relative}
-.lifeCard .lifeImg{width:100%;height:100%;min-height:118px;object-fit:cover;display:block;filter:saturate(.84) contrast(1.03) brightness(.83)}
-.lifeCard .lifeCopy{padding:14px 13px;display:flex;flex-direction:column;justify-content:center;gap:6px;position:relative;z-index:2}
-.lifeCard .lifeCopy strong{font-size:13px;line-height:1.14;letter-spacing:-.02em}
-.lifeCard .lifeCopy span{font-size:10px;line-height:1.4;color:var(--muted)}
-.lifeCard .lifeTag{font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold2)}
-.choiceLife{position:relative;min-height:178px;padding:0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;background:#0a0d0a}
-.choiceLife .choiceImg{position:absolute;inset:0}
-.choiceLife .choiceImg img{width:100%;height:100%;object-fit:cover;filter:brightness(.58) saturate(.8)}
-.choiceLife:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,5,3,.04) 20%,rgba(3,5,3,.9) 100%)}
-.choiceLife .choiceContent{position:relative;z-index:2;padding:14px}
-.choiceLife .icon{background:rgba(5,7,5,.58);backdrop-filter:blur(10px)}
-.cardPortrait{position:absolute;right:11px;bottom:10px;width:72px;height:84px;object-fit:cover;border-radius:17px;border:1px solid rgba(242,215,137,.28);filter:saturate(.82) brightness(.88);box-shadow:0 10px 28px rgba(0,0,0,.4)}
-.lifeWide{grid-template-columns:.82fr 1.18fr}.lifeWide .lifeImg{order:0}.lifeWide .lifeCopy{order:1}
-@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}@keyframes pulse{0%,100%{transform:scale(.94);opacity:.2}50%{transform:scale(1.04);opacity:.88}}@keyframes scan{0%{top:15%}50%{top:80%}100%{top:15%}}@keyframes beam{0%,100%{opacity:.15;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes token{0%,100%{transform:translate(0,0)}40%{transform:translate(14px,-12px)}80%{transform:translate(-10px,8px)}}@keyframes bar{0%,100%{opacity:.74;transform:scaleY(.97)}50%{opacity:1;transform:scaleY(1.05)}}@keyframes sweep{0%,45%{transform:translateX(-65%) rotate(9deg)}65%,100%{transform:translateX(65%) rotate(9deg)}}@keyframes drift{0%{transform:translate3d(-2%,0,0) scale(1)}100%{transform:translate3d(2%,1%,0) scale(1.02)}}@keyframes cart{0%,100%{transform:translateX(0) skewX(-12deg)}50%{transform:translateX(-13px) skewX(-12deg)}}@keyframes paper{0%,100%{transform:translateX(-50%) rotate(-2deg) translateY(0)}50%{transform:translateX(-50%) rotate(1deg) translateY(-8px)}}@keyframes coin{0%,100%{transform:rotateY(0)}50%{transform:rotateY(180deg)}}@keyframes conf{0%,100%{transform:translateY(0) rotate(0);opacity:.4}50%{transform:translateY(-20px) rotate(120deg);opacity:1}}@keyframes doc{0%,100%{transform:translateX(-50%) rotate(-4deg) translateY(0)}50%{transform:translateX(-50%) rotate(2deg) translateY(-8px)}}
-@media(max-height:700px){.body{justify-content:flex-start;overflow:auto;padding-top:8px}.touch{width:165px;height:165px}.store{height:265px}.receiptStage{height:255px}.vault{width:210px;height:210px}.goldRoom{height:250px}.pieStage{height:230px}.kyc{height:255px}}
+/* v2 flow + component corrections */
+.screen{overflow:hidden}
+.screen .inner{min-height:100%;height:100%;overflow:hidden}
+.topbar{display:flex;align-items:center;justify-content:space-between;height:34px;flex:0 0 34px}
+.backbtn{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stepdots{display:flex;gap:5px}.stepdots i{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.1)}.stepdots i.on{background:var(--gold2);box-shadow:0 0 8px rgba(242,215,137,.45)}
+.scene{position:relative;min-height:0;flex:1;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.heroGlass{position:relative;min-height:210px;border-radius:30px;overflow:hidden;border:1px solid rgba(242,215,137,.18);background:rgba(8,11,8,.48);box-shadow:0 30px 90px rgba(0,0,0,.55);backdrop-filter:blur(22px)}
+.heroGlass img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.6}
+.heroGlass:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,6,4,.05),rgba(4,6,4,.25) 45%,rgba(4,6,4,.92) 100%)}
+.heroText{position:absolute;left:20px;right:20px;bottom:18px;z-index:2}.heroText small{display:block;color:var(--gold2);text-transform:uppercase;letter-spacing:.18em;font-size:8px;margin-bottom:6px}.heroText strong{display:block;font-size:26px;letter-spacing:-.05em;line-height:.98}.heroText span{display:block;color:#c0bdb3;font-size:10px;line-height:1.4;margin-top:7px;max-width:310px}
+.routeGrid,.choiceGrid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:13px}
+.routeCard,.actionCard,.moduleV2,.valueCard,.productCard,.instrumentCard,.kycStepCard{padding:12px;text-align:left}
+.routeCard{min-height:132px}.routeCard .bigIcon{font-size:25px;color:var(--gold2);margin-bottom:18px}.routeCard strong{display:block;font-size:14px}.routeCard span,.actionCard span{display:block;font-size:9px;line-height:1.4;color:var(--muted);margin-top:5px}
+.fullCta{width:100%;margin-top:12px}
+.inlineCtas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.sectionTitle{display:flex;align-items:end;justify-content:space-between;margin:10px 0 8px}.sectionTitle strong{font-size:14px}.sectionTitle span{font-size:9px;color:var(--muted)}
+.horiz{display:flex;gap:9px;overflow-x:auto;overflow-y:hidden;padding:2px 1px 9px;scroll-snap-type:x proximity}.horiz::-webkit-scrollbar{display:none}.horiz>*{scroll-snap-align:start}
+.valueCard{flex:0 0 154px;min-height:126px;position:relative;overflow:hidden}.valueCard:before{content:"";position:absolute;inset:0;background:var(--img) center/cover no-repeat;opacity:.22}.valueCard>*{position:relative;z-index:1}.valueCard strong{display:block;font-size:13px}.valueCard span{display:block;color:var(--muted);font-size:9px;line-height:1.35;margin-top:4px}.valueCard b{display:block;color:var(--gold2);font-size:11px;margin-top:19px}
+.vaultConnectGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.vaultConnect{min-height:108px;position:relative;overflow:hidden}.vaultConnect img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.34}.vaultConnect:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.08),rgba(0,0,0,.78))}.vaultConnect div{position:absolute;left:11px;right:11px;bottom:10px;z-index:2}.vaultConnect strong{font-size:12px}.vaultConnect span{display:block;font-size:8px;color:#d2d0c8;margin-top:3px}
+.modalShade{position:absolute;inset:0;background:rgba(0,0,0,.58);z-index:40;display:none;align-items:flex-end;padding:14px}.modalShade.open{display:flex}.sheet{width:100%;border-radius:28px;padding:16px;background:rgba(13,16,13,.94);border:1px solid rgba(242,215,137,.18);box-shadow:0 -20px 70px rgba(0,0,0,.55);backdrop-filter:blur(24px)}.sheetHandle{width:38px;height:4px;border-radius:99px;background:rgba(255,255,255,.1);margin:0 auto 14px}.sheet h3{margin:0 0 6px;font-size:21px}.sheet p{margin:0;color:var(--muted);font-size:10px;line-height:1.5}.sheetActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+.userChoice{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.userChoice .choiceLarge{min-height:168px}
+.phoneMock{width:128px;height:194px;margin:0 auto 8px;border-radius:23px;border:1px solid rgba(242,215,137,.18);background:linear-gradient(160deg,#202820,#070a07);position:relative;overflow:hidden;box-shadow:0 25px 55px rgba(0,0,0,.4)}.phoneMock:before{content:"";position:absolute;left:50%;top:7px;transform:translateX(-50%);width:42px;height:6px;border-radius:8px;background:#0a0d0a;border:1px solid rgba(255,255,255,.05)}.phoneMock .phoneScreen{position:absolute;inset:25px 8px 8px;border-radius:17px;background:linear-gradient(180deg,#111711,#070907);padding:10px}.dots{display:flex;gap:4px}.dots i{width:4px;height:4px;border-radius:50%;background:var(--gold2)}.inputMock{height:23px;border-radius:8px;border:1px solid rgba(242,215,137,.13);margin-top:18px}.inputMock + .inputMock{margin-top:8px}.miniGold{margin-top:15px;height:40px;border-radius:12px;background:radial-gradient(circle at 50% 50%,rgba(242,215,137,.28),rgba(242,215,137,.04));border:1px solid rgba(242,215,137,.13)}
+.otpRow{display:flex;gap:7px;justify-content:center;margin:18px 0 8px}.otpRow i{width:41px;height:46px;display:grid;place-items:center;border-radius:13px;font-style:normal;font-weight:900;font-size:17px;background:rgba(255,255,255,.03);border:1px solid rgba(242,215,137,.13);color:var(--gold2)}
+.cockpitGrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.moduleV2{min-height:126px;position:relative;overflow:hidden}.moduleV2 img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.26}.moduleV2:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.77))}.moduleV2 .mcopy{position:absolute;left:12px;right:12px;bottom:11px;z-index:2}.moduleV2 strong{display:block;font-size:12px}.moduleV2 span{display:block;font-size:8px;color:#d2d0c8;margin-top:3px}.moduleV2.wide{grid-column:1/-1;min-height:103px}
+.cardHero{position:relative;min-height:178px;border-radius:28px;padding:15px;overflow:hidden;background:linear-gradient(145deg,rgba(239,226,182,.12),rgba(255,255,255,.035));border:1px solid rgba(242,215,137,.21);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 30px 85px rgba(0,0,0,.42);backdrop-filter:blur(24px)}
+.cardHero img{position:absolute;right:-2px;top:-2px;width:46%;height:100%;object-fit:cover;opacity:.78;mask-image:linear-gradient(90deg,transparent 0%,black 50%);-webkit-mask-image:linear-gradient(90deg,transparent 0%,black 50%)}.cardHero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(14,16,12,.96) 0%,rgba(14,16,12,.72) 51%,rgba(14,16,12,.12) 100%);pointer-events:none}.cardHero .cfront{position:relative;z-index:2;width:62%;height:100%;display:flex;flex-direction:column;justify-content:space-between}.cardLogo{font-size:8px;letter-spacing:.22em;color:var(--gold2);font-weight:900}.cardName{font-size:24px;font-weight:950;letter-spacing:-.05em}.cardRole{font-size:9px;color:#d1cec3}.cardMeta{display:flex;gap:6px;flex-wrap:wrap}.tag{padding:5px 7px;border-radius:999px;border:1px solid rgba(242,215,137,.14);font-size:8px;color:var(--muted)}
+.profileRail{display:flex;gap:8px;overflow:auto;margin-top:10px;padding-bottom:5px}.profileRail button{flex:0 0 auto;padding:9px 11px;border-radius:14px;border:1px solid rgba(242,215,137,.11);background:rgba(255,255,255,.02);font-size:9px;color:var(--muted)}.profileRail button.active{border-color:rgba(242,215,137,.42);background:rgba(242,215,137,.07);color:var(--gold2)}
+.templateRail{display:flex;gap:9px;overflow:auto;padding:2px 1px 8px}.templateMini{flex:0 0 135px;min-height:93px;border-radius:18px;border:1px solid rgba(242,215,137,.12);padding:11px;position:relative;overflow:hidden}.templateMini img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.23}.templateMini:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.04),rgba(0,0,0,.78))}.templateMini .tmc{position:absolute;left:10px;right:10px;bottom:9px;z-index:2}.templateMini strong{font-size:11px}.templateMini span{display:block;font-size:8px;color:#d2d0c8;margin-top:2px}.templateMini.active{border-color:rgba(242,215,137,.45);box-shadow:0 12px 30px rgba(197,154,46,.13)}
+.shareRail{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-top:9px}.shareRail button{padding:9px 4px;border-radius:13px;border:1px solid rgba(242,215,137,.11);background:rgba(255,255,255,.02);font-size:8px;color:var(--muted)}.shareRail button.active{color:var(--gold2);background:rgba(242,215,137,.06);border-color:rgba(242,215,137,.35)}
+.moneyHero{display:grid;grid-template-columns:1fr 1fr;gap:9px}.moneyTile{min-height:100px;padding:13px}.moneyTile span{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.moneyTile strong{display:block;font-size:25px;margin-top:8px;letter-spacing:-.05em}.moneyTile small{display:block;color:var(--gold2);font-size:8px;margin-top:4px}
+.actionRail{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}.actionRail button{padding:10px 5px;border-radius:13px;border:1px solid rgba(242,215,137,.1);background:rgba(255,255,255,.018);font-size:8px;color:var(--muted)}
+.chartBox{height:116px;padding:12px;display:flex;gap:7px;align-items:flex-end}.chartBox .vbar{flex:1;border-radius:9px 9px 3px 3px;background:linear-gradient(180deg,#f2d789,#72531b);box-shadow:0 0 14px rgba(242,215,137,.12)}.chartBox .v1{height:35%}.chartBox .v2{height:52%}.chartBox .v3{height:43%}.chartBox .v4{height:75%}.chartBox .v5{height:60%}.chartBox .v6{height:87%}.chartLabels{display:flex;justify-content:space-between;color:var(--muted);font-size:7px;margin-top:4px}
+.instRail{display:flex;gap:8px;overflow:auto;padding:2px 1px 8px}.instrumentCard{flex:0 0 185px;min-height:112px}.instrumentCard.connected{border-color:rgba(242,215,137,.32)}.instrumentTop{display:flex;justify-content:space-between;font-size:8px;color:var(--muted)}.instrumentName{font-size:15px;font-weight:900;margin-top:16px}.instrumentFoot{display:flex;justify-content:space-between;margin-top:10px;font-size:8px;color:var(--muted)}.instrumentFoot b{color:var(--gold2)}
+.storeHero{position:relative;min-height:170px;border-radius:27px;overflow:hidden;border:1px solid rgba(242,215,137,.15);box-shadow:0 28px 70px rgba(0,0,0,.44)}.storeHero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.storeHero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.78))}.storeHero .stxt{position:absolute;z-index:2;left:15px;right:15px;bottom:12px}.storeHero strong{font-size:22px;letter-spacing:-.05em}.storeHero span{display:block;color:#d0cdc4;font-size:9px;margin-top:4px}
+.productRail{display:flex;gap:9px;overflow:auto;margin-top:8px;padding:2px 1px 9px}.productCard{flex:0 0 165px;min-height:188px;padding:0;overflow:hidden}.productCard img{width:100%;height:101px;object-fit:cover}.productCard .pcopy{padding:9px 10px}.productCard strong{font-size:11px}.productCard span{display:block;font-size:8px;color:var(--muted);margin-top:3px}.productCard b{display:block;color:var(--gold2);font-size:12px;margin-top:9px}
+.checkoutBox{padding:13px}.lineItem{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}.lineItem:last-child{border-bottom:0}.thumb{width:48px;height:48px;border-radius:13px;overflow:hidden;border:1px solid rgba(242,215,137,.11)}.thumb img{width:100%;height:100%;object-fit:cover}.lineItem .liCopy{flex:1}.lineItem strong{display:block;font-size:10px}.lineItem span{display:block;font-size:8px;color:var(--muted);margin-top:3px}.lineItem b{font-size:10px}.totalRow{display:flex;justify-content:space-between;margin-top:10px;padding-top:9px;border-top:1px solid rgba(242,215,137,.12)}.totalRow strong{font-size:17px}
+.payChoices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.payChoice{padding:12px;min-height:82px}.payChoice strong{display:block;font-size:11px}.payChoice span{display:block;font-size:8px;color:var(--muted);margin-top:4px}.payChoice.active{border-color:rgba(242,215,137,.45);background:rgba(242,215,137,.06)}
+.resultHero{padding:19px;text-align:center}.resultCoin{width:80px;height:80px;margin:0 auto 12px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 32% 24%,#fff0b5,#eacb73 20%,#ab7820 60%,#49330c);color:#5a4008;font-weight:950;font-size:20px;box-shadow:0 0 40px rgba(242,215,137,.3);animation:coin 5s linear infinite}
+.idCanvas{height:150px;position:relative}.idDoc{position:absolute;width:230px;height:132px;left:50%;top:8px;transform:translateX(-50%) rotate(-3deg);border-radius:16px;background:linear-gradient(145deg,#e5ddc9,#9f997f);box-shadow:0 25px 55px rgba(0,0,0,.38);overflow:hidden}.idDoc .idPhoto{position:absolute;left:14px;top:18px;width:52px;height:66px;border-radius:10px;background:linear-gradient(145deg,#d6a988,#734c3a)}.idDoc .idLines{position:absolute;left:77px;right:15px;top:18px}.idDoc .idLines i{display:block;height:6px;border-radius:5px;background:rgba(50,48,37,.22);margin-bottom:7px}.idDoc .seal2{position:absolute;right:13px;bottom:10px;width:28px;height:28px;border-radius:50%;border:2px solid rgba(71,64,41,.25)}.camFrame{height:185px;border-radius:27px;overflow:hidden;position:relative;border:1px solid rgba(242,215,137,.17);background:linear-gradient(145deg,#142018,#060806);display:grid;place-items:center}.camFrame img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55}.camFrame:after{content:"";position:absolute;inset:22px;border:1px solid rgba(242,215,137,.45);border-radius:20px;box-shadow:0 0 35px rgba(242,215,137,.13) inset}.faceDot{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--gold2);box-shadow:0 0 18px rgba(242,215,137,.8);z-index:2;animation:float 2.8s ease-in-out infinite}.fd1{left:34%;top:38%}.fd2{left:57%;top:38%;animation-delay:.4s}.fd3{left:46%;top:57%;animation-delay:.8s}
+.amlRows{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.aml{padding:10px}.aml b{font-size:16px;color:var(--gold2)}.aml span{display:block;font-size:8px;color:var(--muted);margin-top:2px}
+.smallNote{font-size:8px;color:var(--muted);line-height:1.35;margin-top:8px}
+@media(max-height:740px){h1{font-size:48px}.heroGlass{min-height:185px}.cardHero{min-height:155px}.productCard{min-height:170px}.moduleV2{min-height:111px}.cockpitGrid{gap:7px}.moduleV2{padding:9px}}
 </style>
 </head>
 <body>
 <div id="app">
-<div id="grain"></div>
-<div id="flow"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M50 0 C47 18 56 26 50 43 S46 68 53 100"/><circle cx="50" cy="6" r=".6"><animate attributeName="cy" values="3;97" dur="4.8s" repeatCount="indefinite"/></circle><circle cx="50" cy="28" r=".45" opacity=".8"><animate attributeName="cy" values="11;96" dur="6s" repeatCount="indefinite"/></circle></svg></div>
-
-<svg width="0" height="0" style="position:absolute"><defs>
-<symbol id="i-tap" viewBox="0 0 48 48"><circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M24 14v12l5 4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="24" cy="24" r="3" fill="currentColor"/></symbol>
-<symbol id="i-scan" viewBox="0 0 48 48"><path d="M9 18v-5a4 4 0 0 1 4-4h5M39 18v-5a4 4 0 0 0-4-4h-5M9 30v5a4 4 0 0 0 4 4h5M39 30v5a4 4 0 0 1-4 4h-5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M15 15h18v18H15z" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="24" cy="24" r="3" fill="currentColor"/></symbol>
-<symbol id="i-vault" viewBox="0 0 48 48"><circle cx="24" cy="24" r="16" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="24" cy="24" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M24 15v5M24 28v5M15 24h5M28 24h5" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
-<symbol id="i-card" viewBox="0 0 48 48"><rect x="7" y="12" width="34" height="24" rx="5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M11 19h26M11 29h9" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
-<symbol id="i-friends" viewBox="0 0 48 48"><circle cx="17" cy="18" r="5" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="32" cy="19" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 36c1-7 18-8 19 0M28 36c0-5 10-7 13-1" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
-<symbol id="i-gold" viewBox="0 0 48 48"><circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M18 28l4-9h5l3 9M20 24h9" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
-<symbol id="i-chart" viewBox="0 0 48 48"><path d="M8 37h32M12 33V24M21 33V17M30 33V21M39 33V11" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
-<symbol id="i-bank" viewBox="0 0 48 48"><path d="M7 20l17-10 17 10M10 21v13M19 21v13M29 21v13M38 21v13M7 37h34" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
-</defs></svg>
-
 <div id="screens">
 
-<section class="screen active" id="s0"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Today</div></div><div class="body center">
-<div class="touch"><div class="person"><div class="head"></div><div class="torso"></div><div class="arm l"></div><div class="arm r"></div></div><div class="hand"></div><div class="beam"></div></div>
-<div class="eyebrow">Your everyday moment</div><h1>What are you up to today?</h1><p class="copy">A quick touch. A familiar store. A little more value coming back to you.</p>
-<div class="humanScene"><img class="bg" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=84" alt=""><div class="humanCopy"><div><small>Your everyday moment</small><strong>Arrive. Choose. Enjoy.</strong><span>Your value should travel naturally with the things you already do.</span></div></div></div><div class="lifeMini"><img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=180&q=80" alt=""><div><strong>You’re in control.</strong><span>I’ll stay beside you and guide the next useful step.</span></div></div>
-<div class="actions"><button class="cta primary" onclick="go(1)">Let’s begin</button></div>
+<section class="screen active" id="s0">
+  <div class="inner">
+    <div class="topbar"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Buyer Experience</div></div>
+    <div class="scene center">
+      <div class="heroGlass">
+        <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1000&q=86" alt="">
+        <div class="heroText"><small>Commerce that feels like life</small><strong>Start with a tap.<br>We’ll take it from there.</strong><span>Your store, your choices, your value — with K-Assistant beside you.</span></div>
+      </div>
+      <div class="routeGrid">
+        <button class="glass routeCard" onclick="go(1,'tap')"><div class="bigIcon">◉</div><strong>Tap to start</strong><span>NFC / phone tap<br>Instant store recognition.</span></button>
+        <button class="glass routeCard" onclick="go(1,'scan')"><div class="bigIcon">⌁</div><strong>Scan to start</strong><span>Camera / URL scan<br>Open the connected experience.</span></button>
+      </div>
+      <div class="smallNote">You can always step back. I’ll keep your choices with you.</div>
+    </div>
+  </div>
+</section>
+
+<section class="screen" id="s1"><div class="inner">
+  <div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny" id="routeLabel">Start</div></div>
+  <div class="scene center">
+    <div class="heroGlass" style="min-height:185px">
+      <img id="routeImage" src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1000&q=86" alt="">
+      <div class="heroText"><small id="routeEyebrow">NFC found</small><strong id="routeTitle">Your store is opening.</strong><span id="routeSub">I’ll bring the right experience forward without making you search for it.</span></div>
+    </div>
+    <div class="glass section" style="margin-top:11px;padding:13px;text-align:left">
+      <div class="metric"><span class="tiny">Connected entry</span><strong id="routeDevice" class="goldText">NFC / Tap</strong></div>
+      <div class="smallNote">The compact link identifies the store and opens the secure KanzPay web experience.</div>
+    </div>
+    <button class="cta primary fullCta" onclick="go(2)">Open Web App</button>
+  </div>
+</div></section>
+
+<section class="screen" id="s2"><div class="inner">
+  <div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Store found</div></div>
+  <div class="scene center">
+    <div class="storeHero">
+      <img src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1100&q=86" alt="">
+      <div class="stxt"><small class="tiny">KanzPay Store</small><strong>Grand Gifts</strong><span>Gifts · Lifestyle · Offers near you</span></div>
+    </div>
+    <div class="inlineCtas">
+      <button class="glass actionCard" onclick="toastMsg('Google Maps ready')">⌖<strong>Open in Maps</strong><span>See the store and route.</span></button>
+      <button class="glass actionCard" onclick="go(21)">◈<strong>Live catalogue</strong><span>Browse offers and products.</span></button>
+    </div>
+    <button class="cta primary fullCta" onclick="go(3)">Continue with me</button>
+  </div>
+</div></section>
+
+<section class="screen" id="s3"><div class="inner">
+  <div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Welcome</div></div>
+  <div class="scene center">
+    <div class="heroGlass" style="min-height:175px"><img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Let’s get you moving</small><strong>Are you already with us?</strong><span>Choose once. I’ll carry the right context forward.</span></div></div>
+    <div class="userChoice">
+      <button class="glass choiceLarge" onclick="state.existing=true;go(12)"><div class="icon">✓</div><strong style="display:block;font-size:18px;margin-top:22px">Yes, I’m a user</strong><span class="choiceSub">Open my value, shop, offers and cockpit.</span></button>
+      <button class="glass choiceLarge" onclick="state.existing=false;go(4)"><div class="icon">＋</div><strong style="display:block;font-size:18px;margin-top:22px">I’m new</strong><span class="choiceSub">Mobile → OTP → email → first gold → Vault.</span></button>
+    </div>
+  </div>
+</div></section>
+
+<section class="screen" id="s4"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Create account</div></div><div class="scene center">
+  <div class="phoneMock"><div class="phoneScreen"><div class="dots"><i></i><i></i><i></i></div><div style="font-size:9px;color:var(--gold2);margin-top:16px">Your mobile number</div><div class="inputMock"></div><div class="miniGold"></div></div></div>
+  <div class="eyebrow">Step 1 of 6</div><h2>Start with your mobile.</h2><p class="copy">I’ll use it to make this account yours. No long form.</p>
+  <button class="cta primary fullCta" onclick="go(5)">Send OTP</button>
 </div></div></section>
 
-<section class="screen" id="s1"><div class="inner"><div class="top"><button class="tiny" onclick="go(0)">‹ Back</button><div class="progress"><i style="width:14%"></i></div><div class="tiny">01</div></div><div class="body center">
-<div class="eyebrow">Touchpoint</div><h2>How did you arrive?</h2><p class="copy">Two live paths. One connected journey.</p>
-<div class="choiceGrid">
-<button class="choice choiceLife glass" onclick="go(2)"><div class="choiceImg"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=700&q=82" alt=""></div><div class="choiceContent"><div class="icon"><svg><use href="#i-tap"/></svg></div><div class="choiceTitle" style="margin-top:10px">Tap</div><div class="choiceSub">A quick touch. The experience follows you.</div></div></button>
-<button class="choice choiceLife glass" onclick="go(2)"><div class="choiceImg"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=82" alt=""></div><div class="choiceContent"><div class="icon"><svg><use href="#i-scan"/></svg></div><div class="choiceTitle" style="margin-top:10px">Scan</div><div class="choiceSub">See the store appear around you.</div></div></button>
+<section class="screen" id="s5"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Verify mobile</div></div><div class="scene center">
+  <div class="heroGlass" style="min-height:145px"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Quick check</small><strong>One code.</strong><span>That’s all I need to verify your number.</span></div></div>
+  <div class="otpRow"><i>4</i><i>2</i><i>8</i><i>7</i><i>1</i><i>9</i></div>
+  <button class="cta primary fullCta" onclick="go(6)">Verify mobile</button>
+  <button class="backbtn" style="margin-top:10px" onclick="toastMsg('OTP resent')">Resend OTP</button>
+</div></div></section>
+
+<section class="screen" id="s6"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Verify email</div></div><div class="scene center">
+  <div class="glass section" style="padding:18px;width:100%;text-align:left"><span class="tiny">Your email</span><div style="font-size:17px;font-weight:900;margin-top:9px">you@example.com</div><div class="smallNote">Used for account recovery and your digital identity.</div></div>
+  <div class="otpRow"><i>6</i><i>1</i><i>9</i><i>0</i><i>3</i><i>4</i></div>
+  <button class="cta primary fullCta" onclick="go(7)">Verify email</button>
+</div></div></section>
+
+<section class="screen" id="s7"><div class="inner"><div class="topbar"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Welcome</div></div><div class="scene center">
+  <div class="resultCoin">Au</div><div class="eyebrow">First little win</div><h1 style="font-size:54px">1 mg</h1><p class="copy">Welcome to KanzPay. Your first digital gold has arrived.</p>
+  <div class="glass section" style="width:100%;padding:13px;text-align:left;margin-top:13px"><div class="metric"><span class="tiny">Next</span><strong>Build my Value Vault</strong></div><div class="smallNote">Connect the memberships, rewards, vouchers and benefits you already own.</div></div>
+  <button class="cta primary fullCta" onclick="go(9)">Build my Vault</button>
+</div></div></section>
+
+<section class="screen" id="s8"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Preparing Vault</div></div><div class="scene center">
+  <div class="vault"><div class="vaultDoor"><div class="vaultCore">V</div></div></div>
+  <div class="eyebrow">Value is already around you</div><h2>Let’s bring it together.</h2><p class="copy">I’ll show you what can be connected and what each connection can add.</p>
+  <button class="cta primary fullCta" onclick="go(9)">Open Value Vault</button>
+</div></div></section>
+
+<section class="screen" id="s9"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">My Value Vault</div></div><div class="scene">
+  <div class="heroGlass" style="min-height:155px"><img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>My Value Vault</small><strong>Everything you choose to connect.</strong><span>Memberships, reward points, promo codes and vouchers — with permission.</span></div></div>
+  <div class="sectionTitle"><strong>Value already found</strong><span>4 connected</span></div>
+  <div class="horiz">
+    <div class="glass valueCard" style="--img:url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80')"><strong>Memberships</strong><span>2 active memberships</span><b>+ AED 120 value</b></div>
+    <div class="glass valueCard" style="--img:url('https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=500&q=80')"><strong>Reward Points</strong><span>18,420 points across apps</span><b>+ AED 184 value</b></div>
+    <div class="glass valueCard" style="--img:url('https://images.unsplash.com/photo-1607083206968-13611e3d76db?auto=format&fit=crop&w=500&q=80')"><strong>Promo Codes</strong><span>3 valid this month</span><b>Save up to AED 75</b></div>
+    <div class="glass valueCard" style="--img:url('https://images.unsplash.com/photo-1504274066651-8d31a536b11a?auto=format&fit=crop&w=500&q=80')"><strong>Vouchers</strong><span>6 stored securely</span><b>+ AED 210 value</b></div>
+  </div>
+  <button class="cta primary fullCta" onclick="go(10)">Connect another programme</button>
+</div></div></section>
+
+<section class="screen" id="s10"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Connect Value</div></div><div class="scene">
+  <div class="eyebrow">Choose what you already use</div><h2>Bring a benefit in.</h2><div class="vaultConnectGrid">
+    <button class="glass vaultConnect" onclick="openConnect('Membership')"><img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=700&q=80" alt=""><div><strong>Membership</strong><span>Connect with permission.</span></div></button>
+    <button class="glass vaultConnect" onclick="openConnect('Rewards')"><img src="https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=700&q=80" alt=""><div><strong>Rewards</strong><span>Bring points into view.</span></div></button>
+    <button class="glass vaultConnect" onclick="openConnect('Voucher')"><img src="https://images.unsplash.com/photo-1607083206968-13611e3d76db?auto=format&fit=crop&w=700&q=80" alt=""><div><strong>Voucher / Coupon</strong><span>Store it once. Use it later.</span></div></button>
+    <button class="glass vaultConnect" onclick="openConnect('Dynamic QR')"><img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=700&q=80" alt=""><div><strong>Dynamic QR</strong><span>Redirect to the programme app.</span></div></button>
+  </div>
+  <div class="smallNote">Your credentials stay encrypted. KanzPay only uses the permission you approve.</div>
+</div></div></section>
+
+<section class="screen" id="s11"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Authorization</div></div><div class="scene center">
+  <div class="heroGlass" style="min-height:160px"><img src="https://images.unsplash.com/photo-1516321165247-4aa89a48be28?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small id="connectType">Secure connection</small><strong>Approve what you want shared.</strong><span>Programme credentials, validity and value will be stored securely.</span></div></div>
+  <div class="glass section" style="width:100%;padding:13px;text-align:left;margin-top:11px"><div class="metric"><span class="tiny">Permission</span><strong>View rewards + voucher validity</strong></div><div class="smallNote">Nothing is connected until you approve.</div></div>
+  <div class="inlineCtas"><button class="cta primary" onclick="completeConnect()">Approve & connect</button><button class="cta" onclick="back()">Not now</button></div>
+</div></div></section>
+
+<section class="screen" id="s12"><div class="inner"><div class="topbar"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">My Cockpit</div></div><div class="scene">
+  <div class="heroGlass" style="min-height:135px"><img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Value & Wealth Building</small><strong>All set to earn more.</strong><span>I’ll put the next useful action where you can see it.</span></div></div>
+  <div class="sectionTitle"><strong>Your six places</strong><span>Tap to enter</span></div>
+  <div class="cockpitGrid">
+    <button class="glass moduleV2" onclick="go(9)"><img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=700&q=80" alt=""><div class="mcopy"><strong>My Value Vault</strong><span>8 connected values</span></div></button>
+    <button class="glass moduleV2" onclick="go(13)"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=80" alt=""><div class="mcopy"><strong>My Visiting Card</strong><span>1 active identity</span></div></button>
+    <button class="glass moduleV2" onclick="go(16)"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=700&q=80" alt=""><div class="mcopy"><strong>Earn with Friends</strong><span>Share your value</span></div></button>
+    <button class="glass moduleV2" onclick="go(17)"><img src="https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=700&q=80" alt=""><div class="mcopy"><strong>My Gold Vault</strong><span>1.84 g · +7.8%</span></div></button>
+    <button class="glass moduleV2" onclick="go(19)"><img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=700&q=80" alt=""><div class="mcopy"><strong>My Expenses</strong><span>See patterns, not clutter</span></div></button>
+    <button class="glass moduleV2" onclick="go(20)"><img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=700&q=80" alt=""><div class="mcopy"><strong>Payment Intelligence</strong><span>Cards + bank accounts</span></div></button>
+  </div>
+</div></div></section>
+
+<section class="screen" id="s13"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Cockpit</button><div class="tiny">My Visiting Card</div></div><div class="scene">
+  <div class="cardHero"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=84" alt=""><div class="cfront"><div class="cardLogo">KANZPAY CONNECT</div><div><div class="cardName">Navneet Sharma</div><div class="cardRole" id="roleText">Personal · OXY</div></div><div class="cardMeta"><span class="tag">NFC</span><span class="tag">QR</span><span class="tag">WhatsApp</span></div></div></div>
+  <div class="sectionTitle"><strong>Choose the relationship</strong><span>One identity, many contexts</span></div>
+  <div class="profileRail" id="profiles"></div>
+  <button class="cta primary fullCta" onclick="go(14)">Choose a card template</button>
+</div></div></section>
+
+<section class="screen" id="s14"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Card template</div></div><div class="scene">
+  <div class="heroGlass" style="min-height:125px"><img src="https://images.unsplash.com/photo-1529119513315-c7c361862fc7?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Made for how you meet people</small><strong>Pick a look that feels like you.</strong><span>Glass, image, gold and identity — all in one card.</span></div></div>
+  <div class="sectionTitle"><strong>Templates</strong><span>7 styles</span></div>
+  <div class="templateRail" id="templates"></div>
+  <button class="cta primary fullCta" onclick="go(15)">Preview & edit card</button>
+</div></div></section>
+
+<section class="screen" id="s15"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Card preview</div></div><div class="scene">
+  <div class="cardHero" id="previewCard"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=700&q=84" alt=""><div class="cfront"><div class="cardLogo">KANZPAY CONNECT</div><div><div class="cardName">Navneet Sharma</div><div class="cardRole" id="previewRole">Personal · OXY</div></div><div class="cardMeta"><span class="tag" id="selectedTemplateTag">Executive</span><span class="tag">Online Profile</span></div></div></div>
+  <div class="sectionTitle"><strong>Share the same profile everywhere</strong><span>Selected: <span id="tplText">Executive</span></span></div>
+  <div class="shareRail" id="shareRail"></div>
+  <div class="glass section" style="padding:11px;margin-top:9px"><div class="metric"><span class="tiny">Rich profile</span><strong>Compact NFC URL + full online profile</strong></div><div class="smallNote">The NFC stores the compact link. Your rich identity stays online and can be suspended or replaced.</div></div>
+  <button class="cta primary fullCta" onclick="toastMsg('Card activated across all share modes')">Activate this card</button>
+</div></div></section>
+
+<section class="screen" id="s16"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Cockpit</button><div class="tiny">Earn with Friends</div></div><div class="scene center">
+  <div class="heroGlass" style="min-height:210px"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Shared value</small><strong>Some things are better together.</strong><span>Send a simple invitation. I’ll remember who came through it.</span></div></div>
+  <div class="shareRail" id="friendShares"></div>
+  <div class="glass section" style="width:100%;padding:12px;text-align:left;margin-top:9px"><div class="metric"><span class="tiny">Your reward</span><strong class="goldText">+5 mg Gold</strong></div><div class="smallNote">Reward after your friend completes their first qualifying action.</div></div>
+</div></div></section>
+
+<section class="screen" id="s17"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Cockpit</button><div class="tiny">My Gold Vault</div></div><div class="scene">
+  <div class="heroGlass" style="min-height:154px"><img src="https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Your gold</small><strong>1.84 g · +7.8%</strong><span>A quiet store of value that can move with your life.</span></div></div>
+  <div class="moneyHero" style="margin-top:10px"><div class="glass moneyTile"><span>Current value</span><strong>AED 521</strong><small>Updated now</small></div><div class="glass moneyTile"><span>Since purchase</span><strong>+7.8%</strong><small>Value change</small></div></div>
+  <div class="actionRail" id="goldActions"></div>
+</div></div></section>
+
+<section class="screen" id="s18"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Gold Vault</button><div class="tiny">Gold action</div></div><div class="scene center">
+  <div class="heroGlass" style="min-height:180px"><img src="https://images.unsplash.com/photo-1579298245158-33e8f8d7bcd9?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small id="goldActionTitle">Buy Gold</small><strong id="goldActionHeadline">Make the next move when it feels right.</strong><span id="goldActionSub">I’ll show the amount, value and what changes in your vault.</span></div></div>
+  <div class="glass section" style="width:100%;padding:14px;text-align:left;margin-top:11px"><div class="metric"><span class="tiny">Current holding</span><strong>1.84 g</strong></div><div class="smallNote">Action: <span id="goldActionType">Buy</span> · Your approval is always required.</div></div>
+  <button class="cta primary fullCta" onclick="toastMsg('Gold action confirmed');back()">Confirm action</button>
+</div></div></section>
+
+<section class="screen" id="s19"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Cockpit</button><div class="tiny">My Expenses</div></div><div class="scene">
+  <div class="heroGlass" style="min-height:130px"><img src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Make the numbers human</small><strong>AED 8,420 this month.</strong><span>Food 36% · Shopping 22% · Travel 18% · Other 24%</span></div></div>
+  <div class="glass chartBox" style="margin-top:9px"><i class="vbar v1"></i><i class="vbar v2"></i><i class="vbar v3"></i><i class="vbar v4"></i><i class="vbar v5"></i><i class="vbar v6"></i></div>
+  <div class="chartLabels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+  <div class="profileRail" id="expensePeriods"></div>
+  <div class="glass section" style="padding:11px"><div class="metric"><span class="tiny" id="expenseLabel">Monthly</span><strong id="expenseValue">AED 8,420</strong></div></div>
+</div></div></section>
+
+<section class="screen" id="s20"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Cockpit</button><div class="tiny">Payment Intelligence</div></div><div class="scene">
+  <div class="heroGlass" style="min-height:135px"><img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Your instruments</small><strong>I found an option worth seeing.</strong><span>You decide. I explain before anything is activated.</span></div></div>
+  <div class="sectionTitle"><strong>Connected</strong><span>Tap to manage</span></div><div class="instRail" id="instrumentRail"></div>
+  <div class="glass section" style="padding:12px;margin-top:2px"><div class="metric"><span class="tiny">Recommendation</span><strong class="goldText">ADCB A2A</strong></div><div class="smallNote">Lower friction for this checkout. Approval required before activation.</div></div>
+  <div class="inlineCtas"><button class="cta primary" onclick="toastMsg('Recommendation approved')">Approve</button><button class="cta" onclick="toastMsg('Recommendation dismissed')">Not now</button></div>
+</div></div></section>
+
+<section class="screen" id="s21"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Grand Gifts</div></div><div class="scene">
+  <div class="storeHero"><img src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1100&q=86" alt=""><div class="stxt"><strong>Grand Gifts</strong><span>Live catalogue · member offers · available now</span></div></div>
+  <div class="sectionTitle"><strong>For you</strong><span>Curated by value</span></div>
+  <div class="productRail">
+    <button class="glass productCard" onclick="openProduct('Gift Box','AED 220','https://images.unsplash.com/photo-1607344645866-009c320b63e0?auto=format&fit=crop&w=600&q=82')"><img src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?auto=format&fit=crop&w=600&q=82" alt=""><div class="pcopy"><strong>Gift Box</strong><span>Premium selection</span><b>AED 220</b></div></button>
+    <button class="glass productCard" onclick="openProduct('Wrap & Note','AED 25','https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=600&q=82')"><img src="https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=600&q=82" alt=""><div class="pcopy"><strong>Wrap & Note</strong><span>Personal touch</span><b>AED 25</b></div></button>
+    <button class="glass productCard" onclick="openProduct('Home Set','AED 180','https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=82')"><img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=600&q=82" alt=""><div class="pcopy"><strong>Home Set</strong><span>Everyday beauty</span><b>AED 180</b></div></button>
+  </div>
+  <div class="glass section" style="padding:11px"><div class="metric"><span class="tiny">Seller offer</span><strong class="goldText">Save AED 15 today</strong></div></div>
+</div></div></section>
+
+<section class="screen" id="s22"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Catalogue</button><div class="tiny">Product</div></div><div class="scene">
+  <div class="heroGlass" style="min-height:190px" id="productHero"><img id="productImg" src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Grand Gifts</small><strong id="productTitle">Gift Box</strong><span id="productDesc">A premium gift selection with a personal note.</span></div></div>
+  <div class="glass section checkoutBox" style="margin-top:10px"><div class="metric"><span class="tiny">Price</span><strong id="productPrice">AED 220</strong></div><div class="smallNote">Offer: − AED 15 · Estimated Gold: +18 mg after checkout.</div></div>
+  <button class="cta primary fullCta" onclick="addToCart()">Add to checkout</button>
+</div></div></section>
+
+<section class="screen" id="s23"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Product</button><div class="tiny">Checkout request</div></div><div class="scene">
+  <div class="glass checkoutBox">
+    <div class="lineItem"><div class="thumb"><img id="cartThumb" src="https://images.unsplash.com/photo-1607344645866-009c320b63e0?auto=format&fit=crop&w=200&q=80" alt=""></div><div class="liCopy"><strong id="cartName">Gift Box</strong><span>1 × selected item</span></div><b id="cartPrice">AED 220</b></div>
+    <div class="lineItem"><div class="thumb"><img src="https://images.unsplash.com/photo-1512909006721-3d6018887383?auto=format&fit=crop&w=200&q=80" alt=""></div><div class="liCopy"><strong>Wrap & Note</strong><span>Optional personalisation</span></div><b>AED 25</b></div>
+    <div class="lineItem"><div class="thumb" style="display:grid;place-items:center;color:var(--gold2)">%</div><div class="liCopy"><strong>Seller Offer</strong><span>Connected value applied</span></div><b>− AED 15</b></div>
+    <div class="totalRow"><span>Total</span><strong id="totalPrice">AED 230</strong></div>
+  </div>
+  <div class="sectionTitle"><strong>Check items & price</strong><span>Before you pay</span></div>
+  <div class="glass section" style="padding:11px"><div class="metric"><span class="tiny">Everything ready</span><strong>✓ Items · ✓ Price · ✓ Offer</strong></div></div>
+  <button class="cta primary fullCta" onclick="go(24)">Looks good — choose payment</button>
+</div></div></section>
+
+<section class="screen" id="s24"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Checkout</button><div class="tiny">Pay</div></div><div class="scene">
+  <div class="heroGlass" style="min-height:135px"><img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Payment choice</small><strong>Use the instrument that suits you.</strong><span>A2A first, card second. I’ll show the path before you confirm.</span></div></div>
+  <div class="payChoices" id="payChoices"></div>
+  <div class="glass section" style="padding:11px;margin-top:9px"><div class="metric"><span class="tiny">Approval</span><strong id="paySelected">ADCB A2A</strong></div><div class="smallNote">Selected after instrument intelligence review.</div></div>
+  <button class="cta primary fullCta" onclick="go(25)">Pay AED 230</button>
+</div></div></section>
+
+<section class="screen" id="s25"><div class="inner"><div class="topbar"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Commerce complete</div></div><div class="scene center">
+  <div class="resultHero"><div class="resultCoin">Au</div><div class="eyebrow">Mabrook</div><h1 style="font-size:52px">You got it.</h1><p class="copy">AED 230 paid successfully.</p></div>
+  <div class="heroGlass" style="min-height:130px"><img src="https://images.unsplash.com/photo-1505577058444-a3dab90d4253?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Your value came back too</small><strong>+18 mg Gold</strong><span>Moved into your Gold Vault. Earn more · Save more.</span></div></div>
+  <button class="cta primary fullCta" onclick="go(12)">Back to cockpit</button>
+</div></div></section>
+
+<section class="screen" id="s26"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">Create Account</div></div><div class="scene">
+  <div class="heroGlass" style="min-height:130px"><img src="https://images.unsplash.com/photo-1544084944-15269ec7b5a0?auto=format&fit=crop&w=1000&q=86" alt=""><div class="heroText"><small>Identity setup</small><strong>Let’s make the account yours.</strong><span>Emirates ID front + back, then a short live match.</span></div></div>
+  <div class="amlRows"><div class="glass aml"><b>1</b><span>Emirates ID</span></div><div class="glass aml"><b>2</b><span>Live camera</span></div><div class="glass aml"><b>3</b><span>Photo match</span></div><div class="glass aml"><b>4</b><span>AML check</span></div></div>
+  <button class="cta primary fullCta" onclick="go(27)">Start with ID front</button>
+</div></div></section>
+
+<section class="screen" id="s27"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">KYC · 1/4</div></div><div class="scene center">
+  <div class="idCanvas"><div class="idDoc"><div class="idPhoto"></div><div class="idLines"><i style="width:78%"></i><i style="width:62%"></i><i style="width:88%"></i><i style="width:49%"></i></div><div class="seal2"></div></div></div>
+  <div class="eyebrow">Emirates ID</div><h2>Front first.</h2><p class="copy">Hold the front side steady. I’ll help you crop and check it.</p>
+  <button class="cta primary fullCta" onclick="go(28)">Capture front</button>
+</div></div></section>
+
+<section class="screen" id="s28"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">KYC · 2/4</div></div><div class="scene center">
+  <div class="idCanvas"><div class="idDoc" style="transform:translateX(-50%) rotate(3deg)"><div style="position:absolute;left:14px;right:14px;top:16px"><i style="display:block;height:7px;border-radius:6px;background:rgba(50,48,37,.2);margin-bottom:8px;width:84%"></i><i style="display:block;height:7px;border-radius:6px;background:rgba(50,48,37,.2);margin-bottom:8px;width:68%"></i><i style="display:block;height:7px;border-radius:6px;background:rgba(50,48,37,.2);width:91%"></i></div><div class="seal2"></div></div></div>
+  <div class="eyebrow">Emirates ID</div><h2>Now the back.</h2><p class="copy">Turn it over. Keep the edges inside the frame.</p>
+  <button class="cta primary fullCta" onclick="go(29)">Capture back</button>
+</div></div></section>
+
+<section class="screen" id="s29"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">KYC · 3/4</div></div><div class="scene center">
+  <div class="camFrame"><img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=900&q=84" alt=""><div class="faceDot fd1"></div><div class="faceDot fd2"></div><div class="faceDot fd3"></div></div>
+  <div class="eyebrow" style="margin-top:11px">Live camera</div><h2>Blink. Left. Right.</h2><p class="copy">Hold Emirates ID beside your face, blink once, look left, then look right.</p>
+  <button class="cta primary fullCta" onclick="go(30)">Complete live match</button>
+</div></div></section>
+
+<section class="screen" id="s30"><div class="inner"><div class="topbar"><button class="backbtn" onclick="back()">‹ Back</button><div class="tiny">KYC · 4/4</div></div><div class="scene center">
+  <div class="resultHero"><div class="resultCoin" style="width:72px;height:72px">✓</div><div class="eyebrow">Identity complete</div><h2>Everything matches.</h2><p class="copy">Photo match passed. AML check is clear. Your account is ready.</p></div>
+  <div class="amlRows"><div class="glass aml"><b>✓</b><span>Photo match</span></div><div class="glass aml"><b>✓</b><span>AML</span></div></div>
+  <button class="cta primary fullCta" onclick="go(12)">Enter my cockpit</button>
+</div></div></section>
+
 </div>
-</div></div></section>
 
-<section class="screen" id="s2"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Store</div></div><div class="body center">
-<div class="scan"><div class="qr">
-<i></i><i></i><i class="off"></i><i></i><i></i><i class="off"></i><i></i><i></i><i class="off"></i>
-<i></i><i class="off"></i><i></i><i class="off"></i><i></i><i></i><i class="off"></i><i></i><i></i>
-<i class="off"></i><i></i><i></i><i></i><i class="off"></i><i></i><i class="off"></i><i></i><i></i>
-<i></i><i class="off"></i><i></i><i class="off"></i><i></i><i></i><i></i><i class="off"></i><i></i>
-<i></i><i></i><i class="off"></i><i></i><i class="off"></i><i></i><i class="off"></i><i></i><i class="off"></i>
-<i class="off"></i><i></i><i></i><i class="off"></i><i></i><i class="off"></i><i></i><i></i><i></i>
-<i></i><i class="off"></i><i class="off"></i><i></i><i></i><i class="off"></i><i class="off"></i><i></i><i></i>
-<i class="off"></i><i></i><i></i><i class="off"></i><i></i><i></i><i class="off"></i><i></i><i class="off"></i>
-<i></i><i></i><i class="off"></i><i></i><i class="off"></i><i></i><i></i><i class="off"></i><i></i>
-</div><div class="scanline"></div></div>
-<div class="humanScene"><img class="bg" src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=900&q=84" alt=""><img class="humanThumb" src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=300&q=80" alt=""><div class="humanCopy"><div><small>Grand Gifts</small><strong>Let’s see what is useful today.</strong><span>I’ve found the store. I can bring the catalogue, offers and live order together.</span></div></div></div>
-<div class="eyebrow" style="margin-top:12px">Store found</div><h2>Grand Gifts</h2>
-<div class="merchantActions"><button class="merchantAction" onclick="toastMsg('Catalogue opened')"><b>▦</b>Catalogue</button><button class="merchantAction" onclick="toastMsg('Offers opened')"><b>✦</b>Offers</button><button class="merchantAction" onclick="toastMsg('Map opened')"><b>⌖</b>Map</button><button class="merchantAction" onclick="toastMsg('Live order opened')"><b>◴</b>Live order</button></div>
-<div class="actions"><button class="cta primary" onclick="go(3)">Make it mine</button></div>
-</div></div></section>
-
-<section class="screen" id="s3"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Presence</div></div><div class="body">
-<div class="eyebrow">Who is here?</div><h2>Continue your value.</h2><p class="copy">A familiar face keeps value moving. A new one creates a new vault.</p>
-<div class="identity glass"><div class="avatar"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=220&q=80" style="width:59px;height:59px;border-radius:20px;object-fit:cover;filter:saturate(.82)" alt=""></div><div><div class="choiceTitle">Welcome back</div><div class="choiceSub">Your Value Vault is ready. You decide what we use.</div></div><div class="check">✓</div></div>
-<div class="coach"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=180&q=80" alt=""><span><b>Good to see you.</b><br>We’ll show what is useful here, then let you choose.</span></div>
-<div class="choiceGrid"><button class="choice glass" onclick="go(5)"><div class="icon"><svg><use href="#i-vault"/></svg></div><div><div class="choiceTitle">Existing</div><div class="choiceSub">Open my value and checkout.</div></div></button>
-<button class="choice glass" onclick="go(4)"><div class="icon"><svg><use href="#i-friends"/></svg></div><div><div class="choiceTitle">New</div><div class="choiceSub">Begin with mobile + OTP.</div></div></button></div>
-</div></div></section>
-
-<section class="screen" id="s4"><div class="inner"><div class="top"><button class="tiny" onclick="go(3)">‹ Back</button><div class="progress"><i style="width:31%"></i></div><div class="tiny">New</div></div><div class="body center">
-<div class="duo"><div class="person p1"><div class="head"></div><div class="torso"></div><div class="arm l"></div><div class="arm r"></div></div><div class="person p2"><div class="head"></div><div class="torso"></div><div class="arm l"></div><div class="arm r"></div></div><div class="heart">✦</div></div>
-<div class="lifeMini"><img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=180&q=80" alt=""><div><strong>Your first little win.</strong><span>It starts small. It is yours. I’ll help you build from here.</span></div></div>
-<div class="eyebrow" style="margin-top:10px">First value</div><h2>Welcome in.</h2><p class="copy">Mobile → OTP → email → OTP. Then the first gold arrives.</p>
-<div class="glass section" style="width:100%"><div class="metric"><span class="tiny">First reward</span><strong class="goldText" style="font-size:24px">1 mg</strong></div><div style="height:6px;border-radius:99px;background:rgba(255,255,255,.06);margin-top:13px"><i style="display:block;width:66%;height:100%;border-radius:99px;background:linear-gradient(90deg,#9d7725,#f2d789);animation:bar 2.6s ease-in-out infinite"></i></div><div class="emotionRibbon"><img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=180&q=80" alt=""><div><strong>Your first little win.</strong><span>It starts small. It is yours. And it can keep growing.</span></div></div></div>
-<div class="actions"><button class="cta primary" onclick="go(5)">Build my vault</button></div>
-</div></div></section>
-
-<section class="screen" id="s5"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Value Vault</div></div><div class="body center">
-<div class="vault"><div class="vaultDoor"><div class="vaultCore">V</div></div>
-<div class="asset a1"><svg><use href="#i-card"/></svg><div class="assetLabel">Memberships</div></div><div class="asset a2"><svg><use href="#i-gold"/></svg><div class="assetLabel">Rewards</div></div><div class="asset a3"><svg><use href="#i-tap"/></svg><div class="assetLabel">Apps</div></div><div class="asset a4"><svg><use href="#i-vault"/></svg><div class="assetLabel">Vouchers</div></div>
-</div>
-<div class="humanScene"><img class="bg" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=84" alt=""><div class="humanCopy"><div><small>Your value, gathered</small><strong>A vault for the things you already value.</strong><span>Memberships, rewards, vouchers and permissions stay together.</span></div></div></div>
-<div class="eyebrow">Your living vault</div><h2>More connections. More value.</h2><p class="copy">Memberships, points, offers and programmes gather here with your permission.</p>
-<div class="connectionCard glass"><div class="connIcon">⌁</div><div><strong>Careem membership</strong><small>Valid to 31 Dec · AED 180 value · Dynamic QR / app redirect ready</small></div><div class="lock">🔒</div></div>
-<div class="lifePortraitStrip"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=180&q=80" alt=""><img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=180&q=80" alt=""><img src="https://images.unsplash.com/photo-1528502668750-88ba580b705d?auto=format&fit=crop&w=180&q=80" alt=""></div><div class="actions"><button class="cta primary" onclick="go(6)">Enter cockpit</button></div>
-</div></div></section>
-
-<section class="screen" id="s6"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="progress"><i style="width:62%"></i></div><div class="tiny">Cockpit</div></div><div class="body">
-<div class="eyebrow">Today</div><h2>Everything moves together.</h2>
-<div class="humanScene"><img class="bg" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=84" alt=""><div class="humanCopy"><div><small>Your day</small><strong>Everything you already do. Better connected.</strong><span>Start anywhere. I’ll bring the useful pieces together.</span></div></div></div>
-<div class="glass section"><div class="metric"><span class="tiny">Value & wealth building</span><strong class="goldText">All Set to Earn More</strong></div><div style="font-size:9px;color:var(--muted);margin-top:5px">3 of 4 value layers connected · next opportunity is ready when you are.</div><button class="cta" style="width:100%;margin-top:10px;min-height:39px;padding:8px 11px" onclick="go(16)">Complete my account · keep it mine →</button></div>
-<div class="bento">
-<button class="module glass" onclick="go(7)"><div class="moduleArt"><div class="miniVault"></div><i class="token t1"></i><i class="token t2"></i><i class="token t3"></i></div><div class="moduleTitle">Value Vault</div><div class="moduleMeta">Connected value, ready to use.</div></button>
-<button class="module glass" onclick="go(8)"><div class="moduleArt"><div class="miniCard"></div></div><div class="moduleTitle">Visiting Card</div><div class="moduleMeta">One profile. Every share.</div></button>
-<button class="module glass" onclick="go(9)"><div class="moduleArt"><div class="faces"><i class="face f1"></i><i class="face f2"></i><i class="face f3"></i><i class="face f4"></i><div class="arc"></div></div></div><div class="moduleTitle">Friends</div><div class="moduleMeta">Earn together.</div></button>
-<button class="module glass" onclick="go(10)"><div class="moduleArt"><div class="pile"><i class="g1"></i><i class="g2"></i><i class="g3"></i><i class="g4"></i><i class="g5"></i><i class="g6"></i><i class="g7"></i></div></div><div class="moduleTitle">Gold Vault</div><div class="moduleMeta">Grow, use, redeem.</div></button>
-<button class="module glass" onclick="go(11)"><div class="moduleArt"><div class="chart"><i class="bar"></i><i class="bar"></i><i class="bar"></i><i class="bar"></i><i class="bar"></i></div></div><div class="moduleTitle">Expenses</div><div class="moduleMeta">See the shape of life.</div></button>
-<button class="module glass" onclick="go(12)"><div class="moduleArt"><div class="bank"><div class="bankName">PAYMENT AI</div><div class="bankValue">Optimised</div><i class="chip"></i></div></div><div class="moduleTitle">Payment AI</div><div class="moduleMeta">Choose with permission.</div></button>
-</div>
-</div></div></section>
-
-<section class="screen" id="s7"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Vault</div></div><div class="body">
-<div class="vault glass" style="width:100%;height:190px;border-radius:30px;margin:0 auto 8px"><div class="vaultDoor" style="width:100px;height:100px"><div class="vaultCore" style="width:58px;height:58px;font-size:20px">V</div></div></div>
-<div class="eyebrow">My Value Vault</div><h2>Ready to unlock more.</h2><div class="pills"><div class="pill on">Memberships</div><div class="pill on">Rewards</div><div class="pill">Promocodes</div><div class="pill">Vouchers</div></div>
-<div class="glass section"><div class="metric"><span class="tiny">Connected value</span><strong class="goldText" style="font-size:24px">AED 1,840</strong></div><div class="pills"><div class="pill on">Careem</div><div class="pill on">Bank</div><div class="pill on">Cinema</div></div><div class="connectionCard" style="padding:10px 0 0;border:0;background:none;box-shadow:none"><div class="connIcon" style="width:39px;height:39px">↺</div><div><strong>History stays visible</strong><small>Connection date · value used · expiry · permission</small></div><div class="lock">Private</div></div></div>
-<div class="actions"><button class="cta primary" onclick="go(13)">Shop & earn</button></div>
-</div></div></section>
-
-<section class="screen" id="s8"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Connect</div></div><div class="body">
-<div class="eyebrow">My Visiting Card</div><h2>Pick who you are today.</h2>
-<div class="profileRail" id="profiles">
-<button class="profileChoice selected" data-profile="Personal" onclick="profilePick('Personal')"><div class="pIcon">◉</div><small>Personal</small></button><button class="profileChoice " data-profile="Business" onclick="profilePick('Business')"><div class="pIcon">▣</div><small>Business</small></button><button class="profileChoice " data-profile="Professional" onclick="profilePick('Professional')"><div class="pIcon">✦</div><small>Professional</small></button><button class="profileChoice " data-profile="Friend" onclick="profilePick('Friend')"><div class="pIcon">♡</div><small>Friend</small></button><button class="profileChoice " data-profile="Social" onclick="profilePick('Social')"><div class="pIcon">◌</div><small>Social</small></button><button class="profileChoice " data-profile="Family" onclick="profilePick('Family')"><div class="pIcon">⌂</div><small>Family</small></button><button class="profileChoice " data-profile="Maternal" onclick="profilePick('Maternal')"><div class="pIcon">M</div><small>Maternal</small></button><button class="profileChoice " data-profile="Paternal" onclick="profilePick('Paternal')"><div class="pIcon">P</div><small>Paternal</small></button><button class="profileChoice " data-profile="Custom" onclick="profilePick('Custom')"><div class="pIcon">＋</div><small>Custom</small></button>
-</div>
-<div class="cardFace executive" id="heroCard"><img class="cardPortrait" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=82" alt=""><div class="cfBrand">KANZPAY CONNECT</div><div class="cfName">Navneet Sharma</div><div class="cfRole" id="profileRole">Personal · OXY</div><div class="cfLine"></div></div>
-<div class="assistantHint" style="font-size:9px;color:var(--muted);margin:8px 0 0 2px"><b style="color:var(--gold2)">I’ll keep one identity consistent.</b> Pick the relationship first; the design comes next.</div>
-<div class="templates">
-<div class="template selected" data-t="Executive" onclick="template('Executive')"><div class="cardFace executive"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Executive</div><div class="cfLine"></div></div><div class="templateName">Executive</div></div>
-<div class="template" data-t="Professional" onclick="template('Professional')"><div class="cardFace professional"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Professional</div><div class="cfLine"></div></div><div class="templateName">Professional</div></div>
-<div class="template" data-t="Minimal" onclick="template('Minimal')"><div class="cardFace minimal"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Minimal</div><div class="cfLine"></div></div><div class="templateName">Minimal</div></div>
-<div class="template" data-t="Social" onclick="template('Social')"><div class="cardFace social"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Social</div><div class="cfLine"></div></div><div class="templateName">Social</div></div>
-<div class="template" data-t="Family" onclick="template('Family')"><div class="cardFace family"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Family</div><div class="cfLine"></div></div><div class="templateName">Family</div></div>
-<div class="template" data-t="Creative" onclick="template('Creative')"><div class="cardFace creative"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Creative</div><div class="cfLine"></div></div><div class="templateName">Creative</div></div>
-<div class="template" data-t="Custom" onclick="template('Custom')"><div class="cardFace custom"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Custom</div><div class="cfLine"></div></div><div class="templateName">Custom</div></div>
-</div>
-<div class="shareGrid"><button class="share active" onclick="share('NFC',this)"><svg><use href="#i-tap"/></svg>NFC</button><button class="share" onclick="share('QR',this)"><svg><use href="#i-scan"/></svg>QR</button><button class="share" onclick="share('WhatsApp',this)"><svg><use href="#i-friends"/></svg>WhatsApp</button><button class="share" onclick="share('SMS',this)"><svg><use href="#i-card"/></svg>SMS</button></div>
-<div class="coach"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=180&q=80" alt=""><span><b>One profile, everywhere.</b><br>Choose once. The same profile travels through NFC, QR, WhatsApp and SMS.</span></div>
-<div class="actions"><button class="cta primary" onclick="toastMsg('Card ready to share');go(6)">Use this card</button></div>
-</div></div></section>
-
-<section class="screen" id="s9"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Friends</div></div><div class="body center">
-<div class="duo"><div class="person p1"><div class="head"></div><div class="torso"></div></div><div class="person p2"><div class="head"></div><div class="torso"></div></div><div class="heart">↗</div></div>
-<div class="humanScene"><img class="bg" src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=84" alt=""><div class="humanCopy"><div><small>Shared moments</small><strong>Some value is better shared.</strong><span>I’ll help you send the invitation without making it feel like a task.</span></div></div></div>
-<div class="eyebrow">Earn with Friends</div><h2>Bring someone along.</h2><p class="copy">A personal invite becomes shared value.</p>
-<div class="shareGrid" style="width:100%;margin-top:18px"><button class="share active" onclick="toastMsg('WhatsApp share')"><svg><use href="#i-friends"/></svg>WhatsApp</button><button class="share" onclick="toastMsg('SMS share')"><svg><use href="#i-card"/></svg>SMS</button><button class="share" onclick="toastMsg('Email share')"><svg><use href="#i-vault"/></svg>Email</button><button class="share" onclick="toastMsg('Link copied')"><svg><use href="#i-tap"/></svg>Copy</button></div>
-</div></div></section>
-
-<section class="screen" id="s10"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Gold Vault</div></div><div class="body">
-<div class="goldRoom"><div class="weight"><strong>1.84 g</strong><span>+7.8% vs purchase</span></div><div class="pile"><i class="g1"></i><i class="g2"></i><i class="g3"></i><i class="g4"></i><i class="g5"></i><i class="g6"></i><i class="g7"></i></div></div>
-<div class="actions4">
-<button class="act" onclick="toastMsg('Buy gold')"><strong>＋</strong>Buy</button>
-<button class="act" onclick="toastMsg('Sell gold')"><strong>↗</strong>Sell</button>
-<button class="act" onclick="toastMsg('Redeem gold')"><strong>⌂</strong>Redeem</button>
-<button class="act" onclick="toastMsg('Physical delivery')"><strong>▱</strong>Deliver</button>
-<button class="act" onclick="toastMsg('Gift gold')"><strong>✦</strong>Gift</button>
-<button class="act" onclick="toastMsg('Pay with Gold')"><strong>Au</strong>Pay</button>
-</div>
-<div class="glass section"><div class="metric"><span class="tiny">Gold value</span><strong class="goldText" style="font-size:23px">AED 521.40</strong></div></div>
-</div></div></section>
-
-<section class="screen" id="s11"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Expenses</div></div><div class="body">
-<div class="humanScene" style="min-height:116px"><img class="bg" src="https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=900&q=84" alt=""><div class="humanCopy"><div><small>Your spending, made calm</small><strong>See the pattern. Then decide what to do with it.</strong></div></div></div><div class="pieStage"><div class="pie"></div><div class="legend"><span><b></b>Food 36%</span><span><b class="g"></b>Shopping 22%</span><span><b class="b"></b>Travel 18%</span><span><b class="d"></b>Other 24%</span></div></div>
-<div class="periods"><button class="period" onclick="expensePeriod(this,'Daily','AED 318')">Daily</button><button class="period active" onclick="expensePeriod(this,'Weekly','AED 2,110')">Weekly</button><button class="period" onclick="expensePeriod(this,'Monthly','AED 8,420')">Monthly</button><button class="period" onclick="expensePeriod(this,'Yearly','AED 91,860')">Yearly</button></div>
-<div class="glass section"><div class="metric"><span class="tiny">This month</span><strong style="font-size:24px">AED 8,420</strong></div><div style="font-size:10px;color:var(--muted);margin-top:7px">Daily · Weekly · Monthly · Yearly</div></div>
-</div></div></section>
-
-<section class="screen" id="s12"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Payment AI</div></div><div class="body">
-<div class="instStage"><div class="inst i1"><div class="instTitle">CARD</div><div class="instValue">Emirates NBD</div><i class="chip"></i></div><div class="inst i2"><div class="instTitle">BANK</div><div class="instValue">ADCB A2A</div><i class="chip"></i></div><div class="inst i3"><div class="instTitle">UNCONNECTED</div><div class="instValue">Visa · 4821</div></div><div class="approve">Approve recommendation</div></div>
-<div class="humanScene"><img class="bg" src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=900&q=84" alt=""><div class="humanCopy"><div><small>Payment intelligence</small><strong>I found an option. I’ll show you why.</strong><span>You stay in control. Approve only when it makes sense.</span></div></div></div>
-<div class="glass section"><div class="metric"><span class="tiny">Best fit now</span><strong class="goldText">Emirates NBD</strong></div><div style="font-size:10px;color:var(--muted);margin-top:7px">Value detected · user approval before activation.</div></div>
-<div class="actions"><button class="cta primary" onclick="toastMsg('Recommendation approved');go(13)">Approve</button></div>
-</div></div></section>
-
-<section class="screen" id="s13"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Grand Gifts</div></div><div class="body center">
-<div class="store"><div class="shop"></div><div class="awning"></div><div class="window"><div class="shelf s1"></div><div class="shelf s2"></div><i class="prod pr1"></i><i class="prod pr2"></i><i class="prod pr3"></i><i class="prod pr4"></i></div><div class="cart"></div></div>
-<div class="humanScene"><img class="bg" src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=900&q=84" alt=""><img class="humanThumb" src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=300&q=80" alt=""><div class="humanCopy"><div><small>A store that remembers you</small><strong>Choose what feels right.</strong><span>Your value comes with you. The next useful offer can find you.</span></div></div></div>
-<div class="emotionRibbon"><img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=180&q=80" alt=""><div><strong>Take your time.</strong><span>The offer is ready. The choice is yours.</span></div></div>
-<div class="eyebrow">Living catalogue</div><h2>Choose what you love.</h2><p class="copy">Products, offers and checkout in one connected flow.</p><div class="actions"><button class="cta primary" onclick="go(14)">I’m ready to checkout</button></div>
-</div></div></section>
-
-<section class="screen" id="s14"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Checkout</div></div><div class="body center">
-<div class="receiptStage"><div class="pay p1">◈</div><div class="pay p2">◫</div><div class="pay p3">✦</div><div class="receipt"><div class="rbrand">GRAND GIFTS</div><div class="rline"></div><div class="rrow"><span>Gift Box</span><span>AED 220</span></div><div class="rrow"><span>Wrap & Note</span><span>AED 25</span></div><div class="rrow"><span>Offer</span><span>− AED 15</span></div><div class="rline"></div><div class="rtotal"><span>Total</span><span>AED 230</span></div></div></div>
-<div class="emotionRibbon"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=180&q=80" alt=""><div><strong>Everything looks right.</strong><span>One last tap. Then we celebrate the moment with you.</span></div></div>
-<div class="glass section" style="width:100%"><div class="metric"><span class="tiny">Pay with</span><strong class="goldText">A2A / Card</strong></div><div class="copy" style="margin-top:7px">Selected instrument evaluated before confirmation.</div></div><div class="actions"><button class="cta primary" onclick="go(15)">Complete my purchase</button></div>
-</div></div></section>
-
-<section class="screen" id="s15"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Complete</div></div><div class="body center">
-<div class="success"><i></i><i></i><i></i><div class="coin">Au</div><b class="conf c1"></b><b class="conf c2"></b><b class="conf c3"></b><b class="conf c4"></b></div>
-<div class="lifeMini"><img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=180&q=80" alt=""><div><strong>You got what you came for.</strong><span>And something extra came back with it. That’s the moment I want you to feel.</span></div></div>
-<div class="eyebrow">Commerce complete</div><h1 style="font-size:50px">Mabrook.</h1><p class="copy">AED 230 paid. <span class="goldText" style="font-weight:900">+18 mg Gold</span> moved into your vault.</p>
-<div class="glass section" style="width:100%"><div class="metric"><span class="tiny">Gold Vault</span><strong class="goldText">1.858 g</strong></div><div style="font-size:10px;color:var(--muted);margin-top:6px">Earn more · Save more</div></div>
-<div class="actions"><button class="cta primary" onclick="go(6)">Back to cockpit</button></div>
-</div></div></section>
-
-<section class="screen" id="s16"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Create Account</div></div><div class="body">
-<div class="kyc"><div class="id"><div class="photo"></div><div class="idlines"><i style="width:80%"></i><i style="width:62%"></i><i style="width:87%"></i><i style="width:45%"></i></div><div class="seal">FRONT</div></div><div class="id" style="left:55%;top:26px;transform:translateX(-50%) rotate(5deg);opacity:.72;width:220px;height:133px"><div class="idlines" style="left:15px;right:15px;top:18px"><i style="width:64%"></i><i style="width:84%"></i><i style="width:51%"></i><i style="width:72%"></i></div><div class="seal">BACK</div></div><div class="camera"><div class="live"></div></div></div>
-<div class="humanScene"><img class="bg" src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=900&q=84" alt=""><div class="humanCopy"><div><small>One last human step</small><strong>I’ll stay with you while you verify.</strong><span>Front. Back. Blink. Look left. Look right. Then you’re done.</span></div></div></div>
-<div class="idSteps"><div class="idStep active"><b>1</b>ID front</div><div class="idStep"><b>2</b>ID back</div><div class="idStep"><b>3</b>Live match</div><div class="idStep"><b>4</b>AML</div></div>
-<div class="eyebrow" style="margin-top:9px">Identity</div><h2>Make the account yours.</h2><p class="copy">Front + back → crop → blink / look left / right → photo match → AML.</p>
-<div class="glass section"><div style="display:flex;gap:10px;align-items:center"><div class="check">✓</div><div><strong style="font-size:12px">Live camera ready</strong><div style="font-size:10px;color:var(--muted);margin-top:3px">Blink · look left · look right · hold ID</div></div></div></div>
-</div></div></section>
-
-</div>
-
-<div class="assistant" id="assistant"><button class="assistantFace" id="assistantFace" aria-label="K-Assistant"><span class="assistantPulse"></span><i class="a"></i><i class="b"></i><b>K</b></button><div class="assistantBubble"><small>K-ASSISTANT</small><strong id="assistantTitle">I’m here with you.</strong><span id="assistantBody">I’ll guide the next useful step and keep the choices yours.</span></div></div><div class="nav"><button onclick="go(Math.max(0,step-1))"><svg><use href="#i-tap"/></svg>Back</button><button class="active" onclick="go(6)"><svg><use href="#i-vault"/></svg>Journey</button></div>
+<div class="assistant" id="assistant"><button class="assistantFace" id="assistantFace" aria-label="K-Assistant"><span class="assistantPulse"></span><i class="a"></i><i class="b"></i><b>K</b></button><div class="assistantBubble"><small>K-ASSISTANT</small><strong id="assistantTitle">I’m here with you.</strong><span id="assistantBody">I’ll guide the next useful step and keep the choices yours.</span></div></div>
+<div class="nav"><button onclick="back()">‹ Back</button><button class="active" onclick="go(12)">⌂ Cockpit</button></div>
 <div class="toast" id="toast"></div>
+
+<div class="modalShade" id="connectModal"><div class="sheet"><div class="sheetHandle"></div><h3>Secure connection</h3><p id="connectModalText">Connect this programme to your Value Vault.</p><div class="sheetActions"><button class="cta" onclick="closeModal()">Not now</button><button class="cta primary" onclick="closeModal();go(11)">Continue</button></div></div></div>
+
 </div>
+
 <script>
-var step=0;
-var screens=document.querySelectorAll('.screen');
-var toast=document.getElementById('toast');
-var timer;
-function show(n){step=n;screens.forEach(function(s,i){s.classList.toggle('active',i===n);});}
-var assistant=document.getElementById('assistant'),assistantTitle=document.getElementById('assistantTitle'),assistantBody=document.getElementById('assistantBody'),assistantFace=document.getElementById('assistantFace');
-var assistantMessages={
-0:["I’m here with you.","Start anywhere. I’ll guide the next useful step and keep the choices yours."],
-1:["Either is perfect.","Tap or scan — I’ll recognise the store and bring the experience to you."],
-2:["I found your store.","Let’s see what matters here before we ask you to do anything else."],
-3:["Good to see you.","Your value is here if you’re already with us. If you’re new, I’ll make the beginning easy."],
-4:["You’re in.","One quick verification, then your first little win is yours."],
-5:["This is your Vault.","I’ll keep the things you choose to connect here and show you what they are worth."],
-6:["This is your day.","Start where you need me. I’ll bring the right value closer to you."],
-7:["Let’s make it useful.","I found what is connected, what is private and what can give you more value."],
-8:["Let’s make it feel like you.","Pick the relationship first. I’ll carry that identity across every share."],
-9:["Want to share the moment?","I’ll make the invitation easy. You decide who you bring in."],
-10:["Your gold is yours.","I can help you buy, sell, gift, redeem, deliver or use it — whenever you choose."],
-11:["Let’s make the numbers human.","I’ll show the pattern in your day, week, month or year — not just a pile of totals."],
-12:["I found an option.","I’ll show you the reason. You stay in charge of the recommendation."],
-13:["Take your time.","I’ve brought the useful offer closer. Tell me when you’re ready."],
-14:["Everything looks right.","One last confirmation. Then I’ll celebrate the moment with you."],
-15:["Mabrook.","You got what you came for — and 18 mg of gold came back to you."],
-16:["Nearly there.","I’ll guide the identity check step by step. You won’t have to guess what to do next."]
+const state={existing:false,entry:"tap",history:[],profile:"Personal",template:"Executive",connectType:"Membership",product:{name:"Gift Box",price:"AED 220",img:"https://images.unsplash.com/photo-1607344645866-009c320b63e0?auto=format&fit=crop&w=600&q=82"},pay:"ADCB A2A"};
+let step=0,timer=null;
+const screens=[...document.querySelectorAll(".screen")];
+const toast=document.getElementById("toast");
+const assistant=document.getElementById("assistant");
+const assistantTitle=document.getElementById("assistantTitle");
+const assistantBody=document.getElementById("assistantBody");
+const assistantFace=document.getElementById("assistantFace");
+
+const assistantMessages={
+0:["I’m here with you.","Start with a tap or scan. I’ll recognise the store and guide what comes next."],
+1:["I’ve got the signal.","The store connection is ready. Open it and I’ll bring the experience forward."],
+2:["I found Grand Gifts.","Maps, catalogue and offers are here. Nothing is hidden behind a menu."],
+3:["One simple choice.","Already a user? I’ll bring your value back. New here? I’ll make the beginning easy."],
+4:["Just your mobile.","One number gets us started. I’ll keep the form light."],
+5:["Almost done.","A single OTP and we can keep moving."],
+6:["Last verification.","Once email is verified, your first little gold moment arrives."],
+7:["Mabrook.","Your first 1 mg is yours. Now we can build a Vault around the value you already have."],
+8:["Let’s bring it together.","Your Vault keeps the things you choose to connect — with your permission."],
+9:["This is your value.","Memberships, rewards, promo codes and vouchers can start working as one."],
+10:["Choose what matters.","I’ll show you the permission before anything connects."],
+11:["You stay in control.","Approve only the data you want to share. Then I’ll bring its value into your Vault."],
+12:["This is your Cockpit.","Six places. One view. I’ll surface the useful thing at the right moment."],
+13:["Make it feel like you.","Pick the relationship first. Your identity can change context without changing you."],
+14:["Now the look.","Glass, image and gold work together so the card feels like an object, not a profile form."],
+15:["One profile everywhere.","NFC, QR, WhatsApp, SMS and email all point to the same selected identity."],
+16:["Bring someone along.","I’ll make sharing easy. You decide who gets the invitation."],
+17:["Your gold is yours.","Buy, sell, redeem, gift, deliver or pay with it whenever you choose."],
+18:["One clear action.","I’ll show the amount and the effect on your vault before you confirm."],
+19:["Let’s make the numbers human.","See the pattern by day, week, month or year — then decide what matters."],
+20:["I found an option.","I’ll show you why it may fit. You approve before any instrument changes."],
+21:["Here’s the store.","A live catalogue brings products, offers and value together."],
+22:["Take a closer look.","I’ll carry the item and price forward so checkout feels continuous."],
+23:["Everything looks right.","Items, price and connected offer are checked before payment."],
+24:["Your choice.","A2A first, cards next. I’ll show the route before you press pay."],
+25:["Mabrook.","AED 230 is complete and +18 mg gold came back into your Vault."],
+26:["I’ll stay with you.","Four small identity steps. I’ll explain each one before you do it."],
+27:["Front first.","Keep the card inside the frame. We’ll crop and check it next."],
+28:["Now the back.","Turn it over and keep the edges steady."],
+29:["Blink. Left. Right.","That’s the live match. I’m right here with you."],
+30:["Everything matches.","Your identity is ready. Let’s take you into your Cockpit."]
 };
-function updateAssistant(n){var m=assistantMessages[n]||assistantMessages[0];assistantTitle.textContent=m[0];assistantBody.textContent=m[1];assistant.classList.add('open');}
-function go(n){var from=step;n=Math.max(0,Math.min(16,n));show(n);updateAssistant(n);if(n>from){clearTimeout(window._assistantClose);window._assistantClose=setTimeout(function(){assistant.classList.remove('open');},4200);}}
-assistantFace.onclick=function(){assistant.classList.toggle('open');};
-updateAssistant(step);
-function toastMsg(t){toast.textContent=t;toast.classList.add('show');clearTimeout(timer);timer=setTimeout(function(){toast.classList.remove('show');},1600);}
-var selectedProfile='Personal';
-function profilePick(name){selectedProfile=name;document.querySelectorAll('.profileChoice').forEach(function(x){x.classList.toggle('selected',x.getAttribute('data-profile')===name);});var r=document.getElementById('profileRole');if(r)r.textContent=name+' · OXY';toastMsg(name+' profile selected');}
-function template(name){document.querySelectorAll('.template').forEach(function(x){x.classList.toggle('selected',x.getAttribute('data-t')===name);});var c=document.getElementById('heroCard');c.className='cardFace '+name.toLowerCase();c.innerHTML='<img class="cardPortrait" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=82" alt=""><div class="cfBrand">KANZPAY CONNECT</div><div class="cfName">Navneet Sharma</div><div class="cfRole" id="profileRole">'+selectedProfile+' · OXY</div><div class="cfLine"></div>';toastMsg(name+' template selected for '+selectedProfile);}
-function share(name,el){document.querySelectorAll('.share').forEach(function(x){x.classList.remove('active');});if(el)el.classList.add('active');toastMsg(name+' ready');}
-function expensePeriod(el,label,value){document.querySelectorAll('.period').forEach(function(x){x.classList.remove('active');});el.classList.add('active');var t=document.querySelector('#s11 .section strong');if(t)t.textContent=value;var l=document.querySelector('#s11 .section .tiny');if(l)l.textContent=label;toastMsg(label+' expenses');}
+
+function show(n){
+  step=Math.max(0,Math.min(30,n));
+  screens.forEach((s,i)=>s.classList.toggle("active",i===step));
+  updateAssistant(step);
+}
+function go(n,entry){
+  if(typeof entry==="string") state.entry=entry;
+  if(n!==step) state.history.push(step);
+  show(n);
+}
+function back(){
+  const p=state.history.pop();
+  if(typeof p==="number") show(p); else show(12);
+}
+function updateAssistant(n){
+  const m=assistantMessages[n]||assistantMessages[0];
+  assistantTitle.textContent=m[0]; assistantBody.textContent=m[1];
+  assistant.classList.add("open");
+  clearTimeout(timer); timer=setTimeout(()=>assistant.classList.remove("open"),5200);
+}
+assistantFace.onclick=()=>assistant.classList.toggle("open");
+function toastMsg(t){toast.textContent=t;toast.classList.add("show");clearTimeout(window.__t);window.__t=setTimeout(()=>toast.classList.remove("show"),1700);}
+
+function openConnect(type){
+  state.connectType=type;
+  document.getElementById("connectModalText").textContent="Connect "+type+" to your Value Vault. You choose the permission before anything is stored.";
+  document.getElementById("connectModal").classList.add("open");
+}
+function closeModal(){document.getElementById("connectModal").classList.remove("open")}
+function completeConnect(){closeModal();toastMsg(state.connectType+" connected");go(9)}
+
+const profileNames=["Personal","Business","Professional","Friend","Social","Family","Maternal","Paternal","Custom"];
+document.getElementById("profiles").innerHTML=profileNames.map((p,i)=>'<button class="'+(i===0?'active':'')+'" onclick="pickProfile(\''+p+'\',this)">'+p+'</button>').join("");
+function pickProfile(p,el){
+  state.profile=p;
+  document.querySelectorAll("#profiles button").forEach(x=>x.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("roleText").textContent=p+" · OXY";
+  document.getElementById("previewRole").textContent=p+" · OXY";
+  toastMsg(p+" profile selected");
+}
+
+const templateNames=[
+ ["Executive","https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=700&q=80"],
+ ["Professional","https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=700&q=80"],
+ ["Minimal","https://images.unsplash.com/photo-1513519245088-0e12902e5a38?auto=format&fit=crop&w=700&q=80"],
+ ["Social","https://images.unsplash.com/photo-1517840901100-8179e982acb7?auto=format&fit=crop&w=700&q=80"],
+ ["Family","https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=700&q=80"],
+ ["Creative","https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=700&q=80"],
+ ["Custom","https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?auto=format&fit=crop&w=700&q=80"]
+];
+document.getElementById("templates").innerHTML=templateNames.map((t,i)=>'<button class="templateMini '+(i===0?'active':'')+'" style="background:rgba(0,0,0,.2)" onclick="pickTemplate(\''+t[0]+'\',this)"><img src="'+t[1]+'" alt=""><div class="tmc"><strong>'+t[0]+'</strong><span>Glass + image + gold</span></div></button>').join("");
+function pickTemplate(t,el){
+  state.template=t;
+  document.querySelectorAll("#templates .templateMini").forEach(x=>x.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("selectedTemplateTag").textContent=t;
+  document.getElementById("tplText").textContent=t;
+  toastMsg(t+" template selected");
+}
+document.getElementById("shareRail").innerHTML=["NFC","QR","WhatsApp","SMS","Email"].map((x,i)=>'<button class="'+(i===0?'active':'')+'" onclick="shareSelect(this,\''+x+'\')">'+x+'</button>').join("");
+document.getElementById("friendShares").innerHTML=["WhatsApp","SMS","Email","Copy","NFC"].map((x,i)=>'<button class="'+(i===0?'active':'')+'" onclick="shareSelect(this,\''+x+'\')">'+x+'</button>').join("");
+function shareSelect(el,x){el.parentElement.querySelectorAll("button").forEach(b=>b.classList.remove("active"));el.classList.add("active");toastMsg(x+" ready");}
+
+document.getElementById("goldActions").innerHTML=["Buy","Sell","Redeem","Deliver","Gift","Pay with Gold"].map(x=>'<button onclick="openGold(\''+x+'\')" class="glass">'+x+'</button>').join("");
+function openGold(x){
+  document.getElementById("goldActionTitle").textContent=x;
+  document.getElementById("goldActionType").textContent=x;
+  document.getElementById("goldActionHeadline").textContent=x==="Pay with Gold"?"Use value already in your vault.":x+" gold when it feels right.";
+  go(18);
+}
+
+document.getElementById("expensePeriods").innerHTML=["Daily","Weekly","Monthly","Yearly"].map((x,i)=>'<button class="'+(i===2?'active':'')+'" onclick="pickExpense(\''+x+'\',this)">'+x+'</button>').join("");
+function pickExpense(x,el){
+  document.querySelectorAll("#expensePeriods button").forEach(b=>b.classList.remove("active"));el.classList.add("active");
+  const vals={Daily:"AED 318",Weekly:"AED 2,110",Monthly:"AED 8,420",Yearly:"AED 91,860"};
+  document.getElementById("expenseLabel").textContent=x;document.getElementById("expenseValue").textContent=vals[x];toastMsg(x+" expenses");
+}
+
+document.getElementById("instrumentRail").innerHTML=[
+ ["ADCB A2A","Connected","Best fit now",true],
+ ["Emirates NBD","Connected","Card benefit",true],
+ ["Visa · 4821","Not connected","Ready to connect",false]
+].map(a=>'<button class="glass instrumentCard '+(a[3]?'connected':'')+'" onclick="toastMsg(\''+a[0]+' selected\')"><div class="instrumentTop"><span>'+a[1]+'</span><span>⌁</span></div><div class="instrumentName">'+a[0]+'</div><div class="instrumentFoot"><span>'+a[2]+'</span><b>'+(a[3]?'ACTIVE':'CONNECT')+'</b></div></button>').join("");
+document.getElementById("payChoices").innerHTML=[
+ ["ADCB A2A","Connected","Fastest path"],
+ ["Emirates NBD","Card","Use card benefits"]
+].map((a,i)=>'<button class="glass payChoice '+(i===0?'active':'')+'" onclick="pickPay(this,\''+a[0]+' '+a[1]+'\')"><strong>'+a[0]+'</strong><span>'+a[1]+' · '+a[2]+'</span></button>').join("");
+function pickPay(el,x){document.querySelectorAll("#payChoices .payChoice").forEach(b=>b.classList.remove("active"));el.classList.add("active");state.pay=x;document.getElementById("paySelected").textContent=x;toastMsg(x+" selected");}
+
+function openProduct(name,price,img){
+  state.product={name,price,img};
+  document.getElementById("productTitle").textContent=name;
+  document.getElementById("productPrice").textContent=price;
+  document.getElementById("productImg").src=img;
+  go(22);
+}
+function addToCart(){
+  document.getElementById("cartName").textContent=state.product.name;
+  document.getElementById("cartPrice").textContent=state.product.price;
+  document.getElementById("cartThumb").src=state.product.img;
+  go(23);
+}
+document.getElementById("routeLabel").textContent="Start";
+document.getElementById("routeEyebrow").textContent="NFC found";
+document.getElementById("routeTitle").textContent="Your store is opening.";
+document.getElementById("routeSub").textContent="I’ll bring the right experience forward without making you search for it.";
+document.getElementById("routeDevice").textContent="NFC / Tap";
+function refreshEntryVisual(){
+  const scan=state.entry==="scan";
+  document.getElementById("routeLabel").textContent=scan?"Scan":"Tap";
+  document.getElementById("routeEyebrow").textContent=scan?"Camera URL found":"NFC found";
+  document.getElementById("routeTitle").textContent=scan?"Your scanned store is opening.":"Your tapped store is opening.";
+  document.getElementById("routeSub").textContent=scan?"The URL is recognised. I’ll open the connected commerce experience.":"The NFC link is recognised. I’ll open the connected commerce experience.";
+  document.getElementById("routeDevice").textContent=scan?"Camera / QR URL":"NFC / Tap";
+}
+const oldGo=go;
+go=function(n,entry){if(typeof entry==="string") state.entry=entry; oldGo(n,entry); if(n===1) refreshEntryVisual();};
+show(0);
 </script>
 </body>
 </html>
