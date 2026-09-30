@@ -75,6 +75,31 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 .section{padding:14px;margin-top:11px}.metric{display:flex;align-items:center;justify-content:space-between}.goldText{color:var(--gold2)}.pills{display:flex;gap:7px;overflow:auto;padding-bottom:3px;margin-top:10px}.pill{padding:7px 9px;border-radius:999px;background:rgba(242,215,137,.05);border:1px solid rgba(242,215,137,.12);font-size:9px;color:var(--muted);white-space:nowrap}.pill.on{color:var(--gold2);border-color:rgba(242,215,137,.36);background:rgba(242,215,137,.08)}
 .nav{position:absolute;z-index:20;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);width:min(442px,calc(100% - 22px));display:flex;gap:6px;padding:7px;border-radius:20px;background:rgba(7,9,7,.76);border:1px solid rgba(242,215,137,.12);backdrop-filter:blur(22px);box-shadow:0 22px 70px rgba(0,0,0,.42)}.nav button{flex:1;min-height:43px;border-radius:14px;font-size:9px;color:var(--muted)}.nav button.active{background:rgba(242,215,137,.08);color:var(--gold2)}.nav svg{width:18px;height:18px;display:block;margin:0 auto 2px}
 .toast{position:absolute;z-index:50;left:50%;bottom:calc(87px + env(safe-area-inset-bottom));transform:translate(-50%,14px);opacity:0;padding:10px 14px;border-radius:999px;background:rgba(8,11,8,.9);border:1px solid rgba(242,215,137,.23);box-shadow:0 20px 50px rgba(0,0,0,.45);font-size:10px;color:var(--gold2);transition:.35s;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* HUMAN-LIFE EXPERIENCE LAYER */
+.lifeCard{display:grid;grid-template-columns:1.08fr .92fr;min-height:118px;border-radius:24px;overflow:hidden;border:1px solid rgba(242,215,137,.15);background:rgba(12,15,12,.58);box-shadow:0 24px 66px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.035);backdrop-filter:blur(20px);margin:12px 0 4px;position:relative}
+.lifeCard .lifeImg{width:100%;height:100%;min-height:118px;object-fit:cover;display:block;filter:saturate(.84) contrast(1.03) brightness(.83)}
+.lifeCard .lifeCopy{padding:14px 13px;display:flex;flex-direction:column;justify-content:center;gap:6px;position:relative;z-index:2}
+.lifeCard .lifeCopy strong{font-size:13px;line-height:1.14;letter-spacing:-.02em}
+.lifeCard .lifeCopy span{font-size:10px;line-height:1.4;color:var(--muted)}
+.lifeCard .lifeTag{font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold2)}
+.choiceLife{position:relative;min-height:178px;padding:0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;background:#0a0d0a}
+.choiceLife .choiceImg{position:absolute;inset:0}
+.choiceLife .choiceImg img{width:100%;height:100%;object-fit:cover;filter:brightness(.58) saturate(.8)}
+.choiceLife:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,5,3,.04) 20%,rgba(3,5,3,.9) 100%)}
+.choiceLife .choiceContent{position:relative;z-index:2;padding:14px}
+.choiceLife .icon{background:rgba(5,7,5,.58);backdrop-filter:blur(10px)}
+.cardPortrait{position:absolute;right:11px;bottom:10px;width:72px;height:84px;object-fit:cover;border-radius:17px;border:1px solid rgba(242,215,137,.28);filter:saturate(.82) brightness(.88);box-shadow:0 10px 28px rgba(0,0,0,.4)}
+.lifeWide{grid-template-columns:.82fr 1.18fr}.lifeWide .lifeImg{order:0}.lifeWide .lifeCopy{order:1}
+.moment{position:absolute;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:25px;background:rgba(3,5,3,.42);backdrop-filter:blur(12px);opacity:0}
+.moment.show{display:flex;animation:momentIn .8s ease forwards}
+.momentCard{width:min(335px,92%);display:grid;grid-template-columns:58px 1fr;gap:12px;align-items:center;padding:14px;border-radius:23px;border:1px solid rgba(242,215,137,.22);background:rgba(15,19,15,.84);box-shadow:0 28px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04);backdrop-filter:blur(25px);position:relative;overflow:hidden}
+.momentCard:after{content:"";position:absolute;inset:-60% 35%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);transform:rotate(11deg);animation:sweep 4.5s ease-in-out infinite}
+.momentCard img{width:58px;height:58px;border-radius:19px;object-fit:cover;filter:saturate(.82) brightness(.9);border:1px solid rgba(242,215,137,.24)}
+.momentCopy small{display:block;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold2);margin-bottom:4px}
+.momentCopy strong{display:block;font-size:16px;line-height:1.05}
+.momentCopy span{display:block;font-size:9px;line-height:1.4;color:var(--muted);margin-top:4px}
+@keyframes momentIn{0%{opacity:0}.16%{opacity:1}15%{opacity:1}100%{opacity:0}}
 @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}@keyframes pulse{0%,100%{transform:scale(.94);opacity:.2}50%{transform:scale(1.04);opacity:.88}}@keyframes scan{0%{top:15%}50%{top:80%}100%{top:15%}}@keyframes beam{0%,100%{opacity:.15;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes token{0%,100%{transform:translate(0,0)}40%{transform:translate(14px,-12px)}80%{transform:translate(-10px,8px)}}@keyframes bar{0%,100%{opacity:.74;transform:scaleY(.97)}50%{opacity:1;transform:scaleY(1.05)}}@keyframes sweep{0%,45%{transform:translateX(-65%) rotate(9deg)}65%,100%{transform:translateX(65%) rotate(9deg)}}@keyframes drift{0%{transform:translate3d(-2%,0,0) scale(1)}100%{transform:translate3d(2%,1%,0) scale(1.02)}}@keyframes cart{0%,100%{transform:translateX(0) skewX(-12deg)}50%{transform:translateX(-13px) skewX(-12deg)}}@keyframes paper{0%,100%{transform:translateX(-50%) rotate(-2deg) translateY(0)}50%{transform:translateX(-50%) rotate(1deg) translateY(-8px)}}@keyframes coin{0%,100%{transform:rotateY(0)}50%{transform:rotateY(180deg)}}@keyframes conf{0%,100%{transform:translateY(0) rotate(0);opacity:.4}50%{transform:translateY(-20px) rotate(120deg);opacity:1}}@keyframes doc{0%,100%{transform:translateX(-50%) rotate(-4deg) translateY(0)}50%{transform:translateX(-50%) rotate(2deg) translateY(-8px)}}
 @media(max-height:700px){.body{justify-content:flex-start;overflow:auto;padding-top:8px}.touch{width:165px;height:165px}.store{height:265px}.receiptStage{height:255px}.vault{width:210px;height:210px}.goldRoom{height:250px}.pieStage{height:230px}.kyc{height:255px}}
 </style>
@@ -105,8 +130,8 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 <section class="screen" id="s1"><div class="inner"><div class="top"><button class="tiny" onclick="go(0)">‹ Back</button><div class="progress"><i style="width:14%"></i></div><div class="tiny">01</div></div><div class="body center">
 <div class="eyebrow">Touchpoint</div><h2>How did you arrive?</h2><p class="copy">Two live paths. One connected journey.</p>
 <div class="choiceGrid">
-<button class="choice glass" onclick="go(2)"><div class="icon"><svg><use href="#i-tap"/></svg></div><div><div class="choiceTitle">Tap</div><div class="choiceSub">NFC opens the store without friction.</div></div></button>
-<button class="choice glass" onclick="go(2)"><div class="icon"><svg><use href="#i-scan"/></svg></div><div><div class="choiceTitle">Scan</div><div class="choiceSub">Camera finds the live catalogue.</div></div></button>
+<button class="choice choiceLife glass" onclick="go(2)"><div class="choiceImg"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=700&q=82" alt=""></div><div class="choiceContent"><div class="icon"><svg><use href="#i-tap"/></svg></div><div class="choiceTitle" style="margin-top:10px">Tap</div><div class="choiceSub">A quick touch. The experience follows you.</div></div></button>
+<button class="choice choiceLife glass" onclick="go(2)"><div class="choiceImg"><img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=82" alt=""></div><div class="choiceContent"><div class="icon"><svg><use href="#i-scan"/></svg></div><div class="choiceTitle" style="margin-top:10px">Scan</div><div class="choiceSub">See the store appear around you.</div></div></button>
 </div>
 </div></div></section>
 
@@ -134,7 +159,8 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 
 <section class="screen" id="s4"><div class="inner"><div class="top"><button class="tiny" onclick="go(3)">‹ Back</button><div class="progress"><i style="width:31%"></i></div><div class="tiny">New</div></div><div class="body center">
 <div class="duo"><div class="person p1"><div class="head"></div><div class="torso"></div><div class="arm l"></div><div class="arm r"></div></div><div class="person p2"><div class="head"></div><div class="torso"></div><div class="arm l"></div><div class="arm r"></div></div><div class="heart">✦</div></div>
-<div class="eyebrow">First value</div><h2>Welcome in.</h2><p class="copy">Mobile → OTP → email → OTP. Then the first gold arrives.</p>
+<div class="lifeCard" style="width:100%"><img class="lifeImg" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">A good beginning</div><strong>This is the moment your everyday value starts coming back to you.</strong><span>You stay in control. KanzPay simply makes the next step easier.</span></div></div>
+<div class="eyebrow" style="margin-top:10px">First value</div><h2>Welcome in.</h2><p class="copy">Mobile → OTP → email → OTP. Then the first gold arrives.</p>
 <div class="glass section" style="width:100%"><div class="metric"><span class="tiny">First reward</span><strong class="goldText" style="font-size:24px">1 mg</strong></div><div style="height:6px;border-radius:99px;background:rgba(255,255,255,.06);margin-top:13px"><i style="display:block;width:66%;height:100%;border-radius:99px;background:linear-gradient(90deg,#9d7725,#f2d789);animation:bar 2.6s ease-in-out infinite"></i></div></div>
 <div class="actions"><button class="cta primary" onclick="go(5)">Build my vault</button></div>
 </div></div></section>
@@ -143,11 +169,13 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 <div class="vault"><div class="vaultDoor"><div class="vaultCore">V</div></div>
 <div class="asset a1"><svg><use href="#i-card"/></svg><div class="assetLabel">Memberships</div></div><div class="asset a2"><svg><use href="#i-gold"/></svg><div class="assetLabel">Rewards</div></div><div class="asset a3"><svg><use href="#i-tap"/></svg><div class="assetLabel">Apps</div></div><div class="asset a4"><svg><use href="#i-vault"/></svg><div class="assetLabel">Vouchers</div></div>
 </div>
+<div class="lifeCard lifeWide"><img class="lifeImg" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">Your life, gathered</div><strong>Memberships, rewards and little wins finally have one place.</strong><span>Connect only what you choose. Nothing moves without your permission.</span></div></div>
 <div class="eyebrow">Your living vault</div><h2>More connections. More value.</h2><p class="copy">Memberships, points, offers and programmes gather here with your permission.</p><div class="actions"><button class="cta primary" onclick="go(6)">Enter cockpit</button></div>
 </div></div></section>
 
 <section class="screen" id="s6"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="progress"><i style="width:62%"></i></div><div class="tiny">Cockpit</div></div><div class="body">
 <div class="eyebrow">Today</div><h2>Everything moves together.</h2>
+<div class="lifeCard lifeWide"><div class="lifeCopy"><div class="lifeTag">Your day</div><strong>Imagine this becoming the quiet centre of everything you already do.</strong><span>Pay. Earn. Connect. Remember. Choose. Keep moving.</span></div><img class="lifeImg" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=700&q=82" alt=""></div>
 <div class="bento">
 <button class="module glass" onclick="go(7)"><div class="moduleArt"><div class="miniVault"></div><i class="token t1"></i><i class="token t2"></i><i class="token t3"></i></div><div class="moduleTitle">Value Vault</div><div class="moduleMeta">Connected value, ready to use.</div></button>
 <button class="module glass" onclick="go(8)"><div class="moduleArt"><div class="miniCard"></div></div><div class="moduleTitle">Visiting Card</div><div class="moduleMeta">One profile. Every share.</div></button>
@@ -167,7 +195,8 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 
 <section class="screen" id="s8"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Connect</div></div><div class="body">
 <div class="eyebrow">My Visiting Card</div><h2>Pick the feeling.</h2>
-<div class="cardFace executive" id="heroCard"><div class="cfBrand">KANZPAY CONNECT</div><div class="cfName">Navneet Sharma</div><div class="cfRole">Founder · OXY</div><div class="cfLine"></div></div>
+<div class="cardFace executive" id="heroCard"><img class="cardPortrait" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=82" alt=""><div class="cfBrand">KANZPAY CONNECT</div><div class="cfName">Navneet Sharma</div><div class="cfRole">Founder · OXY</div><div class="cfLine"></div></div>
+<div class="lifeCard"><img class="lifeImg" src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">Feels like you</div><strong>Choose the version of yourself you want to carry into every introduction.</strong><span>One profile flows through NFC, QR, WhatsApp, SMS and email.</span></div></div>
 <div class="templates">
 <div class="template selected" data-t="Executive" onclick="template('Executive')"><div class="cardFace executive"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Executive</div><div class="cfLine"></div></div><div class="templateName">Executive</div></div>
 <div class="template" data-t="Professional" onclick="template('Professional')"><div class="cardFace professional"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Professional</div><div class="cfLine"></div></div><div class="templateName">Professional</div></div>
@@ -183,6 +212,7 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 
 <section class="screen" id="s9"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Friends</div></div><div class="body center">
 <div class="duo"><div class="person p1"><div class="head"></div><div class="torso"></div></div><div class="person p2"><div class="head"></div><div class="torso"></div></div><div class="heart">↗</div></div>
+<div class="lifeCard lifeWide"><img class="lifeImg" src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">Shared moments</div><strong>The best part is letting someone you care about discover value with you.</strong><span>Share your link when it feels natural. The reward follows the relationship.</span></div></div>
 <div class="eyebrow">Earn with Friends</div><h2>Bring someone along.</h2><p class="copy">A personal invite becomes shared value.</p>
 <div class="shareGrid" style="width:100%;margin-top:18px"><button class="share active" onclick="toastMsg('WhatsApp share')"><svg><use href="#i-friends"/></svg>WhatsApp</button><button class="share" onclick="toastMsg('SMS share')"><svg><use href="#i-card"/></svg>SMS</button><button class="share" onclick="toastMsg('Email share')"><svg><use href="#i-vault"/></svg>Email</button><button class="share" onclick="toastMsg('Link copied')"><svg><use href="#i-tap"/></svg>Copy</button></div>
 </div></div></section>
@@ -206,6 +236,7 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 
 <section class="screen" id="s13"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Grand Gifts</div></div><div class="body center">
 <div class="store"><div class="shop"></div><div class="awning"></div><div class="window"><div class="shelf s1"></div><div class="shelf s2"></div><i class="prod pr1"></i><i class="prod pr2"></i><i class="prod pr3"></i><i class="prod pr4"></i></div><div class="cart"></div></div>
+<div class="lifeCard" style="margin-top:0"><img class="lifeImg" src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">A store that remembers you</div><strong>You are not starting from zero. Your value comes with you.</strong><span>See the right offer, choose what matters, keep the moment simple.</span></div></div>
 <div class="eyebrow">Living catalogue</div><h2>Choose what you love.</h2><p class="copy">Products, offers and checkout in one connected flow.</p><div class="actions"><button class="cta primary" onclick="go(14)">Open checkout</button></div>
 </div></div></section>
 
@@ -216,6 +247,7 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 
 <section class="screen" id="s15"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Complete</div></div><div class="body center">
 <div class="success"><i></i><i></i><i></i><div class="coin">Au</div><b class="conf c1"></b><b class="conf c2"></b><b class="conf c3"></b><b class="conf c4"></b></div>
+<div class="lifeCard lifeWide" style="margin-top:0;margin-bottom:12px"><img class="lifeImg" src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">That feeling</div><strong>You chose. You paid. You got what you came for — and something extra came back.</strong><span>That is the moment KanzPay should make memorable.</span></div></div>
 <div class="eyebrow">Commerce complete</div><h1 style="font-size:50px">Mabrook.</h1><p class="copy">AED 230 paid. <span class="goldText" style="font-weight:900">+18 mg Gold</span> moved into your vault.</p>
 <div class="glass section" style="width:100%"><div class="metric"><span class="tiny">Gold Vault</span><strong class="goldText">1.858 g</strong></div><div style="font-size:10px;color:var(--muted);margin-top:6px">Earn more · Save more</div></div>
 <div class="actions"><button class="cta primary" onclick="go(6)">Back to cockpit</button></div>
@@ -223,13 +255,14 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 
 <section class="screen" id="s16"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Create Account</div></div><div class="body">
 <div class="kyc"><div class="id"><div class="photo"></div><div class="idlines"><i style="width:80%"></i><i style="width:62%"></i><i style="width:87%"></i><i style="width:45%"></i></div><div class="seal">UAE</div></div><div class="camera"><div class="live"></div></div></div>
+<div class="lifeCard lifeWide" style="margin-top:0"><img class="lifeImg" src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">One last human step</div><strong>We are checking it is really you — then the account is yours.</strong><span>Guidance stays gentle: blink, look left, look right, hold your ID.</span></div></div>
 <div class="eyebrow">Identity</div><h2>Make the account yours.</h2><p class="copy">Emirates ID → live camera → crop → photo match → AML.</p>
 <div class="glass section"><div style="display:flex;gap:10px;align-items:center"><div class="check">✓</div><div><strong style="font-size:12px">Live camera ready</strong><div style="font-size:10px;color:var(--muted);margin-top:3px">Blink · look left · look right · hold ID</div></div></div></div>
 </div></div></section>
 
 </div>
 
-<div class="nav"><button onclick="go(Math.max(0,step-1))"><svg><use href="#i-tap"/></svg>Back</button><button class="active" onclick="go(6)"><svg><use href="#i-vault"/></svg>Journey</button><button onclick="go(Math.min(16,step+1))"><svg><use href="#i-gold"/></svg>Next</button></div>
+<div class="moment" id="moment"><div class="momentCard"><img id="momentImg" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=220&q=80" alt=""><div class="momentCopy"><small id="momentKicker">A little help</small><strong id="momentTitle">Good choice.</strong><span id="momentBody">Let’s take the next step together.</span></div></div></div><div class="nav"><button onclick="go(Math.max(0,step-1))"><svg><use href="#i-tap"/></svg>Back</button><button class="active" onclick="go(6)"><svg><use href="#i-vault"/></svg>Journey</button><button onclick="go(Math.min(16,step+1))"><svg><use href="#i-gold"/></svg>Next</button></div>
 <div class="toast" id="toast"></div>
 </div>
 <script>
@@ -238,9 +271,33 @@ var screens=document.querySelectorAll('.screen');
 var toast=document.getElementById('toast');
 var timer;
 function show(n){step=n;screens.forEach(function(s,i){s.classList.toggle('active',i===n);});}
-function go(n){show(Math.max(0,Math.min(16,n)));}
+var momentEl=document.getElementById('moment'),momentImg=document.getElementById('momentImg'),momentKicker=document.getElementById('momentKicker'),momentTitle=document.getElementById('momentTitle'),momentBody=document.getElementById('momentBody'),momentTimer;
+var moments={
+1:["Nice choice.","Let’s open the experience around you.","https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=220&q=80"],
+2:["You found it.","Now let’s make the store feel like it already knows your day.","https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=220&q=80"],
+3:["Welcome back.","Your value is already here. You decide what happens next.","https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=220&q=80"],
+4:["You’re in.","We’ll keep the setup simple and show you the value as it grows.","https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=220&q=80"],
+5:["Good move.","Your Value Vault is now becoming part of everyday life.","https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=220&q=80"],
+6:["This is yours.","Here is the centre of your connected day.","https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=220&q=80"],
+7:["More is connected.","That means less searching when the next useful moment arrives.","https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=220&q=80"],
+8:["That feels like you.","Choose a profile and template, then let one identity travel with you.","https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=220&q=80"],
+9:["Share the good.","A small invitation can become a shared moment.","https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=220&q=80"],
+10:["You’ve built something tangible.","Watch the gold move with your life instead of sitting outside it.","https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=220&q=80"],
+11:["Now you can see it.","The patterns in your life become useful, not just numbers.","https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=220&q=80"],
+12:["A smarter choice starts with you.","We can recommend. You still decide.","https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=220&q=80"],
+13:["Enjoy the moment.","The store is ready. You are already carrying your value with you.","https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=220&q=80"],
+14:["Almost there.","One simple confirmation, then it is yours.","https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=220&q=80"],
+15:["Mabrook.","You did it — and 18 mg of gold came back to you.","https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=220&q=80"],
+16:["You’re nearly done.","A gentle identity check keeps this account yours.","https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=220&q=80"]
+};
+function showMoment(n){
+var m=moments[n];if(!m||n===0)return;
+momentImg.src=m[2];momentKicker.textContent=n===15?"Congratulations":"Next moment";momentTitle.textContent=m[0];momentBody.textContent=m[1];
+momentEl.classList.remove('show');void momentEl.offsetWidth;momentEl.classList.add('show');clearTimeout(momentTimer);momentTimer=setTimeout(function(){momentEl.classList.remove('show');},1150);
+}
+function go(n){n=Math.max(0,Math.min(16,n));show(n);showMoment(n);}
 function toastMsg(t){toast.textContent=t;toast.classList.add('show');clearTimeout(timer);timer=setTimeout(function(){toast.classList.remove('show');},1600);}
-function template(name){document.querySelectorAll('.template').forEach(function(x){x.classList.toggle('selected',x.getAttribute('data-t')===name);});var c=document.getElementById('heroCard');c.className='cardFace '+name.toLowerCase();c.innerHTML='<div class="cfBrand">KANZPAY CONNECT</div><div class="cfName">Navneet Sharma</div><div class="cfRole">'+name+' · OXY</div><div class="cfLine"></div>';toastMsg(name+' template selected');}
+function template(name){document.querySelectorAll('.template').forEach(function(x){x.classList.toggle('selected',x.getAttribute('data-t')===name);});var c=document.getElementById('heroCard');c.className='cardFace '+name.toLowerCase();c.innerHTML='<img class="cardPortrait" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=82" alt=""><div class="cfBrand">KANZPAY CONNECT</div><div class="cfName">Navneet Sharma</div><div class="cfRole">'+name+' · OXY</div><div class="cfLine"></div>';toastMsg(name+' template selected');}
 function share(name){document.querySelectorAll('.share').forEach(function(x){x.classList.remove('active');});event.currentTarget.classList.add('active');toastMsg(name+' ready');}
 </script>
 </body>
