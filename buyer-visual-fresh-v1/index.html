@@ -262,7 +262,7 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 
 </div>
 
-<div class="moment" id="moment"><div class="momentCard"><img id="momentImg" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=220&q=80" alt=""><div class="momentCopy"><small id="momentKicker">A little help</small><strong id="momentTitle">Good choice.</strong><span id="momentBody">Let’s take the next step together.</span></div></div></div><div class="nav"><button onclick="go(Math.max(0,step-1))"><svg><use href="#i-tap"/></svg>Back</button><button class="active" onclick="go(6)"><svg><use href="#i-vault"/></svg>Journey</button><button onclick="go(Math.min(16,step+1))"><svg><use href="#i-gold"/></svg>Next</button></div>
+<div class="moment" id="moment"><div class="momentCard"><img id="momentImg" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=220&q=80" alt=""><div class="momentCopy"><small id="momentKicker">A little help</small><strong id="momentTitle">Good choice.</strong><span id="momentBody">Let’s take the next step together.</span></div></div></div><div class="nav"><button onclick="go(Math.max(0,step-1))"><svg><use href="#i-tap"/></svg>Back</button><button class="active" onclick="go(6)"><svg><use href="#i-vault"/></svg>Journey</button></div>
 <div class="toast" id="toast"></div>
 </div>
 <script>
@@ -295,7 +295,7 @@ var m=moments[n];if(!m||n===0)return;
 momentImg.src=m[2];momentKicker.textContent=n===15?"Congratulations":"Next moment";momentTitle.textContent=m[0];momentBody.textContent=m[1];
 momentEl.classList.remove('show');void momentEl.offsetWidth;momentEl.classList.add('show');clearTimeout(momentTimer);momentTimer=setTimeout(function(){momentEl.classList.remove('show');},1150);
 }
-function go(n){n=Math.max(0,Math.min(16,n));show(n);showMoment(n);}
+function go(n){var from=step;n=Math.max(0,Math.min(16,n));show(n);if(n>from)showMoment(n);}
 function toastMsg(t){toast.textContent=t;toast.classList.add('show');clearTimeout(timer);timer=setTimeout(function(){toast.classList.remove('show');},1600);}
 function template(name){document.querySelectorAll('.template').forEach(function(x){x.classList.toggle('selected',x.getAttribute('data-t')===name);});var c=document.getElementById('heroCard');c.className='cardFace '+name.toLowerCase();c.innerHTML='<img class="cardPortrait" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=82" alt=""><div class="cfBrand">KANZPAY CONNECT</div><div class="cfName">Navneet Sharma</div><div class="cfRole">'+name+' · OXY</div><div class="cfLine"></div>';toastMsg(name+' template selected');}
 function share(name){document.querySelectorAll('.share').forEach(function(x){x.classList.remove('active');});event.currentTarget.classList.add('active');toastMsg(name+' ready');}
