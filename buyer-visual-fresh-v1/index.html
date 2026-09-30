@@ -100,6 +100,29 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 .momentCopy strong{display:block;font-size:16px;line-height:1.05}
 .momentCopy span{display:block;font-size:9px;line-height:1.4;color:var(--muted);margin-top:4px}
 @keyframes momentIn{0%{opacity:0}.16%{opacity:1}15%{opacity:1}100%{opacity:0}}
+
+/* FINAL HUMAN-LIFE REFINEMENT */
+.lifeHero{grid-template-columns:1fr 1.05fr;min-height:150px;margin-top:15px}
+.lifeHero .lifeImg{min-height:150px;object-position:center 35%}
+.lifeHero .lifeCopy strong{font-size:15px}
+.coach{display:flex;align-items:center;gap:10px;margin-top:10px;padding:9px 11px;border-radius:18px;background:rgba(9,12,9,.58);border:1px solid rgba(242,215,137,.12);backdrop-filter:blur(18px)}
+.coach img{width:31px;height:31px;border-radius:12px;object-fit:cover;border:1px solid rgba(242,215,137,.2)}
+.coach span{font-size:9px;line-height:1.35;color:var(--muted)}.coach b{color:var(--gold2)}
+.profileRail{display:flex;gap:8px;overflow:auto;padding:7px 1px 10px;margin-top:7px;scrollbar-width:none}.profileRail::-webkit-scrollbar{display:none}
+.profileChoice{flex:0 0 auto;min-width:88px;padding:9px 9px;border-radius:16px;border:1px solid rgba(242,215,137,.1);background:rgba(255,255,255,.018);text-align:left;color:var(--muted);transition:.25s}
+.profileChoice .pIcon{width:31px;height:31px;border-radius:11px;display:grid;place-items:center;margin-bottom:6px;background:rgba(242,215,137,.045);color:var(--gold2);border:1px solid rgba(242,215,137,.1)}
+.profileChoice small{font-size:9px;white-space:nowrap}.profileChoice.selected{color:var(--gold2);border-color:rgba(242,215,137,.4);background:rgba(242,215,137,.07);box-shadow:0 13px 30px rgba(197,154,46,.08)}
+.connectionCard{padding:13px;margin-top:10px;display:grid;grid-template-columns:48px 1fr auto;gap:10px;align-items:center}
+.connectionCard .connIcon{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:rgba(242,215,137,.06);border:1px solid rgba(242,215,137,.13);color:var(--gold2);font-size:20px}
+.connectionCard strong{font-size:11px}.connectionCard small{display:block;font-size:9px;color:var(--muted);margin-top:3px;line-height:1.4}
+.lock{font-size:9px;color:var(--good);padding:6px 7px;border-radius:999px;background:rgba(158,208,165,.07);border:1px solid rgba(158,208,165,.16)}
+.periods{display:flex;gap:7px;overflow:auto;margin:10px 0 4px;scrollbar-width:none}.periods::-webkit-scrollbar{display:none}
+.period{flex:0 0 auto;padding:7px 10px;border-radius:999px;border:1px solid rgba(242,215,137,.1);background:rgba(255,255,255,.02);font-size:9px;color:var(--muted)}.period.active{color:var(--gold2);border-color:rgba(242,215,137,.34);background:rgba(242,215,137,.07)}
+.lifePortraitStrip{display:flex;gap:8px;overflow:hidden;margin-top:10px}.lifePortraitStrip img{width:62px;height:62px;object-fit:cover;border-radius:20px;border:1px solid rgba(242,215,137,.14);filter:saturate(.82) brightness(.88);box-shadow:0 12px 27px rgba(0,0,0,.28)}
+.merchantActions{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}.merchantAction{padding:10px 6px;border-radius:15px;border:1px solid rgba(242,215,137,.1);background:rgba(255,255,255,.018);font-size:8px;color:var(--muted);text-align:center}.merchantAction b{display:block;color:var(--gold2);font-size:16px;margin-bottom:4px}
+.idSteps{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:10px}.idStep{padding:8px 6px;border-radius:14px;background:rgba(255,255,255,.018);border:1px solid rgba(242,215,137,.09);font-size:8px;color:var(--muted);text-align:center}.idStep.active{color:var(--gold2);border-color:rgba(242,215,137,.32);background:rgba(242,215,137,.06)}.idStep b{display:block;font-size:14px;margin-bottom:3px}
+.emotionRibbon{display:flex;align-items:center;gap:8px;margin-top:10px;padding:9px 10px;border-radius:17px;background:linear-gradient(100deg,rgba(242,215,137,.075),rgba(255,255,255,.018));border:1px solid rgba(242,215,137,.1)}
+.emotionRibbon img{width:30px;height:30px;border-radius:11px;object-fit:cover}.emotionRibbon strong{font-size:10px}.emotionRibbon span{font-size:8px;color:var(--muted);display:block;margin-top:2px}
 @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}@keyframes pulse{0%,100%{transform:scale(.94);opacity:.2}50%{transform:scale(1.04);opacity:.88}}@keyframes scan{0%{top:15%}50%{top:80%}100%{top:15%}}@keyframes beam{0%,100%{opacity:.15;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes token{0%,100%{transform:translate(0,0)}40%{transform:translate(14px,-12px)}80%{transform:translate(-10px,8px)}}@keyframes bar{0%,100%{opacity:.74;transform:scaleY(.97)}50%{opacity:1;transform:scaleY(1.05)}}@keyframes sweep{0%,45%{transform:translateX(-65%) rotate(9deg)}65%,100%{transform:translateX(65%) rotate(9deg)}}@keyframes drift{0%{transform:translate3d(-2%,0,0) scale(1)}100%{transform:translate3d(2%,1%,0) scale(1.02)}}@keyframes cart{0%,100%{transform:translateX(0) skewX(-12deg)}50%{transform:translateX(-13px) skewX(-12deg)}}@keyframes paper{0%,100%{transform:translateX(-50%) rotate(-2deg) translateY(0)}50%{transform:translateX(-50%) rotate(1deg) translateY(-8px)}}@keyframes coin{0%,100%{transform:rotateY(0)}50%{transform:rotateY(180deg)}}@keyframes conf{0%,100%{transform:translateY(0) rotate(0);opacity:.4}50%{transform:translateY(-20px) rotate(120deg);opacity:1}}@keyframes doc{0%,100%{transform:translateX(-50%) rotate(-4deg) translateY(0)}50%{transform:translateX(-50%) rotate(2deg) translateY(-8px)}}
 @media(max-height:700px){.body{justify-content:flex-start;overflow:auto;padding-top:8px}.touch{width:165px;height:165px}.store{height:265px}.receiptStage{height:255px}.vault{width:210px;height:210px}.goldRoom{height:250px}.pieStage{height:230px}.kyc{height:255px}}
 </style>
@@ -124,7 +147,10 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 
 <section class="screen active" id="s0"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Today</div></div><div class="body center">
 <div class="touch"><div class="person"><div class="head"></div><div class="torso"></div><div class="arm l"></div><div class="arm r"></div></div><div class="hand"></div><div class="beam"></div></div>
-<div class="eyebrow">Commerce begins here</div><h1>Feel the flow.</h1><p class="copy">Tap a store. Scan a QR. Let the experience open around you.</p><div class="actions"><button class="cta primary" onclick="go(1)">Start</button></div>
+<div class="eyebrow">Your everyday moment</div><h1>What are you up to today?</h1><p class="copy">A quick touch. A familiar store. A little more value coming back to you.</p>
+<div class="lifeCard lifeHero"><img class="lifeImg" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">This could be you</div><strong>Arrive, choose, pay — and keep moving with more of your value.</strong><span>KanzPay quietly connects the moments already in your day.</span></div></div>
+<div class="coach"><img src="https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=200&q=80" alt=""><span><b>You’re in control.</b><br>We guide the next useful step — never push you through a maze.</span></div>
+<div class="actions"><button class="cta primary" onclick="go(1)">Let’s begin</button></div>
 </div></div></section>
 
 <section class="screen" id="s1"><div class="inner"><div class="top"><button class="tiny" onclick="go(0)">‹ Back</button><div class="progress"><i style="width:14%"></i></div><div class="tiny">01</div></div><div class="body center">
@@ -147,12 +173,16 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 <i class="off"></i><i></i><i></i><i class="off"></i><i></i><i></i><i class="off"></i><i></i><i class="off"></i>
 <i></i><i></i><i class="off"></i><i></i><i class="off"></i><i></i><i></i><i class="off"></i><i></i>
 </div><div class="scanline"></div></div>
-<div class="eyebrow" style="margin-top:18px">Store found</div><h2>Grand Gifts</h2><p class="copy">A living store opens around you — catalogue, offers and checkout stay connected.</p><div class="actions"><button class="cta primary" onclick="go(3)">Continue</button></div>
+<div class="lifeCard lifeHero"><img class="lifeImg" src="https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">Welcome to Grand Gifts</div><strong>The kind of store moment that should feel familiar, not transactional.</strong><span>See your catalogue, useful offers and your live order together.</span></div></div>
+<div class="eyebrow" style="margin-top:12px">Store found</div><h2>Grand Gifts</h2>
+<div class="merchantActions"><button class="merchantAction" onclick="toastMsg('Catalogue opened')"><b>▦</b>Catalogue</button><button class="merchantAction" onclick="toastMsg('Offers opened')"><b>✦</b>Offers</button><button class="merchantAction" onclick="toastMsg('Map opened')"><b>⌖</b>Map</button><button class="merchantAction" onclick="toastMsg('Live order opened')"><b>◴</b>Live order</button></div>
+<div class="actions"><button class="cta primary" onclick="go(3)">Make it mine</button></div>
 </div></div></section>
 
 <section class="screen" id="s3"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Presence</div></div><div class="body">
 <div class="eyebrow">Who is here?</div><h2>Continue your value.</h2><p class="copy">A familiar face keeps value moving. A new one creates a new vault.</p>
-<div class="identity glass"><div class="avatar"><div class="person"><div class="head"></div><div class="torso"></div></div></div><div><div class="choiceTitle">Welcome back</div><div class="choiceSub">Value Vault ready.</div></div><div class="check">✓</div></div>
+<div class="identity glass"><div class="avatar"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=220&q=80" style="width:59px;height:59px;border-radius:20px;object-fit:cover;filter:saturate(.82)" alt=""></div><div><div class="choiceTitle">Welcome back</div><div class="choiceSub">Your Value Vault is ready. You decide what we use.</div></div><div class="check">✓</div></div>
+<div class="coach"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=180&q=80" alt=""><span><b>Good to see you.</b><br>We’ll show what is useful here, then let you choose.</span></div>
 <div class="choiceGrid"><button class="choice glass" onclick="go(5)"><div class="icon"><svg><use href="#i-vault"/></svg></div><div><div class="choiceTitle">Existing</div><div class="choiceSub">Open my value and checkout.</div></div></button>
 <button class="choice glass" onclick="go(4)"><div class="icon"><svg><use href="#i-friends"/></svg></div><div><div class="choiceTitle">New</div><div class="choiceSub">Begin with mobile + OTP.</div></div></button></div>
 </div></div></section>
@@ -161,7 +191,7 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 <div class="duo"><div class="person p1"><div class="head"></div><div class="torso"></div><div class="arm l"></div><div class="arm r"></div></div><div class="person p2"><div class="head"></div><div class="torso"></div><div class="arm l"></div><div class="arm r"></div></div><div class="heart">✦</div></div>
 <div class="lifeCard" style="width:100%"><img class="lifeImg" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">A good beginning</div><strong>This is the moment your everyday value starts coming back to you.</strong><span>You stay in control. KanzPay simply makes the next step easier.</span></div></div>
 <div class="eyebrow" style="margin-top:10px">First value</div><h2>Welcome in.</h2><p class="copy">Mobile → OTP → email → OTP. Then the first gold arrives.</p>
-<div class="glass section" style="width:100%"><div class="metric"><span class="tiny">First reward</span><strong class="goldText" style="font-size:24px">1 mg</strong></div><div style="height:6px;border-radius:99px;background:rgba(255,255,255,.06);margin-top:13px"><i style="display:block;width:66%;height:100%;border-radius:99px;background:linear-gradient(90deg,#9d7725,#f2d789);animation:bar 2.6s ease-in-out infinite"></i></div></div>
+<div class="glass section" style="width:100%"><div class="metric"><span class="tiny">First reward</span><strong class="goldText" style="font-size:24px">1 mg</strong></div><div style="height:6px;border-radius:99px;background:rgba(255,255,255,.06);margin-top:13px"><i style="display:block;width:66%;height:100%;border-radius:99px;background:linear-gradient(90deg,#9d7725,#f2d789);animation:bar 2.6s ease-in-out infinite"></i></div><div class="emotionRibbon"><img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=180&q=80" alt=""><div><strong>Your first little win.</strong><span>It starts small. It is yours. And it can keep growing.</span></div></div></div>
 <div class="actions"><button class="cta primary" onclick="go(5)">Build my vault</button></div>
 </div></div></section>
 
@@ -170,12 +200,15 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 <div class="asset a1"><svg><use href="#i-card"/></svg><div class="assetLabel">Memberships</div></div><div class="asset a2"><svg><use href="#i-gold"/></svg><div class="assetLabel">Rewards</div></div><div class="asset a3"><svg><use href="#i-tap"/></svg><div class="assetLabel">Apps</div></div><div class="asset a4"><svg><use href="#i-vault"/></svg><div class="assetLabel">Vouchers</div></div>
 </div>
 <div class="lifeCard lifeWide"><img class="lifeImg" src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">Your life, gathered</div><strong>Memberships, rewards and little wins finally have one place.</strong><span>Connect only what you choose. Nothing moves without your permission.</span></div></div>
-<div class="eyebrow">Your living vault</div><h2>More connections. More value.</h2><p class="copy">Memberships, points, offers and programmes gather here with your permission.</p><div class="actions"><button class="cta primary" onclick="go(6)">Enter cockpit</button></div>
+<div class="eyebrow">Your living vault</div><h2>More connections. More value.</h2><p class="copy">Memberships, points, offers and programmes gather here with your permission.</p>
+<div class="connectionCard glass"><div class="connIcon">⌁</div><div><strong>Careem membership</strong><small>Valid to 31 Dec · AED 180 value · Connected with permission</small></div><div class="lock">🔒</div></div>
+<div class="lifePortraitStrip"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=180&q=80" alt=""><img src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=180&q=80" alt=""><img src="https://images.unsplash.com/photo-1528502668750-88ba580b705d?auto=format&fit=crop&w=180&q=80" alt=""></div><div class="actions"><button class="cta primary" onclick="go(6)">Enter cockpit</button></div>
 </div></div></section>
 
 <section class="screen" id="s6"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="progress"><i style="width:62%"></i></div><div class="tiny">Cockpit</div></div><div class="body">
 <div class="eyebrow">Today</div><h2>Everything moves together.</h2>
-<div class="lifeCard lifeWide"><div class="lifeCopy"><div class="lifeTag">Your day</div><strong>Imagine this becoming the quiet centre of everything you already do.</strong><span>Pay. Earn. Connect. Remember. Choose. Keep moving.</span></div><img class="lifeImg" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=700&q=82" alt=""></div>
+<div class="lifeCard lifeWide"><div class="lifeCopy"><div class="lifeTag">Your day</div><strong>This is the quiet centre of the life you already have.</strong><span>Pay. Earn. Connect. Remember. Choose. Keep moving.</span></div><img class="lifeImg" src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=700&q=82" alt=""></div>
+<div class="glass section"><div class="metric"><span class="tiny">Value & wealth building</span><strong class="goldText">All Set to Earn More</strong></div><div style="font-size:9px;color:var(--muted);margin-top:5px">3 of 4 value layers connected · next opportunity is ready when you are.</div></div>
 <div class="bento">
 <button class="module glass" onclick="go(7)"><div class="moduleArt"><div class="miniVault"></div><i class="token t1"></i><i class="token t2"></i><i class="token t3"></i></div><div class="moduleTitle">Value Vault</div><div class="moduleMeta">Connected value, ready to use.</div></button>
 <button class="module glass" onclick="go(8)"><div class="moduleArt"><div class="miniCard"></div></div><div class="moduleTitle">Visiting Card</div><div class="moduleMeta">One profile. Every share.</div></button>
@@ -189,13 +222,16 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 <section class="screen" id="s7"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Vault</div></div><div class="body">
 <div class="vault glass" style="width:100%;height:190px;border-radius:30px;margin:0 auto 8px"><div class="vaultDoor" style="width:100px;height:100px"><div class="vaultCore" style="width:58px;height:58px;font-size:20px">V</div></div></div>
 <div class="eyebrow">My Value Vault</div><h2>Ready to unlock more.</h2><div class="pills"><div class="pill on">Memberships</div><div class="pill on">Rewards</div><div class="pill">Promocodes</div><div class="pill">Vouchers</div></div>
-<div class="glass section"><div class="metric"><span class="tiny">Connected value</span><strong class="goldText" style="font-size:24px">AED 1,840</strong></div><div class="pills"><div class="pill on">Careem</div><div class="pill on">Bank</div><div class="pill on">Cinema</div></div></div>
+<div class="glass section"><div class="metric"><span class="tiny">Connected value</span><strong class="goldText" style="font-size:24px">AED 1,840</strong></div><div class="pills"><div class="pill on">Careem</div><div class="pill on">Bank</div><div class="pill on">Cinema</div></div><div class="connectionCard" style="padding:10px 0 0;border:0;background:none;box-shadow:none"><div class="connIcon" style="width:39px;height:39px">↺</div><div><strong>History stays visible</strong><small>Connection date · value used · expiry · permission</small></div><div class="lock">Private</div></div></div>
 <div class="actions"><button class="cta primary" onclick="go(13)">Shop & earn</button></div>
 </div></div></section>
 
 <section class="screen" id="s8"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Connect</div></div><div class="body">
-<div class="eyebrow">My Visiting Card</div><h2>Pick the feeling.</h2>
-<div class="cardFace executive" id="heroCard"><img class="cardPortrait" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=82" alt=""><div class="cfBrand">KANZPAY CONNECT</div><div class="cfName">Navneet Sharma</div><div class="cfRole">Founder · OXY</div><div class="cfLine"></div></div>
+<div class="eyebrow">My Visiting Card</div><h2>Pick who you are today.</h2>
+<div class="profileRail" id="profiles">
+<button class="profileChoice selected" data-profile="Personal" onclick="profilePick('Personal')"><div class="pIcon">◉</div><small>Personal</small></button><button class="profileChoice " data-profile="Business" onclick="profilePick('Business')"><div class="pIcon">▣</div><small>Business</small></button><button class="profileChoice " data-profile="Professional" onclick="profilePick('Professional')"><div class="pIcon">✦</div><small>Professional</small></button><button class="profileChoice " data-profile="Friend" onclick="profilePick('Friend')"><div class="pIcon">♡</div><small>Friend</small></button><button class="profileChoice " data-profile="Social" onclick="profilePick('Social')"><div class="pIcon">◌</div><small>Social</small></button><button class="profileChoice " data-profile="Family" onclick="profilePick('Family')"><div class="pIcon">⌂</div><small>Family</small></button><button class="profileChoice " data-profile="Maternal" onclick="profilePick('Maternal')"><div class="pIcon">M</div><small>Maternal</small></button><button class="profileChoice " data-profile="Paternal" onclick="profilePick('Paternal')"><div class="pIcon">P</div><small>Paternal</small></button><button class="profileChoice " data-profile="Custom" onclick="profilePick('Custom')"><div class="pIcon">＋</div><small>Custom</small></button>
+</div>
+<div class="cardFace executive" id="heroCard"><img class="cardPortrait" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=82" alt=""><div class="cfBrand">KANZPAY CONNECT</div><div class="cfName">Navneet Sharma</div><div class="cfRole" id="profileRole">Personal · OXY</div><div class="cfLine"></div></div>
 <div class="lifeCard"><img class="lifeImg" src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">Feels like you</div><strong>Choose the version of yourself you want to carry into every introduction.</strong><span>One profile flows through NFC, QR, WhatsApp, SMS and email.</span></div></div>
 <div class="templates">
 <div class="template selected" data-t="Executive" onclick="template('Executive')"><div class="cardFace executive"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Executive</div><div class="cfLine"></div></div><div class="templateName">Executive</div></div>
@@ -206,7 +242,7 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 <div class="template" data-t="Creative" onclick="template('Creative')"><div class="cardFace creative"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Creative</div><div class="cfLine"></div></div><div class="templateName">Creative</div></div>
 <div class="template" data-t="Custom" onclick="template('Custom')"><div class="cardFace custom"><div class="cfBrand">KANZPAY</div><div class="cfName">Navneet</div><div class="cfRole">Custom</div><div class="cfLine"></div></div><div class="templateName">Custom</div></div>
 </div>
-<div class="shareGrid"><button class="share active" onclick="share('NFC')"><svg><use href="#i-tap"/></svg>NFC</button><button class="share" onclick="share('QR')"><svg><use href="#i-scan"/></svg>QR</button><button class="share" onclick="share('WhatsApp')"><svg><use href="#i-friends"/></svg>WhatsApp</button><button class="share" onclick="share('SMS')"><svg><use href="#i-card"/></svg>SMS</button></div>
+<div class="shareGrid"><button class="share active" onclick="share('NFC',this)"><svg><use href="#i-tap"/></svg>NFC</button><button class="share" onclick="share('QR',this)"><svg><use href="#i-scan"/></svg>QR</button><button class="share" onclick="share('WhatsApp',this)"><svg><use href="#i-friends"/></svg>WhatsApp</button><button class="share" onclick="share('SMS',this)"><svg><use href="#i-card"/></svg>SMS</button></div>
 <div class="actions"><button class="cta primary" onclick="toastMsg('Card ready to share');go(6)">Use this card</button></div>
 </div></div></section>
 
@@ -219,17 +255,26 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 
 <section class="screen" id="s10"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Gold Vault</div></div><div class="body">
 <div class="goldRoom"><div class="weight"><strong>1.84 g</strong><span>+7.8% vs purchase</span></div><div class="pile"><i class="g1"></i><i class="g2"></i><i class="g3"></i><i class="g4"></i><i class="g5"></i><i class="g6"></i><i class="g7"></i></div></div>
-<div class="actions4"><button class="act" onclick="toastMsg('Buy gold')"><strong>＋</strong>Buy</button><button class="act" onclick="toastMsg('Sell gold')"><strong>↗</strong>Sell</button><button class="act" onclick="toastMsg('Redeem gold')"><strong>⌂</strong>Redeem</button><button class="act" onclick="toastMsg('Gift gold')"><strong>✦</strong>Gift</button></div>
+<div class="actions4">
+<button class="act" onclick="toastMsg('Buy gold')"><strong>＋</strong>Buy</button>
+<button class="act" onclick="toastMsg('Sell gold')"><strong>↗</strong>Sell</button>
+<button class="act" onclick="toastMsg('Redeem gold')"><strong>⌂</strong>Redeem</button>
+<button class="act" onclick="toastMsg('Physical delivery')"><strong>▱</strong>Deliver</button>
+<button class="act" onclick="toastMsg('Gift gold')"><strong>✦</strong>Gift</button>
+<button class="act" onclick="toastMsg('Pay with Gold')"><strong>Au</strong>Pay</button>
+</div>
 <div class="glass section"><div class="metric"><span class="tiny">Gold value</span><strong class="goldText" style="font-size:23px">AED 521.40</strong></div></div>
 </div></div></section>
 
 <section class="screen" id="s11"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Expenses</div></div><div class="body">
 <div class="pieStage"><div class="pie"></div><div class="legend"><span><b></b>Food 36%</span><span><b class="g"></b>Shopping 22%</span><span><b class="b"></b>Travel 18%</span><span><b class="d"></b>Other 24%</span></div></div>
+<div class="periods"><button class="period" onclick="expensePeriod(this,'Daily','AED 318')">Daily</button><button class="period active" onclick="expensePeriod(this,'Weekly','AED 2,110')">Weekly</button><button class="period" onclick="expensePeriod(this,'Monthly','AED 8,420')">Monthly</button><button class="period" onclick="expensePeriod(this,'Yearly','AED 91,860')">Yearly</button></div>
 <div class="glass section"><div class="metric"><span class="tiny">This month</span><strong style="font-size:24px">AED 8,420</strong></div><div style="font-size:10px;color:var(--muted);margin-top:7px">Daily · Weekly · Monthly · Yearly</div></div>
 </div></div></section>
 
 <section class="screen" id="s12"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Payment AI</div></div><div class="body">
 <div class="instStage"><div class="inst i1"><div class="instTitle">CARD</div><div class="instValue">Emirates NBD</div><i class="chip"></i></div><div class="inst i2"><div class="instTitle">BANK</div><div class="instValue">ADCB A2A</div><i class="chip"></i></div><div class="inst i3"><div class="instTitle">UNCONNECTED</div><div class="instValue">Visa · 4821</div></div><div class="approve">Approve recommendation</div></div>
+<div class="lifeCard lifeWide"><img class="lifeImg" src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">You stay in charge</div><strong>A recommendation should feel like help, not a decision made for you.</strong><span>We show the reason. You approve the action.</span></div></div>
 <div class="glass section"><div class="metric"><span class="tiny">Best fit now</span><strong class="goldText">Emirates NBD</strong></div><div style="font-size:10px;color:var(--muted);margin-top:7px">Value detected · user approval before activation.</div></div>
 <div class="actions"><button class="cta primary" onclick="toastMsg('Recommendation approved');go(13)">Approve</button></div>
 </div></div></section>
@@ -237,12 +282,14 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 <section class="screen" id="s13"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Grand Gifts</div></div><div class="body center">
 <div class="store"><div class="shop"></div><div class="awning"></div><div class="window"><div class="shelf s1"></div><div class="shelf s2"></div><i class="prod pr1"></i><i class="prod pr2"></i><i class="prod pr3"></i><i class="prod pr4"></i></div><div class="cart"></div></div>
 <div class="lifeCard" style="margin-top:0"><img class="lifeImg" src="https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">A store that remembers you</div><strong>You are not starting from zero. Your value comes with you.</strong><span>See the right offer, choose what matters, keep the moment simple.</span></div></div>
-<div class="eyebrow">Living catalogue</div><h2>Choose what you love.</h2><p class="copy">Products, offers and checkout in one connected flow.</p><div class="actions"><button class="cta primary" onclick="go(14)">Open checkout</button></div>
+<div class="emotionRibbon"><img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=180&q=80" alt=""><div><strong>Take your time.</strong><span>The offer is ready. The choice is yours.</span></div></div>
+<div class="eyebrow">Living catalogue</div><h2>Choose what you love.</h2><p class="copy">Products, offers and checkout in one connected flow.</p><div class="actions"><button class="cta primary" onclick="go(14)">I’m ready to checkout</button></div>
 </div></div></section>
 
 <section class="screen" id="s14"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Checkout</div></div><div class="body center">
 <div class="receiptStage"><div class="pay p1">◈</div><div class="pay p2">◫</div><div class="pay p3">✦</div><div class="receipt"><div class="rbrand">GRAND GIFTS</div><div class="rline"></div><div class="rrow"><span>Gift Box</span><span>AED 220</span></div><div class="rrow"><span>Wrap & Note</span><span>AED 25</span></div><div class="rrow"><span>Offer</span><span>− AED 15</span></div><div class="rline"></div><div class="rtotal"><span>Total</span><span>AED 230</span></div></div></div>
-<div class="glass section" style="width:100%"><div class="metric"><span class="tiny">Pay with</span><strong class="goldText">A2A / Card</strong></div><div class="copy" style="margin-top:7px">Selected instrument evaluated before confirmation.</div></div><div class="actions"><button class="cta primary" onclick="go(15)">Pay AED 230</button></div>
+<div class="emotionRibbon"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=180&q=80" alt=""><div><strong>Everything looks right.</strong><span>One last tap. Then we celebrate the moment with you.</span></div></div>
+<div class="glass section" style="width:100%"><div class="metric"><span class="tiny">Pay with</span><strong class="goldText">A2A / Card</strong></div><div class="copy" style="margin-top:7px">Selected instrument evaluated before confirmation.</div></div><div class="actions"><button class="cta primary" onclick="go(15)">Complete my purchase</button></div>
 </div></div></section>
 
 <section class="screen" id="s15"><div class="inner"><div class="top"><div class="brand">K<span>ANZPAY</span></div><div class="tiny">Complete</div></div><div class="body center">
@@ -256,7 +303,8 @@ h2{font-size:27px;line-height:1;letter-spacing:-.04em;margin:0 0 8px}
 <section class="screen" id="s16"><div class="inner"><div class="top"><button class="tiny" onclick="go(6)">‹ Cockpit</button><div class="tiny">Create Account</div></div><div class="body">
 <div class="kyc"><div class="id"><div class="photo"></div><div class="idlines"><i style="width:80%"></i><i style="width:62%"></i><i style="width:87%"></i><i style="width:45%"></i></div><div class="seal">UAE</div></div><div class="camera"><div class="live"></div></div></div>
 <div class="lifeCard lifeWide" style="margin-top:0"><img class="lifeImg" src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=700&q=82" alt=""><div class="lifeCopy"><div class="lifeTag">One last human step</div><strong>We are checking it is really you — then the account is yours.</strong><span>Guidance stays gentle: blink, look left, look right, hold your ID.</span></div></div>
-<div class="eyebrow">Identity</div><h2>Make the account yours.</h2><p class="copy">Emirates ID → live camera → crop → photo match → AML.</p>
+<div class="idSteps"><div class="idStep active"><b>1</b>ID front</div><div class="idStep"><b>2</b>ID back</div><div class="idStep"><b>3</b>Live match</div><div class="idStep"><b>4</b>AML</div></div>
+<div class="eyebrow" style="margin-top:9px">Identity</div><h2>Make the account yours.</h2><p class="copy">Front + back → crop → blink / look left / right → photo match → AML.</p>
 <div class="glass section"><div style="display:flex;gap:10px;align-items:center"><div class="check">✓</div><div><strong style="font-size:12px">Live camera ready</strong><div style="font-size:10px;color:var(--muted);margin-top:3px">Blink · look left · look right · hold ID</div></div></div></div>
 </div></div></section>
 
@@ -297,8 +345,11 @@ momentEl.classList.remove('show');void momentEl.offsetWidth;momentEl.classList.a
 }
 function go(n){var from=step;n=Math.max(0,Math.min(16,n));show(n);if(n>from)showMoment(n);}
 function toastMsg(t){toast.textContent=t;toast.classList.add('show');clearTimeout(timer);timer=setTimeout(function(){toast.classList.remove('show');},1600);}
-function template(name){document.querySelectorAll('.template').forEach(function(x){x.classList.toggle('selected',x.getAttribute('data-t')===name);});var c=document.getElementById('heroCard');c.className='cardFace '+name.toLowerCase();c.innerHTML='<img class="cardPortrait" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=82" alt=""><div class="cfBrand">KANZPAY CONNECT</div><div class="cfName">Navneet Sharma</div><div class="cfRole">'+name+' · OXY</div><div class="cfLine"></div>';toastMsg(name+' template selected');}
-function share(name){document.querySelectorAll('.share').forEach(function(x){x.classList.remove('active');});event.currentTarget.classList.add('active');toastMsg(name+' ready');}
+var selectedProfile='Personal';
+function profilePick(name){selectedProfile=name;document.querySelectorAll('.profileChoice').forEach(function(x){x.classList.toggle('selected',x.getAttribute('data-profile')===name);});var r=document.getElementById('profileRole');if(r)r.textContent=name+' · OXY';toastMsg(name+' profile selected');}
+function template(name){document.querySelectorAll('.template').forEach(function(x){x.classList.toggle('selected',x.getAttribute('data-t')===name);});var c=document.getElementById('heroCard');c.className='cardFace '+name.toLowerCase();c.innerHTML='<img class="cardPortrait" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=82" alt=""><div class="cfBrand">KANZPAY CONNECT</div><div class="cfName">Navneet Sharma</div><div class="cfRole" id="profileRole">'+selectedProfile+' · OXY</div><div class="cfLine"></div>';toastMsg(name+' template selected for '+selectedProfile);}
+function share(name,el){document.querySelectorAll('.share').forEach(function(x){x.classList.remove('active');});if(el)el.classList.add('active');toastMsg(name+' ready');}
+function expensePeriod(el,label,value){document.querySelectorAll('.period').forEach(function(x){x.classList.remove('active');});el.classList.add('active');var t=document.querySelector('#s11 .section strong');if(t)t.textContent=value;var l=document.querySelector('#s11 .section .tiny');if(l)l.textContent=label;toastMsg(label+' expenses');}
 </script>
 </body>
 </html>
