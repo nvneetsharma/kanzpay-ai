@@ -83,7 +83,7 @@ idback:["Now the back.","Turn it over and keep the edges inside the frame."],
 live:["Blink. Left. Right.","That’s the live match. I’m right here with you."],
 aml:["Everything matches.","Photo match and AML are complete. Your account is ready."]
 };
-function cta(label,benefit,fn,primary=true){return '<div class="ctaWrap"><button class="cta '+(primary?'primary':'')+'" onclick="&quot;+fn+&quot;"><span class="label">'+label+'</span><small>Benefit: '+benefit+'</small></button></div>'}
+function cta(label,benefit,fn,primary=true){return '<div class="ctaWrap"><button class="cta '+(primary?'primary':'')+'" onclick="'+fn+'"><span class="label">'+label+'</span><small>Benefit: '+benefit+'</small></button></div>'}
 function top(label,back=true){document.getElementById("top").innerHTML=(back?'<button class="footerBtn" style="font-size:8px;color:var(--muted)" onclick="goBack()">‹ '+label+'</button>':'<div class="brand">K<span>ANZPAY</span></div>')+'<span class="tiny">'+(S.step==="cockpit"?"COCKPIT":"BUYER")+'</span>'}
 function hero(ey,title,copy,pic){return '<div class="hero"><img src="'+pic+'"><div class="heroCopy"><div class="eyebrow">'+ey+'</div><h1>'+title+'</h1><p>'+copy+'</p></div></div>'}
 function section(title,sub,body){return '<div class="glass section"><div class="metric"><strong>'+title+'</strong><span class="tiny">'+sub+'</span></div><div class="sub">'+body+'</div></div>'}
