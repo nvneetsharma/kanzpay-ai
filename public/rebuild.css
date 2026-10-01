@@ -1,0 +1,590 @@
+:root {
+  --v1-black: #070807;
+  --v1-panel: rgba(22, 23, 21, .78);
+  --v1-gold: #d3a24c;
+  --v1-gold-hi: #f7df9b;
+  --v1-muted: #9a9a91;
+  --v1-line: rgba(247, 223, 155, .16);
+  --v1-green: #d3a24c;
+}
+
+body {
+  background: #050605;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.ambient,
+.v1-shell::before,
+.v1-ambient-b {
+  display: none;
+}
+
+.v1-shell {
+  min-height: 100vh;
+  color: #f4f0e7;
+  background:
+    radial-gradient(circle at 50% -10%, rgba(211, 162, 76, .15), transparent 34%),
+    radial-gradient(circle at 10% 35%, rgba(211, 162, 76, .05), transparent 30%),
+    #070807;
+}
+
+.v1-shell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: .1;
+  background-image: url("/assets/scene-welcome.png");
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: screen;
+  filter: grayscale(1) sepia(.35);
+  z-index: 0;
+}
+
+.v1-nav,
+.v1-progress,
+.v1-footer {
+  width: min(940px, calc(100% - 36px));
+}
+
+.v1-nav {
+  padding: 19px 0 13px;
+  border-bottom-color: rgba(247, 223, 155, .12);
+}
+
+.v1-brand {
+  font-size: 14px;
+}
+
+.v1-brand-mark {
+  width: 27px;
+  height: 27px;
+  font-size: 13px;
+  box-shadow: 0 0 18px rgba(211, 162, 76, .18);
+}
+
+.v1-nav-center {
+  font-size: 8px;
+  letter-spacing: .14em;
+}
+
+.v1-role,
+.v1-back {
+  padding: 7px 9px;
+  font-size: 9px;
+}
+
+.v1-progress {
+  height: 2px;
+}
+
+.v1-progress span {
+  background: linear-gradient(90deg, #9d6a20, var(--v1-gold-hi));
+  box-shadow: 0 0 12px rgba(211, 162, 76, .62);
+}
+
+.v1-footer {
+  padding: 20px 0 14px;
+  font-size: 8px;
+}
+
+.v1-kicker {
+  font-size: 8px;
+  letter-spacing: .16em;
+}
+
+.v1-kicker i {
+  width: 19px;
+  background: var(--v1-gold);
+  box-shadow: 0 0 9px var(--v1-gold);
+}
+
+.v1-welcome,
+.v1-story,
+.v1-journey,
+.v1-tap,
+.v1-invoice {
+  width: min(940px, calc(100% - 36px));
+  min-height: calc(100vh - 120px);
+  grid-template-columns: minmax(250px, .82fr) minmax(320px, 1.18fr);
+  gap: 52px;
+}
+
+.v1-welcome h1,
+.v1-story h1,
+.v1-journey h1,
+.v1-cockpit h1,
+.v1-detail h1,
+.v1-tap h1,
+.v1-invoice h1,
+.v1-receipt h1,
+.v1-status h1,
+.v1-seller-cockpit h1,
+.v1-panel-page h1,
+.v1-catalogue h1 {
+  font-size: clamp(30px, 4vw, 54px);
+  line-height: 1.02;
+  letter-spacing: -.045em;
+  margin: 16px 0 12px;
+}
+
+.v1-welcome-copy p,
+.v1-story-copy p,
+.v1-copy,
+.v1-detail-hero p,
+.v1-status-head p,
+.v1-panel-page > p {
+  max-width: 400px;
+  color: #aaa99f;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.v1-welcome {
+  align-items: center;
+}
+
+.v1-welcome-copy {
+  padding: 30px 0 45px;
+}
+
+.v1-welcome-actions {
+  display: grid;
+  gap: 8px;
+  max-width: 260px;
+  margin-top: 22px;
+}
+
+.v1-gold-button,
+.v1-glass-button {
+  min-height: 42px;
+  padding: 11px 14px;
+  border-radius: 9px;
+  font-size: 10px;
+}
+
+.v1-gold-button {
+  background: linear-gradient(110deg, #98621d, #e8bd67 52%, #a87323);
+  box-shadow: 0 0 20px rgba(211, 162, 76, .14), inset 0 1px rgba(255, 255, 255, .55);
+}
+
+.v1-glass-button {
+  background: rgba(255, 255, 255, .045);
+  border-color: rgba(247, 223, 155, .18);
+}
+
+.v1-story-button {
+  margin-top: 19px;
+  font-size: 10px;
+}
+
+.v1-hero-orb {
+  height: 440px;
+}
+
+.v1-gold-sphere {
+  width: 145px;
+  height: 145px;
+  box-shadow: 0 0 55px rgba(211, 162, 76, .24), inset -18px -22px 30px rgba(74, 37, 3, .35), inset 10px 8px 16px rgba(255, 255, 255, .42);
+}
+
+.v1-gold-sphere strong {
+  font-size: 48px;
+}
+
+.v1-orbit-one {
+  width: 290px;
+  height: 116px;
+}
+
+.v1-orbit-two {
+  width: 350px;
+  height: 150px;
+}
+
+.v1-float-card {
+  right: 3%;
+  bottom: 12%;
+  padding: 11px 13px;
+  border-radius: 9px;
+}
+
+.v1-float-card strong {
+  font-size: 22px;
+  margin: 5px 0;
+}
+
+.v1-story,
+.v1-journey,
+.v1-tap,
+.v1-invoice {
+  align-items: center;
+}
+
+.v1-story-visual,
+.v1-journey-visual,
+.v1-tap-visual,
+.v1-invoice-visual {
+  min-height: 430px;
+  border-radius: 20px;
+  border-color: rgba(247, 223, 155, .22);
+  background-color: #171713;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+}
+
+.v1-story-visual::before,
+.v1-journey-visual::before,
+.v1-tap-visual::before,
+.v1-invoice-visual::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(4, 5, 4, .12), rgba(4, 5, 4, .74));
+  pointer-events: none;
+}
+
+.v1-counter-scene,
+.v1-tap-visual {
+  background-image: url("/assets/scene-counter.jpg");
+}
+
+.v1-identity-scene,
+.v1-otp-scene {
+  background-image: url("/assets/scene-family.png");
+}
+
+.v1-vault-scene,
+.v1-account-scene {
+  background-image: url("/assets/scene-dashboard.png");
+  background-position: center 25%;
+}
+
+.v1-seller-scene,
+.v1-assistant-scene {
+  background-image: url("/assets/scene-seller.png");
+}
+
+.v1-document-scene,
+.v1-rules-scene {
+  background-image: url("/assets/scene-home.jpg");
+}
+
+.v1-invoice-scene,
+.v1-invoice-visual {
+  background-image: url("/assets/scene-payments.png");
+}
+
+.v1-journey-copy {
+  padding: 24px 0;
+}
+
+.v1-step-line {
+  margin-bottom: 19px;
+  font-size: 9px;
+}
+
+.v1-journey-copy h1 {
+  font-size: clamp(30px, 4vw, 50px);
+}
+
+.v1-journey-copy .v1-copy {
+  margin-bottom: 18px;
+}
+
+.v1-visual-caption {
+  left: 17px;
+  bottom: 16px;
+  font-size: 8px;
+  z-index: 2;
+}
+
+.v1-journey-visual > :not(.v1-visual-caption) {
+  z-index: 1;
+}
+
+.v1-ktag-large,
+.v1-vault-stack,
+.v1-seller-card,
+.v1-document-card,
+.v1-rules-card,
+.v1-seller-invoice {
+  transform: rotate(-4deg) scale(.78);
+  opacity: .95;
+}
+
+.v1-ktag-large {
+  width: 116px;
+  height: 116px;
+  border-radius: 23px;
+  font-size: 43px;
+  box-shadow: 0 0 38px rgba(211, 162, 76, .32);
+}
+
+.v1-scan-ring,
+.v1-account-ring {
+  width: 265px;
+  height: 265px;
+  border-color: rgba(247, 223, 155, .45);
+}
+
+.v1-choice-list {
+  gap: 7px;
+  margin: 15px 0 17px;
+}
+
+.v1-choice,
+.v1-source-chip {
+  min-height: 58px;
+  padding: 10px 11px;
+  border-radius: 11px;
+  background: rgba(11, 12, 10, .68);
+  backdrop-filter: blur(12px);
+}
+
+.v1-choice > span,
+.v1-source-chip > span {
+  width: 26px;
+  height: 26px;
+  font-size: 16px;
+}
+
+.v1-choice b,
+.v1-source-chip b {
+  font-size: 11px;
+}
+
+.v1-choice small,
+.v1-source-chip small {
+  font-size: 9px;
+}
+
+.v1-form-card {
+  gap: 8px;
+  padding: 13px;
+  border-radius: 11px;
+  margin: 15px 0;
+  background: rgba(11, 12, 10, .68);
+  backdrop-filter: blur(12px);
+}
+
+.v1-form-card input {
+  padding: 9px 10px;
+  font-size: 11px;
+}
+
+.v1-source-grid {
+  gap: 7px;
+  margin: 15px 0;
+}
+
+.v1-gold-button.wide {
+  max-width: 360px;
+}
+
+.v1-shell .v1-particles i {
+  background: var(--v1-gold-hi);
+  box-shadow: 0 0 11px 3px rgba(247, 223, 155, .42);
+  opacity: .23;
+}
+
+.v1-shell .v1-particles {
+  opacity: .78;
+}
+
+.v1-cockpit,
+.v1-seller-cockpit,
+.v1-detail,
+.v1-panel-page,
+.v1-catalogue {
+  width: min(940px, calc(100% - 36px));
+  padding: 38px 0 50px;
+}
+
+.v1-cockpit-hero,
+.v1-seller-hero {
+  gap: 22px;
+}
+
+.v1-cockpit-hero h1,
+.v1-seller-hero h1 {
+  font-size: clamp(28px, 4vw, 48px);
+}
+
+.v1-cockpit-orb,
+.v1-seller-value {
+  width: 126px;
+  height: 126px;
+}
+
+.v1-cockpit-tabs,
+.v1-seller-nav {
+  gap: 17px;
+  margin: 25px 0 14px;
+  padding-bottom: 10px;
+}
+
+.v1-cockpit-tabs button,
+.v1-seller-nav button {
+  font-size: 10px;
+}
+
+.v1-metric-row,
+.v1-seller-metrics {
+  gap: 7px;
+}
+
+.v1-metric-row article,
+.v1-seller-metrics article {
+  padding: 14px;
+  border-radius: 11px;
+}
+
+.v1-metric-row strong,
+.v1-seller-metrics strong {
+  font-size: 24px;
+  margin: 12px 0 4px;
+}
+
+.v1-module-grid {
+  gap: 7px;
+  margin: 10px 0;
+}
+
+.v1-module-card {
+  min-height: 83px;
+  padding: 12px;
+  border-radius: 11px;
+}
+
+.v1-module-card b {
+  font-size: 11px;
+}
+
+.v1-module-card small {
+  font-size: 9px;
+}
+
+.v1-counter-cta {
+  margin-top: 10px;
+  padding: 19px;
+  border-radius: 13px;
+}
+
+.v1-counter-cta h2,
+.v1-intelligence h2 {
+  font-size: 25px;
+}
+
+@media (max-width: 800px) {
+  .v1-welcome,
+  .v1-story,
+  .v1-journey,
+  .v1-tap,
+  .v1-invoice {
+    width: min(100% - 28px, 560px);
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .v1-nav,
+  .v1-progress,
+  .v1-footer,
+  .v1-cockpit,
+  .v1-detail,
+  .v1-seller-cockpit,
+  .v1-panel-page,
+  .v1-catalogue,
+  .v1-status {
+    width: min(100% - 28px, 560px);
+  }
+
+  .v1-nav-center {
+    display: none;
+  }
+
+  .v1-welcome {
+    align-items: stretch;
+  }
+
+  .v1-welcome-copy {
+    padding: 24px 0 12px;
+  }
+
+  .v1-hero-orb {
+    height: 285px;
+    order: -1;
+  }
+
+  .v1-hero-note {
+    bottom: 10%;
+  }
+
+  .v1-story-visual,
+  .v1-journey-visual,
+  .v1-tap-visual,
+  .v1-invoice-visual {
+    min-height: 245px;
+  }
+
+  .v1-journey-copy {
+    padding: 6px 0 18px;
+  }
+
+  .v1-journey-copy h1 {
+    font-size: 34px;
+  }
+
+  .v1-choice-list {
+    margin-top: 12px;
+  }
+
+  .v1-form-card {
+    grid-template-columns: 1fr;
+  }
+
+  .v1-form-card label:first-child {
+    grid-column: auto;
+  }
+
+  .v1-otp-row,
+  .v1-form-card > small {
+    grid-column: auto;
+  }
+
+  .v1-source-grid,
+  .v1-module-grid,
+  .v1-status-grid,
+  .v1-product-grid,
+  .v1-seller-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .v1-cockpit-hero,
+  .v1-seller-hero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .v1-cockpit-orb,
+  .v1-seller-value {
+    width: 104px;
+    height: 104px;
+  }
+
+  .v1-metric-row,
+  .v1-seller-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v1-shell *,
+  .v1-shell *::before,
+  .v1-shell *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}

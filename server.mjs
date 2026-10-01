@@ -86,10 +86,20 @@ function totalMinor() {
 
 function buildPreview() {
   const grossMinor = totalMinor();
-  const guaranteedMinor = state.entitlements
+  const capabilities = state.onboarding.exchange?.capabilities;
+  const entitlementIsApproved = (entitlement) => {
+    if (!capabilities) return true;
+    const approved = new Set(capabilities.map((item) => String(item).toLowerCase()));
+    if (entitlement.id === 'fazaa') return approved.has('memberships') || approved.has('membership cards');
+    if (entitlement.id === 'visa') return approved.has('cards') || approved.has('eligible cards / bin');
+    if (entitlement.id === 'newsletter') return approved.has('promocodes') || approved.has('vouchers') || approved.has('newsletter');
+    return false;
+  };
+  const approvedEntitlements = state.entitlements.filter(entitlementIsApproved);
+  const guaranteedMinor = approvedEntitlements
     .filter((item) => item.status === 'ready')
     .reduce((sum, item) => sum + item.valueMinor, 0);
-  const possibleMinor = state.entitlements
+  const possibleMinor = approvedEntitlements
     .filter((item) => item.status === 'possible')
     .reduce((sum, item) => sum + item.valueMinor, 0);
   const netMinor = grossMinor - guaranteedMinor;
@@ -114,7 +124,7 @@ function buildPreview() {
       'Newsletter code is Tier C and cannot reduce the guaranteed price.',
       'Visa Signature carries a sandbox card-not-present fee and would reduce the net benefit.'
     ],
-    evidence: state.entitlements
+    evidence: approvedEntitlements
   };
 }
 
