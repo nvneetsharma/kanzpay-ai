@@ -1,15 +1,1 @@
-{
-  "version": 2,
-  "builds": [
-    { "src": "api/[...path].mjs", "use": "@vercel/node" },
-    { "src": "public/**", "use": "@vercel/static" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/[...path].mjs" },
-    { "src": "/assets/(.*)", "dest": "/public/assets/$1" },
-    { "src": "/app.js", "dest": "/public/app.js" },
-    { "src": "/styles.css", "dest": "/public/styles.css" },
-    { "src": "/visual-overrides.css", "dest": "/public/visual-overrides.css" },
-    { "src": "/", "dest": "/public/index.html" }
-  ]
-}
+{"version":2,"builds":[{"src":"public/**","use":"@vercel/static"}],"routes":[{"src":"/(.*)","dest":"/public/$1"}]}
