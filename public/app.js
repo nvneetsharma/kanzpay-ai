@@ -2,9 +2,19 @@ const app = document.querySelector('#app');
 const toast = document.querySelector('#toast');
 
 const state = {
-  role: null, view: 'welcome', buyerStep: 0, sellerStep: 0,
-  name: '', mobile: '', email: '', account: null, sources: [],
-  permissions: {}, invoice: null, receipt: null, tour: 0
+  role: null,
+  screen: 'home',
+  buyer: null,
+  seller: null,
+  sources: [],
+  catalogue: [],
+  invoice: null,
+  receipt: null,
+  sellerStep: 0,
+  buyerStep: 0,
+  account: null,
+  selectedModule: null,
+  sellerInvoiceStatus: 'pending'
 };
 
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -17,6 +27,7 @@ const notify = (message, kind = '') => {
   clearTimeout(notify.timer);
   notify.timer = setTimeout(() => { toast.className = 'toast'; }, 2600);
 };
+const get = async (path) => (await fetch(path)).json();
 const post = async (path, payload = {}) => {
   const response = await fetch(path, {
     method: 'POST',
@@ -25,212 +36,275 @@ const post = async (path, payload = {}) => {
   });
   return response.json();
 };
-const getSources = async () => {
-  const result = await fetch('/api/savings-map').then((response) => response.json());
-  state.sources = result.discovered || [];
-};
+
+function particles() {
+  return `<div class="particle-field">${Array.from({ length: 42 }, (_, index) => `<i style="--i:${index};--x:${(index * 29) % 100}%;--y:${(index * 47) % 100}%;--d:${2.6 + (index % 5) * .45}s"></i>`).join('')}</div>`;
+}
 
 function shell(content, options = {}) {
-  const { dark = false, back = true } = options;
-  return `<div class="fresh-shell ${dark ? 'fresh-dark' : ''}">
-    <header class="fresh-nav">
-      <button class="brand" data-action="home"><img src="/assets/kanzpay-mark.png" alt="" /><span>Kanzpay</span></button>
-      <div class="nav-path"><span class="path-light"></span><span>${state.role ? esc(state.role) : 'your value journey'}</span></div>
-      ${back ? '<button class="icon-button" data-action="back" aria-label="Go back">←</button>' : '<span class="nav-spacer"></span>'}
-    </header>
-    ${content}
-    <footer class="fresh-footer">Built with <b>♥</b> in UAE <b>🇦🇪</b> by OXY Technologies, ADGM, Abu Dhabi.</footer>
+  const { back = false, eyebrow = 'KANZPAY · VALUE LAYER' } = options;
+  return `<div class="app-shell ${state.role ? `${state.role}-mode` : ''}">${particles()}
+    <header class="topbar">
+      <button class="wordmark" data-action="home"><span class="mark">K</span><span>Kanzpay</span></button>
+      <div class="topbar-center"><span class="signal-dot"></span>${eyebrow}</div>
+      <div class="topbar-actions">
+        <button class="role-pill ${state.role === 'buyer' ? 'selected' : ''}" data-action="role" data-role="buyer">Buyer</button>
+        <button class="role-pill ${state.role === 'seller' ? 'selected' : ''}" data-action="role" data-role="seller">Seller</button>
+        ${back ? '<button class="back-button" data-action="back">←</button>' : ''}
+      </div>
+    </header>${content}<footer class="footer">A calm, intelligent value layer · Built in the UAE</footer>
   </div>`;
 }
 
-function welcome() {
-  return `<main class="hero-screen">
-    <div class="hero-image"></div><div class="hero-shade"></div>
-    <div class="hero-copy"><span class="brand-stamp">KANZPAY · 24K VALUE LAYER</span>
-      <h1>Make more<br /><em>from every payment.</em></h1>
-      <p>Tap once. See the better price. Keep the good that comes back.</p>
-      <div class="hero-actions"><button class="primary-cta" data-action="role" data-role="buyer">I’m a buyer <span>→</span></button><button class="glass-cta" data-action="role" data-role="seller">I’m a seller <span>→</span></button></div>
-      <button class="tour-link" data-action="tour"><span class="play">▶</span> Watch the 15-second story</button>
+function home() {
+  return `<main class="home"><section class="home-copy">
+    <div class="eyebrow">THE VALUE LAYER FOR EVERYDAY LIFE</div>
+    <h1>More value.<br><em>Less effort.</em></h1>
+    <p class="home-lead">Follow the journey exactly as mapped: buyers build a Value Vault, sellers run every transaction through K-Assistant.</p>
+    <div class="role-cards">
+      <button class="role-card buyer-card" data-action="role" data-role="buyer"><span class="card-kicker">BUYERS · JOURNEY 01</span><strong>Build your<br><em>Value Vault.</em></strong><small>Tap, connect, earn, redeem.</small><span class="card-arrow">↗</span></button>
+      <button class="role-card seller-card" data-action="role" data-role="seller"><span class="card-kicker">SELLERS · JOURNEY 02</span><strong>Run your store<br><em>with intelligence.</em></strong><small>Install K-Assistant and grow.</small><span class="card-arrow">↗</span></button>
     </div>
-    <div class="hero-coin"><strong>1</strong><small>mg Gold</small><i></i></div>
-    <div class="gold-thread thread-one"></div><div class="gold-thread thread-two"></div>
-  </main>`;
+    <button class="story-link" data-action="role" data-role="buyer"><span class="story-icon">✦</span> Start the buyer journey</button>
+  </section><section class="home-art"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+    <div class="golden-orb"><span>Au</span><small>24K<br>VALUE</small></div><div class="art-label label-top">FLOWING INTELLIGENCE <i></i></div><div class="art-label label-bottom">1 mg Gold · starts here <i></i></div>
+    <div class="art-card card-float"><span>VALUE VAULT</span><strong>AED 6.60</strong><small>discoverable savings</small><i>+66 points</i></div>
+  </section></main>`;
 }
 
-const tourScenes = [
-  ['scene-welcome.png', 'Start', '1 mg Gold begins your journey.'],
-  ['scene-tap.png', 'Tap', 'Your approved value travels to the seller.'],
-  ['scene-payments.png', 'Save', 'Kanzpay finds the better way to pay.'],
-  ['scene-counter.jpg', 'Earn', 'The good comes back as points and Gold.'],
-  ['scene-dashboard.png', 'See', 'One calm cockpit for your money life.']
-];
-
-function tour() {
-  const scene = tourScenes[state.tour];
-  return `<main class="tour-screen"><div class="tour-art" style="background-image:url('/assets/${scene[0]}')"></div><div class="tour-overlay"></div>
-    <div class="tour-top"><span>THE KANZPAY STORY</span><button data-action="tour-exit">Skip</button></div>
-    <div class="tour-bottom"><div class="tour-count">0${state.tour + 1} <i>/ 05</i></div><h1>${scene[1]}</h1><p>${scene[2]}</p><div class="tour-dots">${tourScenes.map((_, index) => `<i class="${index === state.tour ? 'active' : ''}"></i>`).join('')}</div></div>
-  </main>`;
+function journeyHeader(step, total, title, copy) {
+  return `<div class="journey-header"><div class="step-badge">${String(step).padStart(2, '0')} <span>/ ${String(total).padStart(2, '0')}</span></div><span class="eyebrow">${title}</span><p>${copy}</p></div>`;
 }
 
-function roleStart() {
-  const isBuyer = state.role === 'buyer';
-  return shell(`<main class="scene-page"><div class="scene-panel ${isBuyer ? 'buyer-panel' : 'seller-panel'}"></div><div class="scene-copy">
-    <span class="eyebrow">STEP 01 · ${isBuyer ? 'BUYER' : 'SELLER'}</span><h1>${isBuyer ? 'Start lighter.' : 'Grow smarter.'}</h1>
-    <p>${isBuyer ? 'Tap a K-Tag and let your value travel with you.' : 'Let every invoice, order and customer come back stronger.'}</p>
-    <div class="journey-line"><i class="active"></i><b></b><i></i><b></b><i></i><b></b><i></i></div>
-    <button class="primary-cta" data-action="next-role">${isBuyer ? 'Tap or scan' : 'Start onboarding'} <span>→</span></button><button class="quiet-cta" data-action="home">Choose another path</button>
-  </div></main>`);
+function choiceCard(action, icon, title, copy, tag = '') {
+  return `<button class="choice-card" data-action="${action}"><span class="choice-icon">${icon}</span><span><b>${title}</b><small>${copy}</small></span>${tag ? `<em>${tag}</em>` : '<strong>→</strong>'}</button>`;
 }
 
-function verifyForm() {
-  return `<div class="short-form"><label><span>Your name</span><input id="name" value="${esc(state.name)}" placeholder="Name" /></label><div class="two-inputs"><label><span>Mobile</span><input id="mobile" value="${esc(state.mobile)}" placeholder="+971" /></label><label><span>Email</span><input id="email" value="${esc(state.email)}" placeholder="you@email.com" /></label></div><button class="soft-cta" data-action="verify-user">Send two OTPs <span>↗</span></button></div>`;
+function buyerStart() {
+  return shell(`<main class="journey-page split-page"><section class="journey-art dark-art"><div class="golden-orb small-orb"><span>K</span><small>TAP OR<br>SCAN</small></div><div class="art-caption">YOUR VALUE JOURNEY<br><em>starts here.</em></div></section><section class="journey-panel">
+    ${journeyHeader(1, 4, 'BUYER · START JOURNEY', 'Tap or scan to enter your Value Vault.')}
+    <div class="form-card"><label>How do you want to start?</label>${choiceCard('buyer-tap', '⌁', 'Tap a K-Tag', 'Start instantly at a Kanzpay-ready seller.', 'TAP')} ${choiceCard('buyer-scan', '⌗', 'Scan a QR code', 'Open a seller or partner journey from camera.', 'SCAN')}</div>
+    <button class="quiet-button" data-action="buyer-account">Already have an account? Sign in</button>
+  </section></main>`, { eyebrow: 'BUYER · TAP OR SCAN', back: true });
 }
 
-function buyerFlow() {
-  const steps = [
-    ['Tap', 'Find value at the counter', 'Tap the seller K-Tag. Your approved benefit signals stay yours.', 'scene-tap.png', 'tap-start'],
-    ['Verify', 'Make it yours', 'Mobile and email. Two small steps to open your Gold vault.', 'scene-family.png', 'verify'],
-    ['Rewards', 'Bring points together', 'Connect a reward programme and keep the useful signal in one place.', 'scene-community.png', 'reward'],
-    ['Offers', 'Let value find you', 'Memberships, vouchers and promo codes become easier to use.', 'scene-counter.jpg', 'offers'],
-    ['Pay', 'Choose the better route', 'Kanzpay compares eligible instruments before you approve.', 'scene-payments.png', 'payment'],
-    ['Account', 'Open your vault', 'Create your account and keep every saving, receipt and Gold moment together.', 'scene-dashboard.png', 'account']
-  ];
-  const [label, title, copy, image, action] = steps[state.buyerStep];
-  return shell(`<main class="flow-page"><div class="flow-visual" style="background-image:url('/assets/${image}')"><div class="visual-glow"></div><span class="visual-tag">${label}</span><div class="visual-coin">${state.buyerStep === 5 ? '1 mg' : '✦'}</div></div>
-    <div class="flow-copy"><div class="progress-row"><span>BUYER JOURNEY</span><b>${state.buyerStep + 1} / 6</b></div><div class="progress-bar"><i style="width:${((state.buyerStep + 1) / 6) * 100}%"></i></div><h1>${title}</h1><p>${copy}</p>
-      ${action === 'verify' ? verifyForm() : ''}<div class="flow-actions">${action !== 'verify' ? `<button class="primary-cta" data-action="buyer-action" data-kind="${action}">${action === 'tap-start' ? 'Tap K-Tag' : action === 'account' ? 'Create account' : 'Connect now'} <span>→</span></button>` : ''}
-      ${state.buyerStep > 0 ? '<button class="quiet-cta" data-action="buyer-back">Back</button>' : '<button class="quiet-cta" data-action="dashboard">I’ll do this later</button>'}</div>
-      <div class="mini-path">${steps.map((_, index) => `<i class="${index < state.buyerStep ? 'done' : index === state.buyerStep ? 'active' : ''}"></i>`).join('')}</div>
-    </div></main>`);
+function buyerCheckUser() {
+  return shell(`<main class="journey-page split-page"><section class="journey-art gold-art"><div class="glass-phone"><span>WELCOME BACK</span><strong>Kanzpay<br><em>knows your value.</em></strong><small>Secure identity check</small></div></section><section class="journey-panel">
+    ${journeyHeader(2, 4, 'BUYER · CHECK USER', 'Choose whether you are an existing user or building your Value Vault for the first time.')}
+    <div class="form-card"><label>Are you an existing Kanzpay user?</label>${choiceCard('buyer-existing', '◈', 'Yes, continue', 'Use your saved Value Vault and connected benefits.')} ${choiceCard('buyer-new', '✦', 'No, build my vault', 'Start with a simple secure account setup.')}</div>
+  </section></main>`, { eyebrow: 'BUYER · CHECK USER', back: true });
 }
 
-function sourceSheet(kind) {
-  const source = state.sources.find((item) => item.id === kind) || { label: kind, benefit: 'Find more value before you pay.' };
-  return `<div class="permission-sheet"><div class="sheet-orb">${source.icon || '✦'}</div><span class="eyebrow">ONE PERMISSION</span><h2>${esc(source.label)}</h2><p>${esc(source.benefit)}</p><div class="permission-list"><span>✓ Read-only</span><span>✓ You choose</span><span>✓ Revoke anytime</span></div><button class="primary-cta" data-action="approve-source" data-source="${esc(kind)}">Allow ${esc(source.label)} <span>→</span></button><button class="quiet-cta" data-action="decline-source">Not now</button></div>`;
+function buyerOtp() {
+  return shell(`<main class="journey-page split-page"><section class="journey-art dark-art"><div class="otp-orbit">K<span>✦</span></div><div class="art-caption">ONE TIME<br><em>verification.</em></div></section><section class="journey-panel">
+    ${journeyHeader(2, 4, 'BUYER · OTP VERIFY', 'We use a one-time code to protect your account and your value.')}
+    <div class="form-card"><label>Email or mobile number</label><input class="text-input" value="maya@example.com"><label>Verification code</label><div class="otp-inputs"><input value="2"><input value="4"><input value="8"><input value="6"></div><button class="gold-button wide" data-action="buyer-vault">Verify and continue <span>↗</span></button><small class="helper">Sandbox demo: any four digits continue.</small></div>
+  </section></main>`, { eyebrow: 'BUYER · OTP VERIFY', back: true });
+}
+
+function buyerVaultSetup() {
+  return shell(`<main class="journey-page split-page"><section class="journey-art gold-art"><div class="vault-card"><span>YOUR VALUE VAULT</span><strong>1 mg<br><em>Gold credited.</em></strong><small>Earn more · Save more</small></div></section><section class="journey-panel">
+    ${journeyHeader(2, 4, 'BUYER · BUILD MY VALUE VAULT', 'Choose the sources Kanzpay may check. You approve every connection.')}
+    <div class="form-card"><label>Connect your value sources</label><div class="check-list">${['Memberships and discounts', 'Reward points', 'Promo codes', 'Vouchers and coupons', 'Cards and payment instruments', 'Accounts and preferred rails'].map((item, index) => `<label class="check-row"><input type="checkbox" checked><span>${item}</span><i>${index < 4 ? 'Ready' : 'Optional'}</i></label>`).join('')}</div><button class="gold-button wide" data-action="buyer-cockpit">Save my Value Vault <span>↗</span></button></div>
+  </section></main>`, { eyebrow: 'BUYER · VALUE VAULT', back: true });
 }
 
 function buyerDashboard() {
-  return shell(`<main class="cockpit"><div class="cockpit-hero" style="background-image:url('/assets/scene-dashboard.png')"><div class="hero-shade"></div><div class="cockpit-welcome"><span class="eyebrow">GOOD MORNING, ${esc((state.name || 'MAYA').split(' ')[0]).toUpperCase()}</span><h1>Your value<br /><em>is moving.</em></h1><p>One tap to save. One life to enjoy.</p></div><div class="gold-balance"><strong>1</strong><span>mg<br />processing</span></div></div>
-    <div class="gold-path"><i class="active"></i><b></b><i class="active"></i><b></b><i></i><b></b><i></i><span>account</span><span>connect</span><span>earn</span><span>grow</span></div>
-    <div class="cockpit-grid"><button class="life-card card-tap" data-action="checkout"><span class="card-icon">⌁</span><small>AT THE COUNTER</small><strong>Tap<br />to save</strong><em>Try a guided checkout →</em></button><button class="life-card card-gold" data-action="buyer-flow"><span class="card-icon">✦</span><small>GOLD VAULT</small><strong>Keep<br />the good</strong><em>1 mg processing</em></button><button class="life-card card-rewards" data-action="savings"><span class="card-icon">◎</span><small>VALUE MAP</small><strong>Find<br />more</strong><em>${state.sources.filter((item) => item.status === 'connected').length} connected · ${state.sources.filter((item) => item.status === 'locked').length} waiting</em></button><button class="life-card card-spend" data-action="receipt"><span class="card-icon">▦</span><small>YOUR LIFE</small><strong>See<br />clearly</strong><em>Receipts · patterns · limits</em></button></div>
-    <div class="ask-strip"><span class="ask-avatar">K</span><div><strong>K-assistant</strong><small>What should we make more valuable today?</small></div><button data-action="savings">Ask →</button></div></main>`);
+  const buyer = state.buyer || { name: 'Maya Khan', points: 1840, goldMinor: 1260 };
+  const modules = [
+    ['buyer-module', '✦', 'My Value Vault', 'Memberships, reward points, promo codes and vouchers.'],
+    ['buyer-card', '▣', 'My Visiting Card', 'Share your profile with a trusted contact.'],
+    ['buyer-friends', '♧', 'Earn with friends', 'Invite, share and grow value together.'],
+    ['buyer-gold', 'Au', 'My Gold Vault', 'Track gold weight and value earned.'],
+    ['buyer-expenses', '⌁', 'My Expenses', 'See daily, weekly, monthly and yearly patterns.'],
+    ['buyer-instruments', '◌', 'Payment intelligence', 'Choose the best rail for every purchase.']
+  ];
+  return shell(`<main class="dashboard"><div class="dashboard-hero buyer-hero"><div class="dashboard-heading"><span class="eyebrow">BUYER COCKPIT · VALUE VAULT</span><h1>${esc(buyer.name.split(' ')[0])}, your value<br><em>is already moving.</em></h1><p>All approved modules live in one calm, flowing cockpit.</p></div><div class="gold-balance"><span class="gold-coin">Au</span><div><small>MY GOLD VAULT</small><strong>${(buyer.goldMinor / 1000).toFixed(3)} mg</strong><em>+0.066 this month</em></div></div></div>
+    <div class="dashboard-nav"><button class="active">Cockpit</button><button data-action="buyer-module">My Value Vault</button><button data-action="buyer-savings">Connections</button><button data-action="buyer-expenses">Expenses</button></div>
+    <section class="metric-grid"><article class="metric-card metric-gold"><small>MY REWARD POINTS</small><strong>${buyer.points.toLocaleString()}</strong><span>points · +12% this month</span><i>◎</i></article><article class="metric-card metric-save"><small>VALUE FOUND</small><strong>AED 42.80</strong><span>across 8 transactions</span><i>⌁</i></article><article class="metric-card metric-insight"><small>GOLD WEIGHT</small><strong>${(buyer.goldMinor / 1000).toFixed(3)} <b>mg</b></strong><span>updated today</span><i>✦</i></article></section>
+    <section class="cockpit-module-grid">${modules.map(([action, icon, title, copy]) => `<button class="module-card" data-action="${action}"><span class="module-icon">${icon}</span><span><b>${title}</b><small>${copy}</small></span><strong>→</strong></button>`).join('')}</section>
+    <section class="feature-grid"><article class="feature-card tap-card"><div><span class="eyebrow">AT THE COUNTER</span><h2>Bring your<br><em>value with you.</em></h2><p>Tap a seller K-Tag and review every approved benefit before paying.</p><button class="gold-button" data-action="checkout">Try Luma Market <span>↗</span></button></div><div class="tap-visual"><div class="tap-ring"></div><span class="ktag">K<span>•</span></span><small>LUMA MARKET</small></div></article><article class="value-card"><span class="eyebrow">LIVE VALUE</span><h2>What can<br><em>find you?</em></h2><div class="source-row"><span>✦</span><div><b>Fazaa membership</b><small>Ready to apply</small></div><strong>− AED 4.20</strong></div><div class="source-row"><span>◇</span><div><b>Visa BIN offer</b><small>Ready to apply</small></div><strong>− AED 1.80</strong></div><button class="text-button" data-action="buyer-savings">Open value map →</button></article></section>
+  </main>`, { eyebrow: 'BUYER · COCKPIT', back: true });
 }
 
-function sellerForm() {
-  return `<div class="short-form"><label><span>Business name</span><input id="business" value="Luma Market" /></label><div class="two-inputs"><label><span>Type</span><input value="Retail" /></label><label><span>Location</span><input value="Dubai" /></label></div><div class="permission-list"><span>✓ K-Assistant</span><span>✓ K-Tag</span><span>✓ Invoice share</span></div></div>`;
+function buyerModule() {
+  const module = state.selectedModule || 'My Value Vault';
+  const rows = [
+    ['My Memberships', 'Fazaa · Active', '− AED 4.20'],
+    ['My Reward Points', '1 point / AED', '1,840 pts'],
+    ['My Promocodes', '2 eligible codes', 'Review'],
+    ['My Vouchers', '3 coupons saved', 'Review']
+  ];
+  return shell(`<main class="detail-page"><div class="page-heading"><span class="eyebrow">BUYER COCKPIT · ${module.toUpperCase()}</span><h1>Your value,<br><em>organized.</em></h1><p>Every connected program is visible, explainable and permissioned.</p></div><section class="detail-list">${rows.map(([name, status, value]) => `<article class="detail-row"><span class="module-icon">✦</span><div><b>${name}</b><small>${status}</small></div><strong>${value}</strong><button class="text-button">Open →</button></article>`).join('')}</section><button class="gold-button" data-action="buyer-home">Back to cockpit <span>↗</span></button></main>`, { eyebrow: 'BUYER · VALUE VAULT', back: true });
 }
 
-function sellerFlow() {
-  const steps = [['Start', 'Open your business', 'Install K-Assistant. Add your business identity once.', 'scene-seller.png', 'seller-start'], ['Value', 'Price with care', 'Accept rewards, memberships, vouchers and preferred payment routes.', 'scene-payments.png', 'seller-rules'], ['Invoice', 'Send before print', 'Build the invoice from the buyer tap, then share it.', 'scene-counter.jpg', 'seller-invoice'], ['Run', 'See the whole store', 'Orders, catalogue, inventory, finance and customer intelligence.', 'scene-cockpit.png', 'seller-dashboard']];
-  const [label, title, copy, image, action] = steps[state.sellerStep];
-  return shell(`<main class="flow-page seller-flow"><div class="flow-visual" style="background-image:url('/assets/${image}')"><div class="visual-glow"></div><span class="visual-tag">${label}</span><div class="visual-coin">K</div></div><div class="flow-copy"><div class="progress-row"><span>SELLER JOURNEY</span><b>${state.sellerStep + 1} / 4</b></div><div class="progress-bar"><i style="width:${((state.sellerStep + 1) / 4) * 100}%"></i></div><h1>${title}</h1><p>${copy}</p>${state.sellerStep === 0 ? sellerForm() : ''}<button class="primary-cta" data-action="seller-action" data-kind="${action}">${state.sellerStep === 0 ? 'Start onboarding' : state.sellerStep === 3 ? 'Open cockpit' : 'Continue'} <span>→</span></button>${state.sellerStep > 0 ? '<button class="quiet-cta" data-action="seller-back">Back</button>' : '<button class="quiet-cta" data-action="home">Not now</button>'}</div></main>`);
+function buyerDetail(title, eyebrow, icon, copy, content) {
+  return shell(`<main class="detail-page"><div class="detail-hero"><span class="module-icon">${icon}</span><span class="eyebrow">${eyebrow}</span><h1>${title}<br><em>in one view.</em></h1><p>${copy}</p></div><section class="detail-content">${content}</section><button class="gold-button" data-action="buyer-home">Back to cockpit <span>↗</span></button></main>`, { eyebrow, back: true });
+}
+
+function buyerSavings() {
+  const sources = state.sources.length ? state.sources : [
+    { id: 'cards', icon: '◇', label: 'Cards & BIN offers', benefit: 'Find issuer discounts before you pay.', status: 'discoverable' },
+    { id: 'memberships', icon: '✦', label: 'Memberships', benefit: 'Apply member pricing automatically.', status: 'discoverable' },
+    { id: 'rewards', icon: '◎', label: 'Reward programmes', benefit: 'Use points and keep balances together.', status: 'discoverable' },
+    { id: 'email', icon: '✉', label: 'Email offers', benefit: 'Find vouchers and promo codes.', status: 'locked' }
+  ];
+  return shell(`<main class="map-page"><div class="page-heading"><span class="eyebrow">BUYER · VALUE VAULT CONNECTIONS</span><h1>Choose what<br><em>can help you.</em></h1><p>Icons stay faded until you connect a source. Nothing moves without your approval.</p></div><div class="map-total"><span>DISCOVERED VALUE</span><strong>AED 6.60</strong><small>ready across your approved sources</small></div><section class="source-list">${sources.map((source) => `<button class="source-item ${source.status}" data-action="source" data-source="${esc(source.id)}"><span class="source-icon">${source.icon}</span><div><b>${esc(source.label)}</b><small>${esc(source.benefit)}</small></div><strong>${source.status === 'connected' ? 'Connected' : source.status === 'locked' ? 'Locked' : 'Connect'} <span>→</span></strong></button>`).join('')}</section><button class="quiet-button" data-action="buyer-home">← Back to cockpit</button></main>`, { eyebrow: 'BUYER · VALUE VAULT', back: true });
 }
 
 function checkout() {
+  if (!state.invoice) return shell(`<main class="checkout"><section class="checkout-visual"><div class="checkout-glass"><span class="eyebrow">LUMA MARKET · K-TAG</span><div class="checkout-orb">K</div><div class="scan-line"></div><h2>Tap.<br><em>Review. Decide.</em></h2><p>The seller sees only the approved signals that help price your basket.</p></div></section><section class="checkout-panel"><span class="eyebrow">BUYER · TAP K-TAG</span><h1>A better price<br><em>is waiting.</em></h1><div class="trust-list"><span>✦ Membership pricing</span><span>◇ Card-linked offers</span><span>◎ Reward points</span><span>⌁ Safer payment rails</span></div><button class="gold-button wide" data-action="create-invoice">Tap Luma K-Tag <span>↗</span></button><button class="quiet-button" data-action="buyer-home">← Back to cockpit</button></section></main>`, { eyebrow: 'BUYER · TAP', back: true });
   const invoice = state.invoice;
-  return shell(`<main class="checkout-page"><div class="checkout-art" style="background-image:url('/assets/scene-counter.jpg')"><div class="hero-shade"></div><span class="checkout-badge">LUMA MARKET · K-TAG</span><div class="tap-pulse">⌁</div><div class="checkout-caption"><span>YOUR BENEFITS</span><strong>Arrived before<br />the bill.</strong></div></div><div class="checkout-sheet">${invoice ? `<div class="invoice-head"><div><span class="eyebrow">READY TO REVIEW</span><h1>Better<br /><em>before pay.</em></h1></div><span class="invoice-no">#1048</span></div><div class="invoice-lines"><div><span>Basket</span><b>${money(invoice.grossMinor)}</b></div><div class="saving-line"><span>Fazaa member</span><b>− ${money(420)}</b></div><div class="saving-line"><span>Visa BIN offer</span><b>− ${money(180)}</b></div><div class="total-line"><span>Final amount</span><strong>${money(invoice.payableMinor)}</strong></div></div><div class="reward-result"><span>YOU GET BACK</span><div><strong>+${invoice.pointsEarned}</strong><small>points</small><b>→ ${invoice.pointsAfterPurchase} total</b></div><i>+${(invoice.goldEarnedMinor / 1000).toFixed(3)} mg Gold</i></div><div class="checkout-actions"><button class="primary-cta" data-action="approve">Approve & pay <span>→</span></button><button class="quiet-cta" data-action="stop">Stop</button></div>` : `<div class="checkout-empty"><span class="tap-icon">⌁</span><span class="eyebrow">TAP THE K-TAG</span><h1>Bring your<br /><em>value with you.</em></h1><p>The seller gets the benefit signals you approve. Nothing more.</p><button class="primary-cta" data-action="create-invoice">Tap Luma K-Tag <span>→</span></button><button class="quiet-cta" data-action="dashboard">Back to cockpit</button></div>`}</div></main>`);
-}
-
-function sellerDashboard() {
-  return shell(`<main class="seller-cockpit"><div class="seller-cover" style="background-image:url('/assets/scene-seller.png')"><div class="hero-shade"></div><div><span class="eyebrow">LUMA MARKET · K-ASSISTANT</span><h1>Good morning.<br /><em>Let’s run it well.</em></h1></div><div class="seller-live"><i></i> K-Tag live</div></div><div class="seller-tabs"><button class="active">Today</button><button>Orders</button><button data-action="catalogue">Catalogue</button><button>Intelligence</button></div><div class="seller-metrics"><article><small>TO ACTION</small><strong>04</strong><span>orders waiting</span></article><article><small>VALUE</small><strong>AED 8.4k</strong><span>today · +12.8%</span></article><article><small>STOCK</small><strong>86%</strong><span>healthy shelf</span></article></div><div class="seller-columns"><div class="seller-list"><h2>Today</h2><div class="seller-row"><i class="status-live"></i><span><b>#1048 · Maya</b><small>Invoice waiting for approval</small></span><strong>AED 66</strong></div><div class="seller-row"><i class="status-done"></i><span><b>#1047 · Sarah</b><small>Paid · receipt matched</small></span><strong>AED 128</strong></div><div class="seller-row"><i class="status-warn"></i><span><b>Granola cup</b><small>Low stock · 4 left</small></span><strong>Restock</strong></div></div><div class="seller-scene" style="background-image:url('/assets/scene-cockpit.png')"><span>K-assistant</span><strong>Your store<br />is learning.</strong></div></div></main>`);
+  return shell(`<main class="checkout"><section class="checkout-visual invoice-visual"><div class="invoice-glass"><span class="eyebrow">INVOICE READY · #${esc(invoice.reference || '1048')}</span><h2>Review the<br><em>good part.</em></h2><div class="invoice-preview"><div><span>Basket</span><b>${money(invoice.grossMinor)}</b></div><div class="discount"><span>Fazaa member</span><b>− ${money(420)}</b></div><div class="discount"><span>Visa BIN offer</span><b>− ${money(180)}</b></div><div class="invoice-total"><span>Final amount</span><strong>${money(invoice.payableMinor)}</strong></div></div></div></section><section class="checkout-panel"><span class="eyebrow">BUYER · APPROVE INVOICE</span><h1>Good value,<br><em>before pay.</em></h1><div class="reward-panel"><small>YOU GET BACK</small><strong>+${invoice.pointsEarned}</strong><span>points · ${money(invoice.goldEarnedMinor)} Gold</span><i>Balance after: ${invoice.pointsAfterPurchase.toLocaleString()} points</i></div><div class="rail-note"><span>●</span><div><b>Recommended rail · ${esc(invoice.selectedRail?.name || 'Aani')}</b><small>Safe, instant account-to-account · no fee</small></div></div><button class="gold-button wide" data-action="approve">Approve & pay <span>↗</span></button><button class="quiet-button" data-action="stop">Stop · don’t pay</button></section></main>`, { eyebrow: 'BUYER · APPROVE INVOICE', back: true });
 }
 
 function receipt() {
-  return shell(`<main class="receipt-page"><div class="receipt-visual" style="background-image:url('/assets/scene-home.jpg')"><div class="hero-shade"></div><div class="receipt-check">✓</div><span>PAYMENT COMPLETE</span><h1>Good<br /><em>choice.</em></h1></div><div class="receipt-card"><div><span>Luma Market</span><b>AED 66.00</b></div><div class="receipt-stats"><span><b>− AED 6</b><small>saved</small></span><span><b>+66</b><small>points</small></span><span><b>+0.066</b><small>mg Gold</small></span></div><p>Your receipt is ready. Your spending picture just got clearer.</p><button class="primary-cta" data-action="dashboard">Back to cockpit <span>→</span></button></div></main>`);
+  const result = state.receipt || {};
+  return shell(`<main class="receipt-page"><div class="receipt-check">✓</div><span class="eyebrow">PAYMENT COMPLETE · RECEIPT MATCHED</span><h1>Good<br><em>choice.</em></h1><p class="receipt-lead">Your value came back before the transaction left the room.</p><section class="receipt-summary"><div><span>Luma Market · LM-1048</span><strong>${money(result.paidMinor || 6600)}</strong></div><div class="receipt-stats"><article><b>− AED 6.00</b><small>saved</small></article><article><b>+${result.rewards?.points || 66}</b><small>points</small></article><article><b>+0.066</b><small>mg Gold</small></article></div><p>Receipt reconciled automatically · confidence 98%</p></section><button class="gold-button" data-action="buyer-home">Back to buyer cockpit <span>↗</span></button></main>`, { eyebrow: 'BUYER · RECONCILED RECEIPT' });
 }
 
-function sourceMap() {
-  return `<main class="source-map"><div class="map-head"><span class="eyebrow">K-ASSISTANT · VALUE MAP</span><h1>Find<br /><em>more value.</em></h1><p>One source at a time. You stay in control.</p></div><div class="source-cards">${state.sources.map((source) => `<button class="source-tile ${source.status}" data-action="source" data-source="${esc(source.id)}"><span>${source.icon}</span><div><b>${esc(source.label)}</b><small>${esc(source.benefit)}</small></div><strong>${source.status === 'connected' ? '✓' : source.status === 'locked' ? 'Lost' : 'Open'}</strong></button>`).join('')}</div><button class="quiet-cta" data-action="dashboard">Back to cockpit</button></main>`;
+function sellerStart() {
+  return shell(`<main class="journey-page split-page"><section class="journey-art gold-art"><div class="seller-logo-card"><span>K-ASSISTANT</span><strong>Luma<br><em>Market</em></strong><small>SELLER SETUP</small></div></section><section class="journey-panel">
+    ${journeyHeader(1, 4, 'SELLER · START ONBOARDING', 'Install K-Assistant, choose your business type and make your store visible to value-seeking buyers.')}
+    <div class="form-card"><label>Business details</label><div class="field-grid"><div><small>Business type</small><b>Retail & cafe</b></div><div><small>Location</small><b>Dubai Marina</b></div><div><small>Logo</small><b>Ready to add</b></div><div><small>K-Tag</small><b>K-LUMA-001</b></div></div><button class="gold-button wide" data-action="seller-install">Install K-Assistant <span>↗</span></button></div>
+  </section></main>`, { eyebrow: 'SELLER · START ONBOARDING', back: true });
+}
+
+function sellerInstall() {
+  return shell(`<main class="journey-page split-page"><section class="journey-art dark-art"><div class="assistant-orbit"><span>K</span><i>✦</i><i>Au</i></div><div class="art-caption">BACKGROUND<br><em>intelligence.</em></div></section><section class="journey-panel">
+    ${journeyHeader(1, 4, 'SELLER · INSTALL K-ASSISTANT', 'Choose your device and let Kanzpay work quietly in the background.')}
+    <div class="form-card"><label>Where should K-Assistant run?</label>${choiceCard('seller-docs', '⌘', 'Mobile or desktop', 'Android, iOS, Mac or Windows.', 'SELECTED')}${choiceCard('seller-docs', '⌗', 'Scan K-Tag', 'Connect your physical store identifier.', 'READY')}<div class="success-note">K-Assistant installed in sandbox mode. Next: verify your business.</div><button class="gold-button wide" data-action="seller-docs">Continue to verification <span>↗</span></button></div>
+  </section></main>`, { eyebrow: 'SELLER · K-ASSISTANT', back: true });
+}
+
+function sellerDocs() {
+  return shell(`<main class="journey-page split-page"><section class="journey-art gold-art"><div class="document-stack"><span>EMIRATES ID</span><strong>✓</strong><small>AML CHECK READY</small></div></section><section class="journey-panel">
+    ${journeyHeader(1, 4, 'SELLER · VERIFY BUSINESS', 'Upload the required documents. In production, the camera guides cropping, editing and identity matching.')}
+    <div class="form-card"><label>Required documents</label>${['Emirates ID · front', 'Emirates ID · back', 'Commercial licence'].map((item) => `<div class="upload-row"><span>▧</span><div><b>${item}</b><small>Camera or upload · document crop and edit</small></div><strong>Uploaded</strong></div>`).join('')}<div class="success-note">Photo match and AML check passed for this sandbox journey.</div><button class="gold-button wide" data-action="seller-rules">Continue to reward rules <span>↗</span></button></div>
+  </section></main>`, { eyebrow: 'SELLER · DOCUMENT CHECK', back: true });
+}
+
+function sellerRules() {
+  return shell(`<main class="journey-page split-page"><section class="journey-art gold-art"><div class="rules-card"><span>VALUE RULES</span><strong>12%<br><em>back to buyers.</em></strong><small>YOUR STORE · VERSION 12</small></div></section><section class="journey-panel">
+    ${journeyHeader(2, 4, 'SELLER · SET VALUE RULES', 'Choose how membership discounts, vouchers, points and preferred payment instruments work.')}
+    <div class="form-card"><label>Buyer value settings</label><div class="rule-grid large-rules"><span>Membership discounts <b>12%</b></span><span>Voucher / promo codes <b>Allowed</b></span><span>Reward points value <b>1 point / AED</b></span><span>Preferred instruments <b>Enabled</b></span><span>Gold earn rate <b>GMV AED ÷ 1000</b></span><span>Points earn rate <b>GMV AED ÷ 100</b></span></div><button class="gold-button wide" data-action="seller-invoice">Generate invoice <span>↗</span></button></div>
+  </section></main>`, { eyebrow: 'SELLER · VALUE RULES', back: true });
+}
+
+function sellerInvoice() {
+  return shell(`<main class="journey-page split-page"><section class="journey-art dark-art"><div class="invoice-sheet"><span>INVOICE READY</span><strong>AED 66.00</strong><small>LM-1048 · MAYA KHAN</small><i>− AED 6.00 value applied</i></div></section><section class="journey-panel">
+    ${journeyHeader(2, 4, 'SELLER · SHARE INVOICE', 'Generate the buyer-ready invoice and share it through print, K-Assistant or QR.')}
+    <div class="form-card"><div class="invoice-mini"><span>LM-1048 · MAYA KHAN</span><strong>AED 66.00</strong><small>Membership + card value applied</small></div>${choiceCard('seller-status', '⌁', 'Share via K-Assistant', 'Send the invoice to the buyer instantly.')} ${choiceCard('seller-status', '▤', 'Print or QR', 'Give the buyer a physical or scannable copy.')}</div>
+  </section></main>`, { eyebrow: 'SELLER · INVOICE READY', back: true });
+}
+
+function sellerStatus() {
+  const statuses = [['pending', 'Pending', 'Waiting for buyer approval'], ['paid', 'Paid', 'Buyer approved and settlement matched'], ['rejected', 'Rejected', 'Buyer chose not to continue'], ['process', 'In process', 'K-Assistant is checking the next action']];
+  return shell(`<main class="status-page"><div class="page-heading"><span class="eyebrow">SELLER · VIEW STATUS OF INVOICE</span><h1>Every invoice,<br><em>clear at a glance.</em></h1><p>Use the status to decide whether to markbook, ask the buyer’s reason or check the next process.</p></div><div class="status-grid">${statuses.map(([id, title, copy]) => `<button class="status-card ${state.sellerInvoiceStatus === id ? 'active' : ''}" data-action="seller-status-select" data-status="${id}"><i></i><div><b>${title}</b><small>${copy}</small></div><strong>${id === 'paid' ? 'Open receipt →' : id === 'rejected' ? 'Ask why →' : 'View →'}</strong></button>`).join('')}</div><div class="status-actions"><button class="gold-button" data-action="seller-dashboard">Open business cockpit <span>↗</span></button><button class="quiet-button" data-action="seller-status">Refresh status</button></div></main>`, { eyebrow: 'SELLER · INVOICE STATUS', back: true });
+}
+
+function sellerDashboard() {
+  return shell(`<main class="seller-dashboard"><div class="seller-hero"><div class="seller-hero-copy"><span class="eyebrow">SELLER · ALL-STORE COCKPIT</span><h1>Good morning.<br><em>Let’s run it well.</em></h1><p>Orders, catalogue, finance and payment intelligence in one dropdown-ready cockpit.</p></div><div class="live-pill"><i></i> K-Tag live</div><div class="seller-gold"><span class="gold-coin">K</span><small>VALUE RETURNED<br><strong>AED 8.4k</strong> · +12.8%</small></div></div><div class="dashboard-nav"><button class="active">All stores</button><button data-action="seller-orders">Orders</button><button data-action="catalogue">Catalogue</button><button data-action="seller-finance">Finance</button><button data-action="seller-instruments">Payments</button><button data-action="seller-intelligence">Intelligence</button></div><section class="seller-metrics"><article><small>TO ACTION</small><strong>04</strong><span>orders waiting</span></article><article><small>VALUE</small><strong>AED 8.4k</strong><span>today · +12.8%</span></article><article><small>STOCK</small><strong>86%</strong><span>healthy shelf</span></article><article><small>REPEAT CUSTOMERS</small><strong>38%</strong><span>this month</span></article></section><section class="seller-layout"><article class="seller-orders"><div class="section-title"><div><span class="eyebrow">FOCUS · TRANSACTIONS</span><h2>Keep the line moving.</h2></div><button class="text-button" data-action="seller-orders">View all →</button></div><div class="order-row"><i class="status live"></i><div><b>#1048 · Maya Khan</b><small>Invoice pending · 2m ago</small></div><strong>AED 66</strong><button data-action="seller-status">Open</button></div><div class="order-row"><i class="status done"></i><div><b>#1047 · Sarah Ali</b><small>Paid · receipt matched</small></div><strong>AED 128</strong><button class="muted">Done</button></div><div class="order-row"><i class="status warn"></i><div><b>Granola cup</b><small>Low stock · 4 left</small></div><strong>Restock</strong><button data-action="catalogue">View</button></div></article><article class="seller-intelligence"><span class="eyebrow">INTELLIGENCE · K-ASSISTANT</span><h2>Your store<br><em>is learning.</em></h2><div class="insight-line"><span>✦</span><div><b>Repeat customers</b><small>+8% vs last period</small></div></div><div class="insight-line"><span>◇</span><div><b>Best value lever</b><small>Membership discounts</small></div></div><button class="dark-button" data-action="seller-rules">Tune reward rules ↗</button></article></section></main>`, { eyebrow: 'SELLER · ALL-STORE INTELLIGENCE', back: true });
+}
+
+function sellerOrders() {
+  return sellerPanel('ORDERS · TRANSACTION COMMISSION', 'Pending requests, paid history and tickets in one queue.', [
+    ['#1048 · Maya Khan', 'Pending buyer approval', 'AED 66.00'],
+    ['#1047 · Sarah Ali', 'Paid · receipt matched', 'AED 128.00'],
+    ['#1046 · Omar Hassan', 'Rejected · ask buyer reason', 'AED 42.00']
+  ]);
+}
+
+function sellerPanel(eyebrow, copy, rows) {
+  return shell(`<main class="detail-page"><div class="page-heading"><span class="eyebrow">SELLER · ${eyebrow}</span><h1>Store signals,<br><em>ready to act.</em></h1><p>${copy}</p></div><section class="detail-list seller-list">${rows.map(([name, status, value]) => `<article class="detail-row"><span class="status live"></span><div><b>${name}</b><small>${status}</small></div><strong>${value}</strong><button class="text-button" data-action="seller-status">Open →</button></article>`).join('')}</section><button class="gold-button" data-action="seller-dashboard">Back to cockpit <span>↗</span></button></main>`, { eyebrow: `SELLER · ${eyebrow}`, back: true });
 }
 
 function catalogue() {
-  return `<main class="catalogue-page"><div class="catalogue-head"><span class="eyebrow">LUMA MARKET · SHELF</span><h1>Ready<br /><em>to share.</em></h1><button class="primary-cta" data-action="dashboard">Business cockpit <span>→</span></button></div><div class="catalogue-tiles"><article style="background-image:url('/assets/catalogue-coffee.svg')"><b>Ethiopian cold brew</b><span>AED 24 · 18 left</span></article><article style="background-image:url('/assets/catalogue-granola.svg')"><b>Granola cup</b><span>AED 18 · 4 left</span></article><article style="background-image:url('/assets/catalogue-water.svg')"><b>Still water</b><span>AED 5 · 148 left</span></article></div></main>`;
+  const items = state.catalogue.length ? state.catalogue : [
+    { name: 'Ethiopian cold brew', priceMinor: 2400, stock: 18, image: '/assets/catalogue-coffee.svg' },
+    { name: 'Granola cup', priceMinor: 1800, stock: 4, image: '/assets/catalogue-granola.svg' },
+    { name: 'Still water 500ml', priceMinor: 500, stock: 148, image: '/assets/catalogue-water.svg' }
+  ];
+  return shell(`<main class="catalogue-page"><div class="page-heading inline"><div><span class="eyebrow">SELLER · CATALOGUE</span><h1>Menu and<br><em>stock intelligence.</em></h1></div><button class="gold-button" data-action="seller-dashboard">Business cockpit ↗</button></div><div class="catalogue-tools"><span>Competition price SKU · Menu templates · Low stock list</span><button class="text-button">Upload catalogue +</button></div><div class="catalogue-grid">${items.map((item) => `<article class="product-card"><img src="${esc(item.image)}" alt=""><div><b>${esc(item.name)}</b><small>AED ${(Number(item.priceMinor) / 100).toFixed(0)} · ${item.stock} left · ${item.daysStock || 2} days</small></div><button class="edit-button">Edit SKU</button></article>`).join('')}</div></main>`, { eyebrow: 'SELLER · CATALOGUE', back: true });
 }
 
+function sellerFinance() {
+  return sellerPanel('FINANCE', 'Payables, receivables, P&L and balance sheet snapshots.', [
+    ['Payables vs receivables', 'AED 12.4k receivable · AED 3.1k payable', 'View'],
+    ['P&L', 'Gross margin +18.4% this month', 'Open'],
+    ['Balance sheet', 'Updated today at 09:42', 'View']
+  ]);
+}
+
+function sellerInstruments() {
+  return sellerPanel('PAYMENT INSTRUMENTS', 'Accounts, settlement and cycle planning.', [
+    ['Cards', 'BIN-linked offers enabled', 'Enabled'],
+    ['Account to account', 'Aani settlement live', 'Live'],
+    ['Settlement', 'Next cycle Friday', 'View']
+  ]);
+}
+
+function sellerIntelligence() {
+  return sellerPanel('INTELLIGENCE', 'Customer trends, ticket size and repeat-customer signals.', [
+    ['Customer trends', '+8% repeat customers vs last period', 'Open'],
+    ['Walk-in / repeat', '38% repeat customers', 'View'],
+    ['Average ticket size', 'AED 74.20 · +6.1%', 'View']
+  ]);
+}
+
+async function loadBootstrap() { const result = await get('/api/bootstrap'); state.buyer = result.buyer; state.seller = result.seller; }
+async function loadSources() { const result = await get('/api/savings-map'); state.sources = result.discovered || []; }
+async function loadCatalogue() { const result = await get('/api/catalogue'); state.catalogue = result.items || []; }
 function render() {
-  if (state.view === 'welcome') app.innerHTML = welcome();
-  else if (state.view === 'tour') app.innerHTML = tour();
-  else if (state.view === 'role-start') app.innerHTML = roleStart();
-  else if (state.view === 'buyer-flow') app.innerHTML = buyerFlow();
-  else if (state.view === 'seller-flow') app.innerHTML = sellerFlow();
-  else if (state.view === 'buyer-dashboard') app.innerHTML = buyerDashboard();
-  else if (state.view === 'seller-dashboard') app.innerHTML = sellerDashboard();
-  else if (state.view === 'checkout') app.innerHTML = checkout();
-  else if (state.view === 'receipt') app.innerHTML = receipt();
-  else if (state.view === 'savings') app.innerHTML = shell(sourceMap());
-  else if (state.view === 'catalogue') app.innerHTML = shell(catalogue());
-  else app.innerHTML = welcome();
+  const views = {
+    home, 'buyer-start': buyerStart, 'buyer-check': buyerCheckUser, 'buyer-otp': buyerOtp, 'buyer-vault': buyerVaultSetup,
+    'buyer-dashboard': buyerDashboard, 'buyer-module': buyerModule, 'buyer-savings': buyerSavings, checkout, receipt,
+    'buyer-card': () => buyerDetail('My Visiting Card', 'BUYER · VISITING CARD', '▣', 'Share your profile with a trusted contact.', '<div class="info-grid"><span>Profile approved</span><span>Share via WhatsApp, SMS or email</span><span>Choose a profile mode</span><span>Edit profile information</span></div>'),
+    'buyer-friends': () => buyerDetail('Earn with friends', 'BUYER · FRIENDS', '♧', 'Share value with your circle and help them discover Kanzpay.', '<div class="info-grid"><span>Another share + text link</span><span>Friends joined: 04</span><span>Gold gift options</span><span>Redeem and deliver value</span></div>'),
+    'buyer-gold': () => buyerDetail('My Gold Vault', 'BUYER · GOLD VAULT', 'Au', 'Track weight and the value of each purchase.', '<div class="vault-stat"><strong>1.260 mg</strong><small>Total gold weight</small></div><div class="info-grid"><span>Gold weight when purchased</span><span>Buy, sell, redeem or deliver</span><span>Physical, digital and gift gold</span></div>'),
+    'buyer-expenses': () => buyerDetail('My Expenses', 'BUYER · EXPENSES', '⌁', 'See your spending pattern daily, weekly, monthly and yearly.', '<div class="expense-chart"><i style="height:44%"></i><i style="height:72%"></i><i style="height:58%"></i><i style="height:88%"></i><i style="height:64%"></i><i style="height:96%"></i><i style="height:76%"></i></div><div class="info-grid"><span>Daily</span><span>Weekly</span><span>Monthly</span><span>Yearly</span></div>'),
+    'buyer-instruments': () => buyerDetail('Payment intelligence', 'BUYER · PAYMENT INSTRUMENTS', '◌', 'Kanzpay evaluates instruments and asks for approval before recommendation logic.', '<div class="info-grid"><span>Cards: Visa Signature</span><span>Accounts: Aani</span><span>Evaluate benefit and fee</span><span>Ask user approval</span></div>'),
+    'seller-start': sellerStart, 'seller-install': sellerInstall, 'seller-docs': sellerDocs, 'seller-rules': sellerRules,
+    'seller-invoice': sellerInvoice, 'seller-status': sellerStatus, 'seller-dashboard': sellerDashboard, 'seller-orders': sellerOrders,
+    catalogue, 'seller-finance': sellerFinance, 'seller-instruments': sellerInstruments, 'seller-intelligence': sellerIntelligence
+  };
+  app.innerHTML = views[state.screen]();
 }
 
-let tourTimer;
 document.addEventListener('click', async (event) => {
   const element = event.target.closest('[data-action]');
   if (!element) return;
   const action = element.dataset.action;
-  if (action === 'home') { state.view = 'welcome'; state.role = null; render(); return; }
-  if (action === 'tour') {
-    state.view = 'tour'; state.tour = 0; render(); clearInterval(tourTimer);
-    tourTimer = setInterval(() => { if (state.view !== 'tour') return clearInterval(tourTimer); state.tour += 1; if (state.tour > 4) { clearInterval(tourTimer); state.view = 'welcome'; state.tour = 0; } render(); }, 3000);
-    return;
-  }
-  if (action === 'tour-exit') { clearInterval(tourTimer); state.view = 'welcome'; render(); return; }
-  if (action === 'role') { state.role = element.dataset.role; state.view = 'role-start'; render(); return; }
-  if (action === 'next-role') { state.view = state.role === 'buyer' ? 'buyer-flow' : 'seller-flow'; render(); return; }
-  if (action === 'back') { state.view = state.role === 'buyer' ? 'buyer-flow' : state.role === 'seller' ? 'seller-flow' : 'welcome'; render(); return; }
-  if (action === 'buyer-back') { state.buyerStep = Math.max(0, state.buyerStep - 1); render(); return; }
-  if (action === 'seller-back') { state.sellerStep = Math.max(0, state.sellerStep - 1); render(); return; }
-  if (action === 'buyer-flow') { state.view = 'buyer-flow'; render(); return; }
-  if (action === 'dashboard') { state.view = state.role === 'seller' ? 'seller-dashboard' : 'buyer-dashboard'; render(); return; }
-  if (action === 'checkout') { state.view = 'checkout'; render(); return; }
-  if (action === 'receipt') { state.view = 'receipt'; render(); return; }
-  if (action === 'savings') { await getSources(); state.view = 'savings'; render(); return; }
-  if (action === 'catalogue') { state.view = 'catalogue'; render(); return; }
-  if (action === 'verify-user') {
-    state.name = document.querySelector('#name')?.value.trim() || 'Maya Khan';
-    state.mobile = document.querySelector('#mobile')?.value.trim() || '+971 50 000 0000';
-    state.email = document.querySelector('#email')?.value.trim() || 'maya@example.com';
-    const account = await post('/api/account/create', { name: state.name, mobile: state.mobile, email: state.email });
-    state.account = account;
-    if (account.error) return notify(account.error, 'error');
-    notify('Two OTPs approved. Your Gold vault is opening.', 'success'); state.buyerStep += 1; render(); return;
-  }
-  if (action === 'buyer-action') {
-    const kind = element.dataset.kind;
-    if (kind === 'tap-start') { state.view = 'checkout'; render(); return; }
-    if (kind === 'account') { state.buyerStep = 1; render(); return; }
-    await getSources();
-    const source = { reward: 'rewards', offers: 'memberships', payment: 'cards' }[kind];
-    if (source) { await post('/api/savings-map/connect', { sourceId: source }); state.permissions[source] = 'approved'; state.buyerStep += 1; notify('Approved. I’ll look for value now.', 'success'); render(); }
-    return;
-  }
-  if (action === 'create-invoice') {
-    const exchange = await post('/api/tap/exchange', { kTag: 'K-LUMA-001', buyerId: state.account?.id || 'buyer-maya', capabilities: ['memberships', 'rewards', 'promocodes', 'vouchers', 'cards', 'accounts'] });
-    if (exchange.error) return notify(exchange.error, 'error');
-    state.invoice = await post('/api/invoice/create'); state.view = 'checkout'; render(); return;
-  }
-  if (action === 'approve') { state.receipt = await post('/api/checkout/approve'); if (state.receipt.error) return notify(state.receipt.error, 'error'); state.view = 'receipt'; notify('Approved. Gold is on its way.', 'success'); render(); return; }
-  if (action === 'stop') { await post('/api/checkout/stop'); notify('Stopped. Nothing was paid.'); state.invoice = null; render(); return; }
-  if (action === 'seller-action') {
-    if (state.sellerStep === 0) { const business = document.querySelector('#business')?.value || 'Luma Market'; await post('/api/onboarding/permission', { role: 'seller', id: 'business-account', enabled: true, metadata: { business } }); }
-    if (state.sellerStep === 3) state.view = 'seller-dashboard'; else state.sellerStep += 1;
-    notify(state.sellerStep === 1 ? 'K-Assistant is ready.' : 'Good move. Your store is getting clearer.', 'success'); render(); return;
-  }
-  if (action === 'source') {
-    const id = element.dataset.source;
-    if (element.classList.contains('locked')) return notify('This source needs its official provider connection first.');
-    const sheet = document.createElement('div'); sheet.innerHTML = sourceSheet(id); document.body.append(sheet.firstElementChild); return;
-  }
-  if (action === 'decline-source') { document.querySelector('.permission-sheet')?.remove(); notify('No problem. This opportunity stays visible.'); return; }
-  if (action === 'approve-source') {
-    const id = element.dataset.source;
-    if (id === 'notifications' && 'Notification' in window) await Notification.requestPermission();
-    if (id === 'cards' && navigator.mediaDevices?.getUserMedia) { try { const stream = await navigator.mediaDevices.getUserMedia({ video: true }); stream.getTracks().forEach((track) => track.stop()); } catch { notify('Camera permission was not granted.'); } }
-    const result = await post('/api/savings-map/connect', { sourceId: id }); document.querySelector('.permission-sheet')?.remove();
-    if (result.error) return notify(result.error, 'error');
-    await getSources(); render(); notify('Connected. I’ll search for savings.', 'success');
-  }
+  if (action === 'home') { state.role = null; state.screen = 'home'; state.invoice = null; render(); return; }
+  if (action === 'role') { state.role = element.dataset.role; state.screen = state.role === 'buyer' ? 'buyer-start' : 'seller-start'; render(); return; }
+  if (action === 'back') { state.screen = state.role === 'buyer' ? (state.screen === 'buyer-dashboard' ? 'home' : 'buyer-dashboard') : state.role === 'seller' ? (state.screen === 'seller-dashboard' ? 'home' : 'seller-dashboard') : 'home'; render(); return; }
+  if (action === 'buyer-tap' || action === 'buyer-scan') { state.screen = 'buyer-check'; render(); return; }
+  if (action === 'buyer-existing') { state.screen = 'buyer-otp'; render(); return; }
+  if (action === 'buyer-new') { state.screen = 'buyer-otp'; render(); return; }
+  if (action === 'buyer-account') { state.screen = 'buyer-otp'; render(); return; }
+  if (action === 'buyer-vault') { const result = await post('/api/account/create', { name: 'Maya Khan', mobile: '+971501234567', email: 'maya@example.com' }); if (result.error) return notify(result.error, 'error'); state.account = result; state.screen = 'buyer-vault'; render(); return; }
+  if (action === 'buyer-cockpit' || action === 'buyer-home') { state.role = 'buyer'; state.screen = 'buyer-dashboard'; await loadBootstrap(); render(); return; }
+  if (action === 'buyer-module') { state.selectedModule = 'My Value Vault'; state.screen = 'buyer-module'; render(); return; }
+  if (['buyer-card', 'buyer-friends', 'buyer-gold', 'buyer-expenses', 'buyer-instruments'].includes(action)) { state.screen = action; render(); return; }
+  if (action === 'buyer-savings') { state.role = 'buyer'; await loadSources(); state.screen = 'buyer-savings'; render(); return; }
+  if (action === 'checkout') { state.role = 'buyer'; state.screen = 'checkout'; state.invoice = null; render(); return; }
+  if (action === 'create-invoice') { const exchange = await post('/api/tap/exchange', { kTag: 'K-LUMA-001', buyerId: 'buyer-maya', capabilities: ['memberships', 'rewards', 'promocodes', 'vouchers', 'cards', 'accounts'] }); if (exchange.error) return notify(exchange.error, 'error'); state.invoice = await post('/api/invoice/create'); if (state.invoice.error) return notify(state.invoice.error, 'error'); notify('Tap received. Your invoice is ready.', 'success'); render(); return; }
+  if (action === 'approve') { const preview = await post('/api/solver/preview'); if (preview.error) return notify(preview.error, 'error'); state.receipt = await post('/api/checkout/approve'); if (state.receipt.error) return notify(state.receipt.error, 'error'); await loadBootstrap(); state.screen = 'receipt'; notify('Approved. Gold is on its way.', 'success'); render(); return; }
+  if (action === 'stop') { await post('/api/checkout/stop'); state.invoice = null; state.screen = 'buyer-dashboard'; notify('Stopped. Nothing was paid.'); render(); return; }
+  if (action === 'source') { if (element.classList.contains('locked')) return notify('This source needs its official provider connection first.'); const result = await post('/api/savings-map/connect', { sourceId: element.dataset.source }); if (result.error) return notify(result.error, 'error'); await loadSources(); notify('Connected. I’ll search for savings.', 'success'); render(); return; }
+  if (action === 'seller-install') { state.screen = 'seller-install'; render(); return; }
+  if (action === 'seller-docs') { state.screen = 'seller-docs'; render(); return; }
+  if (action === 'seller-rules') { state.screen = 'seller-rules'; render(); return; }
+  if (action === 'seller-invoice') { state.screen = 'seller-invoice'; render(); return; }
+  if (action === 'seller-status') { state.screen = 'seller-status'; render(); return; }
+  if (action === 'seller-status-select') { state.sellerInvoiceStatus = element.dataset.status; notify(`${element.dataset.status} status selected.`, 'success'); render(); return; }
+  if (action === 'seller-dashboard') { state.role = 'seller'; state.screen = 'seller-dashboard'; render(); return; }
+  if (action === 'seller-orders') { state.screen = 'seller-orders'; render(); return; }
+  if (action === 'catalogue') { state.role = 'seller'; await loadCatalogue(); state.screen = 'catalogue'; render(); return; }
+  if (action === 'seller-finance') { state.screen = 'seller-finance'; render(); return; }
+  if (action === 'seller-instruments') { state.screen = 'seller-instruments'; render(); return; }
+  if (action === 'seller-intelligence') { state.screen = 'seller-intelligence'; render(); }
 });
 
-getSources().catch(() => {});
+await loadBootstrap();
 render();
