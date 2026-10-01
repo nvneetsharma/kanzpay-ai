@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#050705">
+<title>Kanzpay-Rewards-Gold-CH1.0</title>
+<style>
+:root{
+ --bg:#050705;--panel:rgba(18,23,19,.58);--panel2:rgba(10,13,10,.72);--ink:#f7f1e5;
+ --muted:#a8a49a;--gold:#c69b34;--gold2:#f2d789;--gold3:#fff2bb;--line:rgba(242,215,137,.20);
+ --green:#8db79a;--green2:#517961;--danger:#cb7f6f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;background:#050705;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body{overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+#app{position:fixed;inset:0;overflow:hidden;background:
+ radial-gradient(circle at 50% 6%,rgba(242,215,137,.10),transparent 26%),
+ radial-gradient(circle at 10% 85%,rgba(74,110,84,.09),transparent 27%),
+ linear-gradient(150deg,#090c09,#040604 72%,#070907)}
+#app:before{content:"";position:absolute;inset:-25%;background:
+ radial-gradient(circle at 70% 30%,rgba(255,255,255,.025),transparent 18%),
+ radial-gradient(circle at 25% 70%,rgba(242,215,137,.025),transparent 20%);
+ filter:blur(22px);animation:drift 16s ease-in-out infinite alternate;pointer-events:none}
+.shell{position:absolute;inset:0;z-index:2;width:min(480px,100%);margin:auto;padding:14px 14px 18px;display:flex;flex-direction:column}
+.top{min-height:33px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.brand{font-weight:950;letter-spacing:.20em;font-size:12px}.brand span{color:var(--gold2)}
+.tiny{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.switcher{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:50;display:flex;gap:5px;padding:4px;border:1px solid var(--line);border-radius:999px;background:rgba(8,11,8,.82);backdrop-filter:blur(18px);box-shadow:0 12px 35px rgba(0,0,0,.35)}
+.switcher button{padding:6px 10px;border-radius:999px;font-size:8px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.switcher button.active{background:linear-gradient(135deg,#f8e39e,#bb8e29);color:#171308}
+.stage{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.screen{min-height:0;overflow:hidden;animation:screenIn .34s ease-out both}
+.flowBar{display:flex;align-items:center;gap:7px;margin:3px 0 8px;padding:6px 8px;border:1px solid var(--line);border-radius:13px;background:rgba(242,215,137,.025)}
+.flowBar b{min-width:25px;text-align:center;padding:4px 6px;border-radius:8px;background:linear-gradient(135deg,#f9e5a0,#bb8c28);color:#181309;font-size:8px}
+.flowBar span{font-size:7px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.flowBar em{font-size:7px;font-style:normal;color:var(--gold2);letter-spacing:.1em;margin-left:auto}
+.hero{position:relative;min-height:188px;border:1px solid var(--line);border-radius:29px;overflow:hidden;background:#090c09;box-shadow:0 30px 88px rgba(0,0,0,.48)}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.57}
+.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.03),rgba(0,0,0,.88))}
+.heroText{position:absolute;left:19px;right:19px;bottom:16px;z-index:2}
+.eyebrow{font-size:8px;letter-spacing:.20em;text-transform:uppercase;color:var(--gold2);margin-bottom:7px}
+.hero h1{font-size:32px;line-height:.96;letter-spacing:-.055em;margin:0}
+.hero p{font-size:10px;line-height:1.44;color:#d1cec5;margin:7px 0 0;max-width:360px}
+.glass{position:relative;background:linear-gradient(145deg,rgba(255,255,255,.058),rgba(255,255,255,.012));border:1px solid var(--line);border-radius:22px;box-shadow:0 24px 72px rgba(0,0,0,.40),inset 0 1px 0 rgba(255,255,255,.035);backdrop-filter:blur(23px);overflow:hidden}
+.glass:after{content:"";position:absolute;inset:-50% -20%;background:linear-gradient(110deg,transparent 39%,rgba(255,255,255,.045) 49%,transparent 60%);transform:translateX(-65%) rotate(8deg);animation:sheen 10s ease-in-out infinite;pointer-events:none}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:9px}
+.node{padding:12px;min-height:118px;text-align:left}
+.node .ico{width:41px;height:41px;display:grid;place-items:center;border-radius:13px;border:1px solid var(--line);background:rgba(242,215,137,.05);color:var(--gold2);font-size:18px}
+.node strong{display:block;font-size:12px;margin-top:11px}
+.node span{display:block;font-size:8px;line-height:1.42;color:var(--muted);margin-top:4px}
+.panel{padding:12px;margin-top:9px}
+.metric{display:flex;align-items:flex-start;justify-content:space-between;gap:9px}
+.metric strong{font-size:15px;line-height:1.1}
+.sub{font-size:8.5px;line-height:1.45;color:var(--muted);margin-top:5px}
+.ctaWrap{margin-top:9px}
+.cta{width:100%;padding:10px 12px;border-radius:15px;border:1px solid var(--line);background:rgba(255,255,255,.025);text-align:left}
+.cta.primary{background:linear-gradient(135deg,#f9e5a0,#bd9029);color:#181308;border:0}
+.cta b{display:block;font-size:10px}.cta small{display:block;font-size:7.5px;line-height:1.35;margin-top:2px;font-weight:700;opacity:.80}
+.cta.primary small{color:#4c3908;opacity:.92}
+.rail{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 7px;margin-top:8px}
+.rail::-webkit-scrollbar{display:none}.rail>*{flex:0 0 auto}
+.tile{width:150px;padding:11px;text-align:left}
+.tile strong{display:block;font-size:11px}.tile span{display:block;font-size:8px;color:var(--muted);line-height:1.4;margin-top:3px}.tile b{display:block;font-size:9px;color:var(--gold2);margin-top:10px}
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}
+.bento .node{min-height:110px}
+.cardHero{position:relative;min-height:185px;border-radius:27px;overflow:hidden;border:1px solid rgba(242,215,137,.28);background:linear-gradient(135deg,rgba(240,220,163,.13),rgba(255,255,255,.03));box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 26px 80px rgba(0,0,0,.46);backdrop-filter:blur(26px)}
+.cardHero img{position:absolute;right:0;top:0;width:53%;height:100%;object-fit:cover;opacity:.72;mask-image:linear-gradient(90deg,transparent 0,black 44%);-webkit-mask-image:linear-gradient(90deg,transparent 0,black 44%)}
+.cardHero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,10,8,.95),rgba(8,10,8,.62) 56%,rgba(8,10,8,.12))}
+.cardCopy{position:relative;z-index:2;width:68%;height:100%;padding:14px;display:flex;flex-direction:column;justify-content:space-between}
+.cardBrand{font-size:8px;letter-spacing:.18em;color:var(--gold2);font-weight:900}
+.cardName{font-size:23px;font-weight:950;letter-spacing:-.05em}.tag{font-size:7px;padding:5px 7px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.goldHero{height:166px;border-radius:27px;position:relative;overflow:hidden;border:1px solid var(--line);background:radial-gradient(circle at 50% 50%,rgba(242,215,137,.18),rgba(5,7,5,.90) 60%)}
+.coin{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);width:90px;height:90px;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 30% 24%,#fff2bd,#f0d376 20%,#a97720 58%,#43300c);color:#543a07;font-weight:950;box-shadow:0 0 52px rgba(242,215,137,.36);animation:spin 7s linear infinite}
+.goldCopy{position:absolute;left:15px;bottom:12px;z-index:2}.goldCopy strong{display:block;font-size:24px}.goldCopy span{font-size:8px;color:var(--muted)}
+.chart{height:95px;padding:10px;display:flex;align-items:flex-end;gap:7px}.bar{flex:1;border-radius:7px 7px 2px 2px;background:linear-gradient(#f2d789,#72521a)}
+.pie{width:133px;height:133px;border-radius:50%;margin:9px auto;background:conic-gradient(#f2d789 0 36%,#719578 36% 58%,#7e683c 58% 76%,#3d4840 76%);position:relative}.pie:after{content:"";position:absolute;inset:35px;background:#0a0d0a;border-radius:50%}
+.instrument{width:182px;min-height:104px;padding:11px;text-align:left}.instrument strong{display:block;font-size:12px;margin-top:12px}.instrument span{display:block;font-size:8px;color:var(--muted);margin-top:3px}.instrument b{display:block;color:var(--gold2);font-size:8px;margin-top:9px}
+.idCard{height:138px;border-radius:17px;position:relative;background:linear-gradient(145deg,#e8dfc9,#96907a);overflow:hidden;box-shadow:0 22px 56px rgba(0,0,0,.34)}.idCard:before{content:"";position:absolute;left:14px;top:16px;width:51px;height:65px;border-radius:9px;background:linear-gradient(145deg,#d9ad90,#704a39)}.idLines{position:absolute;left:76px;right:12px;top:19px}.idLines i{display:block;height:6px;border-radius:5px;background:rgba(57,52,39,.23);margin-bottom:7px}
+.camera{height:160px;border-radius:25px;position:relative;overflow:hidden;border:1px solid var(--line);background:#101610;display:grid;place-items:center}.camera img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.44}.camera:after{content:"";position:absolute;inset:18px;border:1px solid rgba(242,215,137,.52);border-radius:18px}.dot{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--gold2);box-shadow:0 0 17px rgba(242,215,137,.85);z-index:2;animation:pulse 2.1s ease-in-out infinite}
+.assistant{position:absolute;left:14px;right:14px;bottom:16px;display:flex;justify-content:flex-end;align-items:flex-end;gap:8px;z-index:45;pointer-events:none}.bubble{max-width:290px;padding:10px 12px;border-radius:18px;background:rgba(14,17,14,.93);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.44);backdrop-filter:blur(20px);opacity:0;transform:translateY(8px);transition:.25s}.assistant.open .bubble{opacity:1;transform:none}.bubble small{display:block;font-size:7px;letter-spacing:.15em;color:var(--gold2)}.bubble strong{display:block;font-size:11px;margin-top:3px}.bubble span{display:block;font-size:8px;color:var(--muted);line-height:1.35;margin-top:2px}.face{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;pointer-events:auto;background:radial-gradient(circle at 35% 25%,#f9e6a2,#a97823 42%,#49330d);border:1px solid rgba(242,215,137,.44);color:#3d2a08;font-weight:950;box-shadow:0 0 36px rgba(242,215,137,.20)}
+.confetti{position:fixed;inset:0;z-index:100;pointer-events:none;overflow:hidden}.piece{position:absolute;width:8px;height:15px;border-radius:2px;animation:fall 1.8s cubic-bezier(.2,.8,.2,1) forwards}
+.toast{position:fixed;left:50%;bottom:74px;transform:translate(-50%,10px);opacity:0;z-index:90;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(14,17,14,.96);color:var(--gold2);font-size:9px;transition:.22s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px) scale(.99)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:.35;transform:scale(.95)}50%{opacity:.9;transform:scale(1.02)}}
+@keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes sheen{0%,60%{transform:translateX(-65%) rotate(8deg)}85%,100%{transform:translateX(60%) rotate(8deg)}}
+@keyframes fall{from{transform:translate3d(0,-10vh,0) rotate(0);opacity:1}to{transform:translate3d(var(--x),110vh,0) rotate(680deg);opacity:0}}
+@keyframes drift{from{transform:translate3d(-1%,0,0)}to{transform:translate3d(1%,1%,0)}}
+@media(max-width:700px){.shell{padding:12px}.hero{min-height:175px}.grid2,.grid3,.bento{grid-template-columns:1fr}.switcher{top:6px}}
+</style>
+</head>
+<body>
+<div class="switcher" id="switcher">
+ <button id="buyerTab" class="active" onclick="setRole('buyer')">Buyer</button>
+ <button id="sellerTab" onclick="setRole('seller')">Seller</button>
+</div>
+<div id="app">
+ <div class="shell">
+  <div class="top" id="top"></div>
+  <div class="stage" id="stage"></div>
+  <div class="assistant" id="assistant"><div class="bubble"><small>K-ASSISTANT</small><strong id="aTitle"></strong><span id="aBody"></span></div><button class="face" onclick="toggleA()">K</button></div>
+  <div class="toast" id="toast"></div><div class="confetti" id="confetti"></div>
+ </div>
+</div>
+<script>
+const IMG={
+ life:"https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=84",
+ store:"https://images.unsplash.com/photo-1472851294608-062f824d29cc?auto=format&fit=crop&w=1200&q=84",
+ people:"https://images.unsplash.com/photo-1521737711867-e3b97375b3ac?auto=format&fit=crop&w=1200&q=84",
+ phone:"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=84",
+ scan:"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=84",
+ invoice:"https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=84",
+ vault:"https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1200&q=84",
+ gold:"https://images.unsplash.com/photo-1610375461246-83df859d849d?auto=format&fit=crop&w=1200&q=84",
+ card:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=1200&q=84",
+ money:"https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=84",
+ pay:"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=84",
+ id:"https://images.unsplash.com/photo-1544084944-15269ec7b5a0?auto=format&fit=crop&w=1200&q=84",
+ camera:"https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=1200&q=84",
+ catalog:"https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1200&q=84",
+ pos:"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=84",
+ qr:"https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1200&q=84"
+};
+
+const BUYER={
+ home:{n:"1",t:"@Phone: Tap or Scan to start the journey",e:"Click",p:"One human moment starts everything. Choose exactly how you arrived.",img:"life",o:[["Tap","tapAction"],["Scan","scanAction"]]},
+ tapAction:{n:"1a",t:"Click URL screen Popup",e:"Action",p:"Tap opens the URL screen popup. The connection is visible before the journey moves on.",img:"store",o:[["Web App Started","webApp"]]},
+ scanAction:{n:"1b",t:"Click Camera URL link",e:"Action",p:"Scan opens the camera URL link. The same journey starts without searching.",img:"scan",o:[["Web App Started","webApp"]]},
+ webApp:{n:"Result",t:"Web App Started",e:"Result",p:"The store experience is now open. Next is the exact Check User decision.",img:"people",o:[["Check User","checkUser"]]},
+ checkUser:{n:"2",t:"Check User",e:"Decision",p:"Existing User keeps the existing context. New User begins with mobile verification.",img:"people",o:[["Existing User","invoiceShared"],["New User","mobileNo"]]},
+ mobileNo:{n:"No",t:"Mobile No",e:"Action",p:"A new account starts with your mobile number.",img:"phone",o:[["OTP verify","mobileOtp"]]},
+ mobileOtp:{n:"No",t:"OTP verify",e:"Action",p:"One small verification before email.",img:"phone",o:[["Email ID","emailId"]]},
+ emailId:{n:"No",t:"Email ID",e:"Action",p:"Now your digital identity gets an email.",img:"people",o:[["OTP Verify","emailOtp"]]},
+ emailOtp:{n:"No",t:"OTP Verify",e:"Action",p:"One last check before the first Gold moment.",img:"phone",o:[["Congratulations !! 1 mg Gold credited “earn more Save More”","newGold"]]},
+ newGold:{n:"Result",t:"Congratulations !! 1 mg Gold credited “earn more Save More”",e:"Result",p:"1 mg Gold is credited. Earn more. Save More.",img:"gold",celebrate:true,o:[["Build my “Value Vault”","shareVault"]]},
+ invoiceShared:{n:"2",t:"Invoice shared",e:"Decision",p:"Yes runs the gamified engine. No asks whether the Value Vault is OK.",img:"invoice",o:[["Yes","gamified"],["No","vaultDecision"]]},
+ gamified:{n:"Yes",t:"Gamified engine runs",e:"Result",p:"Invoice → My Expenses · Reward Points → My Rewards · Gold Won → My Gold Vault.",img:"gold",items:["Invoice → My Expenses","Reward Points → My Rewards","Gold Won → My Gold Vault"],celebrate:true,o:[["Cockpit","cockpit"]]},
+ vaultDecision:{n:"No",t:"Value vault OK",e:"Decision",p:"Yes → Navigation / Seller Offers / Live Order Catalogue. No → Share Value Vault.",img:"vault",o:[["Yes","storeActions"],["No","shareVault"]]},
+ storeActions:{n:"Yes",t:"Navigation to Store Lat-Long / Seller Offers / Live Order Catalogue",e:"Action",p:"The three store actions remain visible and separate.",img:"store",items:["Navigation to Store Lat-Long (google map)","Seller Offers","Live Order Catalogue"],o:[["Cockpit","cockpit"]]},
+ shareVault:{n:"2a",t:"Share Value Vault",e:"Action",p:"Your value is visible as living benefits — with permission kept with you.",img:"vault",items:["My Memberships","My Reward Points","My Promocodes","My Vouchers, coupons","Redeem Free Gift – Y/N (tick)","Redeem Points – Y/N (tick)","List → approve/link apps by choosing options 1-1","Icons stored for each on user “Value Vault” — faded icons for not connected apps or programs","Show status & upon edit → Take permission for Email sms, Apps, dropdown"],o:[["Take permission","vaultPermission"],["Dynamic QR code","dynamicQr"]]},
+ dynamicQr:{n:"2a",t:"Dynamic QR code",e:"Decision",p:"No → store the QR in the Vault. Yes → save the redirection link to open the app.",img:"qr",o:[["No","vaultUpdated"],["Yes","vaultUpdated"]]},
+ vaultPermission:{n:"2a",t:"User approves credentials, Valid upto date, % discount or value available",e:"Action",p:"Only approved programme-wise value is saved, with history, validity and credentials in encrypted format.",img:"vault",o:[["Updated in Value Vault","vaultUpdated"]]},
+ vaultUpdated:{n:"Result",t:"Updated in Value Vault",e:"Result",p:"Programme-wise value or % discount is saved with history, validity and credentials in encrypted format.",img:"vault",items:["History","Validity","Credentials","Encrypted format"],celebrate:true,o:[["Cockpit","cockpit"]]},
+ cockpit:{n:"3",t:"COCKPIT",e:"Show",p:"Six living modules inside a graphical bento grid.",img:"life",o:[["3a My Value Vault","valueVault"],["3b My Visiting Card","visitingCard"],["3c Earn with friends","friends"],["3d My Gold Vault","goldVault"],["3e My Expenses","expenses"],["3f Payment instrument intelligence inbuilt","payment"]]},
+ valueVault:{n:"3a",t:"My Value Vault",e:"Module",p:"Status, edit, permission, link options, faded unconnected icons, Dynamic QR and redemption remain explicit.",img:"vault",items:["Show status & upon edit → Take permission for Email sms, Apps, dropdown","List → approve/link apps by choosing options 1-1","Icons stored for each on user “Value Vault” — faded icons for not connected apps or programs","Dynamic QR code","Redeem Free Gift – Y/N (tick)","Redeem Points – Y/N (tick)"],o:[["Back to Cockpit","cockpit"]]},
+ visitingCard:{n:"3b",t:"My Visiting Card",e:"Module",p:"My Card Available: Yes or No.",img:"card",o:[["Yes","tapShareCard"],["No","configureCard"]]},
+ tapShareCard:{n:"3b",t:"Tap/Share Card",e:"Action",p:"Move into My Profiles.",img:"card",o:[["My Profiles","profiles"]]},
+ configureCard:{n:"3b",t:"Add or Configure Card",e:"Action",p:"Configure the card, then continue to My Profiles.",img:"card",o:[["My Profiles","profiles"]]},
+ profiles:{n:"3b",t:"My Profiles",e:"Action",p:"Choose Mode · Switch Profile · Choose Template · Edit Profile Information.",img:"people",items:["Choose Mode","Switch Profile","Choose Template","Edit Profile Information"],o:[["Choose Mode","chooseMode"],["Switch Profile","switchProfile"],["Choose Template","chooseTemplate"]]},
+ chooseMode:{n:"3b",t:"Choose Mode",e:"Action",p:"Choose how the selected profile is presented across the share modes.",img:"card",o:[["Edit Profile Information","editProfile"]]},
+ switchProfile:{n:"3b",t:"Switch Profile",e:"Action",p:"Choose a different relationship context.",img:"people",o:[["Edit Profile Information","editProfile"]]},
+ chooseTemplate:{n:"3b",t:"Choose Template",e:"Action",p:"Make the card feel like you with glass, imagery and metallic Gold.",img:"card",o:[["Edit Profile Information","editProfile"]]},
+ editProfile:{n:"3b",t:"Edit Profile Information",e:"Result",p:"Identity, selected profile and selected presentation come together.",img:"card",o:[["Back to Cockpit","cockpit"]]},
+ friends:{n:"3c",t:"Earn with friends",e:"Module",p:"Banner first explains how it works. A second share banner carries the link to a friend’s mobile via WhatsApp, SMS, email etc.",img:"life",items:["Banner to explain how it works","Another Share banner + text with link to friends’ mobile number via WhatsApp, SMS, email etc."],o:[["Back to Cockpit","cockpit"]]},
+ goldVault:{n:"3d",t:"My Gold Vault",e:"Module",p:"Banner explains how it works. Gold weight shows +/- % vs the value when purchased.",img:"gold",items:["Banner to explain how it works","Gold weight with +/- % vs the value when it was purchased","Buy, Sell, Redeem, deliver Physical gold, gift gold, pay with gold options","Powered by SafeGold"],o:[["Back to Cockpit","cockpit"]]},
+ expenses:{n:"3e",t:"My Expenses",e:"Module",p:"Banner explains the value. Then category-wise expense and Daily/Weekly/Monthly/Yearly progression in Pie and Bar charts.",img:"money",items:["Banner to explain how it works","Category wise Expense done","Daily/Weekly/Monthly/Yearly progression in charts – Pie and Bar charts"],o:[["Back to Cockpit","cockpit"]]},
+ payment:{n:"3f",t:"Payment instrument intelligence inbuilt",e:"Module",p:"Cards BIN info and offers · Lean AIS · instrument evaluation · user approval.",img:"pay",items:["Cards BIN info and offers","Lean AIS","Evaluate instrument wise offers, benefits"],o:[["Get user approval for recommendation logic","paymentApproval"]]},
+ paymentApproval:{n:"3f",t:"Get user approval for recommendation logic",e:"Action",p:"Recommendation logic waits for explicit user approval.",img:"pay",o:[["Step 3+4 Value & Wealth building status","wealthStatus"]]},
+ wealthStatus:{n:"3+4",t:"Step 3+4 Value & Wealth building status",e:"Result",p:"Value & Wealth building status is now visible.",img:"life",o:[["All Set to Earn more","allSet"]]},
+ allSet:{n:"Result",t:"All Set to Earn more",e:"Result",p:"The exact next numbered step is 4 Create account.",img:"gold",celebrate:true,o:[["Create account","createAccount"]]},
+ createAccount:{n:"4",t:"Create account",e:"Action",p:"Upload Emirates ID front-back, then live camera, document crop/edit, photo match and AML.",img:"id",items:["Upload Emirates ID front - back","Live camera with instructions to blink, look left right & hold Emirates ID (front-Back)","Document crop, edit","Photo match with doc","AML check (all para.)"],o:[["Upload Emirates ID front - back","idUpload"]]},
+ idUpload:{n:"4",t:"Upload Emirates ID front - back",e:"Action",p:"Capture both sides of Emirates ID.",img:"id",o:[["Live camera","liveCamera"]]},
+ liveCamera:{n:"4",t:"Live camera with instructions to blink, look left right & hold Emirates ID (front-Back)",e:"Action",p:"Follow the live instructions.",img:"camera",o:[["Document crop, edit","docEdit"]]},
+ docEdit:{n:"4",t:"Document crop, edit",e:"Action",p:"Review, crop and edit the document.",img:"id",o:[["Photo match with doc","photoMatch"]]},
+ photoMatch:{n:"4",t:"Photo match with doc",e:"Action",p:"Match the live photo with the document.",img:"people",o:[["AML check (all para.)","aml"]]},
+ aml:{n:"Result",t:"AML check (all para.)",e:"Result",p:"Identity checks complete.",img:"people",celebrate:true,o:[]}
+};
+
+const SELLER={
+ start:{n:"1",t:"Start Onboarding",e:"Show",p:"Tap link to start the seller setup.",img:"store",o:[["Tap link","installAssistant"]]},
+ installAssistant:{n:"1",t:"Install K-Assistant (in background), Choose business type, Lat-Long, Logo, Pics",e:"Action",p:"Business identity first — then the assistant stays in the background.",img:"people",items:["Choose business type","Lat-Long","Logo","Pics"],o:[["Tap link","sampleInvoice"]]},
+ sampleInvoice:{n:"1",t:"Sample Share Invoice to K-Assistant, Correct Shop name, address, VAT, Mob No.",e:"Check",p:"Use one sample to make sure the shop identity is correct.",img:"invoice",items:["Shop name","address","VAT","Mob No."],o:[["Install K-Tag","installKTag"]]},
+ installKTag:{n:"1",t:"Identify system (windows, Mac, Linux, Android etc(, install drivers, align patch, create floating K-Assistant (KanzPay Logo)",e:"Action",p:"Identify the system, install drivers, align the patch and create the floating K-Assistant.",img:"pos",items:["Windows","Mac","Linux","Android etc","Install drivers","Align patch","Create floating K-Assistant (KanzPay Logo)"],o:[["Set Reward Rules","rewardRules"]]},
+ rewardRules:{n:"Result",t:"Set Reward Rules",e:"Result",p:"GMV_AED = Points = DISC_AED · Points = Free Product milestones · Gold = GMV_AED Slabs = % Gold.",img:"gold",items:["GMV_AED = Points = DISC_AED","Points = Free Product milestones","Gold = GMV_AED Slabs = % Gold"],celebrate:true,o:[["K-Assistant Value Pop up — Vault shared","vaultShared"]]},
+ vaultShared:{n:"2",t:"K-Assistant Value Pop up — Vault shared",e:"Decision",p:"No → Generate Invoice. Yes → Adjust.",img:"vault",o:[["No → Generate Invoice","generateInvoice"],["Yes → Adjust","adjust"]]},
+ adjust:{n:"Yes",t:"Adjust",e:"Action",p:"Membership Discounts(%) value · Voucher / Promo codes value · Coupons value · Reward points value · Free gift.",img:"vault",items:["Membership Discounts(%) value","Voucher / Promo codes value","Coupons value","Reward points value","Free gift"],o:[["Generate Invoice","generateInvoice"]]},
+ generateInvoice:{n:"2",t:"Generate Invoice",e:"Action",p:"Generate the invoice after the Value Vault decision.",img:"invoice",o:[["Share Invoice (Print – K-Assist.)","shareInvoice"]]},
+ shareInvoice:{n:"2",t:"Share Invoice (Print – K-Assist.)",e:"Result",p:"The invoice travels through the K-Assistant path.",img:"invoice",celebrate:true,o:[["Dashboard trigger from A-Assit Logo","dashboard"]]},
+ dashboard:{n:"3",t:"Dashboard trigger from A-Assit Logo (All-Store wise drop down)",e:"Show",p:"All-Store wise drop down is the first dashboard context.",img:"store",items:["All-Store wise drop down"],o:[["Focus","focus"],["Intelligence","intelligence"]]},
+ focus:{n:"3",t:"Focus",e:"Action",p:"Operational pulse for transactions, tickets, rewards, trends and customer trends.",img:"people",items:["Transaction Commission","Pending requests","Paid History","Tickets","Complaints","Queries","Ratings","Rewards","benefits – repeat cust.","Gold = %of Bill Value","Rules edit","Trends vs last period","Value trends","Volume trend","Customer trends","Walkin","Avg ticket size","Repeat customer%"],o:[]},
+ intelligence:{n:"3",t:"Intelligence",e:"Action",p:"Catalogue, Inventory, Finance and Payment Instruments.",img:"catalog",items:["Catalogue","Editable Menu page","Competition price SKU","Menu Templates","Inventory","Low stock sku list +/-","High stock sku list +/-","Finance","Payables Val/Vol/list","Receivables V/V/L (“)","P&L","Balance sheet","Payment Instruments","Cards","Account to Account","Settlement","View txns cycle/mth/year","Change plan"],o:[]}
+};
+
+const FLOW_META={
+ buyer:{title:"Kanzpay Rewards & Gold · Buyer",start:"home"},
+ seller:{title:"Kanzpay Rewards & Gold · Seller",start:"start"}
+};
+let role="buyer", state={buyer:"home",seller:"start"}, history={buyer:[],seller:[]};
+
+const M={
+ buyer:{
+  home:["I’m here with you.","Tap or scan — I’ll stay with the exact path you choose."],
+  checkUser:["One simple decision.","Existing User keeps your context. New User begins with mobile."],
+  newGold:["Mabrook.","Your 1 mg Gold moment is here. Let’s build the Value Vault."],
+  invoiceShared:["Let’s see what the invoice changed.","Yes starts the gamified engine. No checks the Value Vault."],
+  shareVault:["Your value stays yours.","I’ll show what can be connected before asking for permission."],
+  cockpit:["This is your Cockpit.","Six living places. Each one maps to the supplied journey."],
+  payment:["I found the intelligence layer.","I’ll ask before recommendation logic does anything."],
+  allSet:["All Set to Earn more.","Create account is the next numbered step."]
+ },
+ seller:{
+  start:["I’m setting up the shop.","The assistant stays in the background after setup."],
+  installAssistant:["Let’s make the shop recognisable.","Business type, location, logo and pictures become its identity."],
+  vaultShared:["One seller decision matters here.","No goes to invoice. Yes adjusts the shared value first."],
+  rewardRules:["Now the rules become value.","Every invoice can follow the same points, discount, free product and Gold logic."],
+  dashboard:["The assistant becomes your trigger.","Choose the store, then Focus or Intelligence."],
+  focus:["Focus is the operating pulse.","Commission, tickets, rewards, trends and customers."],
+  intelligence:["Intelligence is the growth layer.","Catalogue, inventory, finance and payment instruments."]
+ }
+};
+
+function F(){return role==="buyer"?BUYER:SELLER}
+function N(){return F()[state[role]]}
+function labelNext(label){return label}
+function icon(label){
+ if(label.includes("Tap"))return "◉"; if(label.includes("Scan")||label.includes("QR"))return "⌁";
+ if(label.includes("Gold"))return "Au"; if(label.includes("Card"))return "C"; if(label.includes("Value"))return "V";
+ if(label.includes("Create")||label.includes("Emirates"))return "ID"; if(label.includes("User"))return "◌";
+ if(label.includes("Invoice"))return "▤"; return "•";
+}
+function benefit(label){
+ const map={"Tap":"Start instantly without searching.","Scan":"Start from the camera URL link.","Existing User":"Keep your existing context.","New User":"Begin a lighter account path.","Yes":"Continue on the selected branch.","No":"Continue on the selected branch.","Cockpit":"Return to the six living modules.","Back to Cockpit":"Return to the six living modules.","Create account":"Secure the value layer with identity.","All Set to Earn more":"Move into the next numbered step.","Take permission":"Approve only the value you want connected.","Dynamic QR code":"Choose how the app connection should behave."};
+ return map[label]||"Continue this exact flow step with the benefit visible.";
+}
+function toast(t){const x=document.getElementById("toast");x.textContent=t;x.classList.add("show");clearTimeout(window._toast);window._toast=setTimeout(()=>x.classList.remove("show"),1500)}
+function celebrate(){const b=document.getElementById("confetti");b.innerHTML="";for(let i=0;i<68;i++){const d=document.createElement("i");d.className="piece";d.style.left=(43+Math.random()*14)+"%";d.style.setProperty("--x",((Math.random()-.5)*86)+"vw");d.style.background=["#f2d789","#fff0b5","#9fc8a7","#d2a43b","#fff"][i%5];d.style.animationDelay=(Math.random()*.25)+"s";b.appendChild(d)}setTimeout(()=>b.innerHTML="",2200)}
+function flowMark(n){return '<div class="flowBar"><b>'+n.n+'</b><span>'+n.t+'</span><em>'+n.e+'</em></div>'}
+function hero(n){return '<div class="hero"><img src="'+IMG[n.img]+'"><div class="heroText"><div class="eyebrow">'+n.e+'</div><h1>'+n.t+'</h1><p>'+n.p+'</p></div></div>'}
+function panelItems(items){if(!items||!items.length)return"";return '<div class="rail">'+items.map((x,i)=>'<div class="glass tile"><strong>'+x+'</strong><span>'+((i<4)?"Visible from the supplied flow":"Flow detail")+'</span><b>'+((i<4)?"STEP":"DETAIL")+'</b></div>').join("")+'</div>'}
+function specialized(n){
+ let h="";
+ if(n.t==="COCKPIT") h+='<div class="bento">'+n.o.map(o=>choice(o[0],o[1])).join("")+'</div>';
+ if(n.t==="My Visiting Card") h+='<div class="cardHero"><img src="'+IMG.card+'"><div class="cardCopy"><div class="cardBrand">KANZPAY CONNECT</div><div><div class="cardName">Your identity, your way</div><div class="sub">Glass · image · metallic Gold</div></div><div><span class="tag">NFC</span> <span class="tag">QR</span> <span class="tag">Share</span></div></div></div>';
+ if(n.t==="My Gold Vault") h+='<div class="goldHero"><div class="coin">Au</div><div class="goldCopy"><strong>Gold Vault</strong><span>Weight · +/- % vs purchase · Powered by SafeGold</span></div></div>';
+ if(n.t==="My Expenses") h+='<div class="glass chart"><i class="bar" style="height:37%"></i><i class="bar" style="height:54%"></i><i class="bar" style="height:48%"></i><i class="bar" style="height:73%"></i><i class="bar" style="height:58%"></i><i class="bar" style="height:88%"></i></div><div class="pie"></div>';
+ if(n.t==="Payment instrument intelligence inbuilt") h+='<div class="rail"><div class="glass instrument"><span>Cards BIN info</span><strong>Offers</strong><b>READY</b></div><div class="glass instrument"><span>Lean AIS</span><strong>Instrument data</strong><b>READY</b></div></div>';
+ if(n.t==="Create account") h+='<div class="grid2"><div class="glass panel"><div class="metric"><strong>1</strong><span class="tiny">DOCUMENT</span></div><div class="sub">Emirates ID front-back</div></div><div class="glass panel"><div class="metric"><strong>2</strong><span class="tiny">LIVE</span></div><div class="sub">Camera instructions</div></div><div class="glass panel"><div class="metric"><strong>3</strong><span class="tiny">MATCH</span></div><div class="sub">Photo match</div></div><div class="glass panel"><div class="metric"><strong>4</strong><span class="tiny">AML</span></div><div class="sub">Final check</div></div></div>';
+ if(n.t.includes("Live camera")) h+='<div class="camera"><img src="'+IMG.camera+'"><i class="dot" style="left:39%;top:36%"></i><i class="dot" style="left:57%;top:36%"></i><i class="dot" style="left:48%;top:57%"></i></div>';
+ if(n.t.includes("Emirates ID")&&n.t.toLowerCase().includes("front")) h+='<div class="idCard"><div class="idLines"><i style="width:80%"></i><i style="width:64%"></i><i style="width:90%"></i></div></div>';
+ return h;
+}
+function choice(label,next){return '<button class="glass node" onclick="go(\''+next+'\')"><div class="ico">'+icon(label)+'</div><strong>'+label+'</strong><span>Benefit: '+benefit(label)+'</span></button>'}
+function go(next){const f=F();if(!f[next])return;history[role].push(state[role]);state[role]=next;render()}
+function back(){state[role]=history[role].pop()||FLOW_META[role].start;render()}
+function setRole(r){role=r;history[r]=[];state[r]=FLOW_META[r].start;document.getElementById("buyerTab").classList.toggle("active",r==="buyer");document.getElementById("sellerTab").classList.toggle("active",r==="seller");render()}
+function toggleA(){document.getElementById("assistant").classList.toggle("open")}
+function render(){
+ const n=N(), m=(M[role][state[role]]||["I’m here with you.","I’ll stay beside you through the exact flow."]);
+ document.getElementById("aTitle").textContent=m[0];document.getElementById("aBody").textContent=m[1];
+ document.getElementById("assistant").classList.add("open");clearTimeout(window._a);window._a=setTimeout(()=>document.getElementById("assistant").classList.remove("open"),5000);
+ document.getElementById("top").innerHTML=(history[role].length?'<button style="font-size:8px;color:var(--muted)" onclick="back()">‹ Back</button>':'<div class="brand">KANZ<span>PAY</span></div>')+'<span class="tiny">'+role.toUpperCase()+' · CH1.0</span>';
+ if(n.celebrate)celebrate();
+ let body=flowMark(n)+hero(n)+specialized(n)+panelItems(n.items);
+ if(n.t==="COCKPIT"){} else if(n.o&&n.o.length) body+='<div class="grid2">'+n.o.map(o=>choice(o[0],o[1])).join("")+'</div>';
+ if(n.t==="COCKPIT") body+='<div class="panel glass"><div class="metric"><strong>Value & Wealth Building</strong><span class="tiny">LIVE</span></div><div class="sub">Six modules are now visible as living places, not a report.</div></div>';
+ if(!n.o?.length && n.e==="Module") body+='<div class="ctaWrap"><button class="cta primary" onclick="back()"><b>Back to Cockpit</b><small>Benefit: return without changing the supplied flow.</small></button></div>';
+ document.getElementById("stage").innerHTML='<div class="screen">'+body+'</div>';
+}
+render();
+</script>
+</body>
+</html>
