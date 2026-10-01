@@ -1,14 +1,1 @@
-{
-  "name": "kanzpay-pact-prototype",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "engines": {
-    "node": ">=22"
-  },
-  "scripts": {
-    "dev": "node server.mjs",
-    "start": "node server.mjs",
-    "test": "node --test test/*.test.mjs"
-  }
-}
+{"name":"kanzpay-oxy-project-6","version":"1.0.0","private":true,"type":"module"}
