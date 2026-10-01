@@ -129,7 +129,8 @@ function buyerTap() {
 function buyerInvoice() {
   const invoice = state.invoice;
   if (!invoice) return buyerTap();
-  return shell(`<main class="v1-invoice"><section class="v1-invoice-visual"><span class="v1-kicker"><i></i> INVOICE READY · ${esc(invoice.reference)}</span><h1>Review the<br><em>golden part.</em></h1><div class="v1-paper-invoice"><div><span>Basket</span><b>${money(invoice.grossMinor)}</b></div><div class="saving"><span>Fazaa member</span><b>− ${money(420)}</b></div><div class="saving"><span>Visa BIN offer</span><b>− ${money(180)}</b></div><div class="total"><span>Final amount</span><strong>${money(invoice.payableMinor)}</strong></div></div></section><section class="v1-invoice-copy"><span class="v1-kicker"><i></i> BUYER · APPROVE INVOICE</span><h2>Good value,<br><em>before pay.</em></h2><div class="v1-reward-result"><small>YOU GET BACK</small><strong>+${invoice.pointsEarned}</strong><span>points · ${money(invoice.goldEarnedMinor)} Gold</span><i>Balance after: ${invoice.pointsAfterPurchase.toLocaleString()} points</i></div><div class="v1-rail"><span>●</span><div><b>Recommended rail · ${esc(invoice.selectedRail?.name || 'Aani')}</b><small>Safe, instant account-to-account · no fee</small></div></div><button class="v1-gold-button wide" data-action="approve-invoice">Approve & pay <span>↗</span></button><button class="v1-text-button" data-action="stop-invoice">STOP · DON’T PAY</button></section></main>`, { back: true, label: 'BUYER · INVOICE REVIEW' });
+  const discounts = invoice.discounts || [];
+  return shell(`<main class="v1-invoice"><section class="v1-invoice-visual"><span class="v1-kicker"><i></i> INVOICE READY · ${esc(invoice.reference)}</span><h1>Review the<br><em>golden part.</em></h1><div class="v1-paper-invoice"><div><span>Basket</span><b>${money(invoice.grossMinor)}</b></div>${discounts.map((discount) => `<div class="saving"><span>${esc(discount.name)}</span><b>− ${money(discount.valueMinor)}</b></div>`).join('')}<div class="total"><span>Final amount</span><strong>${money(invoice.payableMinor)}</strong></div></div></section><section class="v1-invoice-copy"><span class="v1-kicker"><i></i> BUYER · APPROVE INVOICE</span><h2>Good value,<br><em>before pay.</em></h2><div class="v1-reward-result"><small>YOU GET BACK</small><strong>+${invoice.pointsEarned}</strong><span>points · ${money(invoice.goldEarnedMinor)} Gold</span><i>Balance after: ${invoice.pointsAfterPurchase.toLocaleString()} points</i></div><div class="v1-rail"><span>●</span><div><b>Recommended rail · ${esc(invoice.selectedRail?.name || 'Aani')}</b><small>Safe, instant account-to-account · no fee</small></div></div><button class="v1-gold-button wide" data-action="approve-invoice">Approve & pay <span>↗</span></button><button class="v1-text-button" data-action="stop-invoice">STOP · DON’T PAY</button></section></main>`, { back: true, label: 'BUYER · INVOICE REVIEW' });
 }
 
 function buyerReceipt() {
@@ -154,7 +155,7 @@ function sellerRules() {
 }
 
 function sellerInvoice() {
-  return journeyScreen({ role: 'seller', step: 3, total: 4, eyebrow: 'GENERATE + SHARE INVOICE', title: 'Send value<br><em>before print.</em>', copy: 'K-Assistant receives the approved buyer signals, applies your rules, and shares the invoice through the buyer’s chosen path.', visual: { className: 'v1-invoice-scene', content: '<div class="v1-seller-invoice"><span>INVOICE READY</span><strong>AED 66.00</strong><small>LM-1048 · MAYA KHAN</small><i>− AED 6.00 value applied</i></div>', caption: 'READY TO SHARE<br><em>BEFORE PAYMENT.</em>' }, body: '<div class="v1-share-grid"><button class="v1-share-card" data-action="seller-status"><span>⌁</span><b>Share via K-Assistant</b><small>Buyer receives it instantly.</small></button><button class="v1-share-card" data-action="seller-status"><span>▤</span><b>Print / QR share</b><small>Physical or scannable copy.</small></button></div>', primary: 'View invoice status', action: 'seller-status', progress: 80 });
+  return journeyScreen({ role: 'seller', step: 3, total: 4, eyebrow: 'GENERATE + SHARE INVOICE', title: 'Send value<br><em>before print.</em>', copy: 'K-Assistant receives the approved buyer signals, applies your rules, and shares the invoice through the buyer’s chosen path.', visual: { className: 'v1-invoice-scene', content: '<div class="v1-seller-invoice"><span>INVOICE READY</span><strong>AED 66.00</strong><small>LM-1048 · MAYA KHAN</small><i>− AED 6.00 value applied</i></div>', caption: 'READY TO SHARE<br><em>BEFORE PAYMENT.</em>' }, body: '<div class="v1-share-grid"><button class="v1-share-card" data-action="seller-share" data-channel="assistant"><span>⌁</span><b>Share via K-Assistant</b><small>Buyer receives it instantly.</small></button><button class="v1-share-card" data-action="seller-share" data-channel="qr"><span>▤</span><b>Print / QR share</b><small>Physical or scannable copy.</small></button></div>', primary: 'View invoice status', action: 'seller-status', progress: 80 });
 }
 
 function sellerStatus() {
@@ -199,9 +200,13 @@ function render() {
 }
 
 async function loadBootstrap() {
-  const result = await get('/api/bootstrap');
-  state.buyer = result.buyer;
-  state.seller = result.seller;
+  try {
+    const result = await get('/api/bootstrap');
+    state.buyer = result.buyer;
+    state.seller = result.seller;
+  } catch {
+    notify('Live sandbox data is unavailable. You can still explore the journey.', 'error');
+  }
 }
 async function loadSources() {
   const result = await get('/api/savings-map');
@@ -223,7 +228,7 @@ document.addEventListener('click', async (event) => {
   if (action === 'buyer-tap' || action === 'buyer-scan') { state.view = 'buyer-check'; render(); return; }
   if (action === 'buyer-existing' || action === 'buyer-new') { state.view = 'buyer-otp'; render(); return; }
   if (action === 'buyer-verify') { const payload = { name: document.querySelector('#buyer-name')?.value || 'Maya Khan', mobile: document.querySelector('#buyer-mobile')?.value || '+971 50 000 0000', email: document.querySelector('#buyer-email')?.value || 'maya@example.com' }; state.account = await post('/api/account/create', payload); if (state.account.error) return notify(state.account.error, 'error'); state.view = 'buyer-vault'; notify('Identity verified. Build your Value Vault.', 'success'); render(); return; }
-  if (action === 'connect-source') { await loadSources(); const source = state.sources.find((item) => item.id === element.dataset.source); if (source?.status === 'locked') return notify('This provider needs its official connection first.'); const result = await post('/api/savings-map/connect', { sourceId: element.dataset.source }); if (result.error) return notify(result.error, 'error'); notify('Permission approved. Value source connected.', 'success'); return; }
+  if (action === 'connect-source') { await loadSources(); const sourceId = { promocodes: 'email', vouchers: 'email' }[element.dataset.source] || element.dataset.source; const source = state.sources.find((item) => item.id === sourceId); if (source?.status === 'locked' && sourceId !== 'email') return notify('This provider needs its official connection first.'); const result = await post('/api/savings-map/connect', { sourceId }); if (result.error) return notify(result.error, 'error'); notify('Permission approved. Value source connected.', 'success'); return; }
   if (action === 'buyer-account') { state.view = 'buyer-account'; render(); return; }
   if (action === 'create-account') { const payload = { name: document.querySelector('#account-name')?.value || 'Maya Khan', mobile: document.querySelector('#account-mobile')?.value || '+971 50 000 0000', email: document.querySelector('#account-email')?.value || 'maya@example.com' }; state.account = await post('/api/account/create', payload); if (state.account.error) return notify(state.account.error, 'error'); await loadBootstrap(); state.view = 'buyer-cockpit'; notify('Value Vault opened. 1 mg Gold is processing.', 'success'); render(); return; }
   if (action === 'buyer-cockpit') { state.role = 'buyer'; state.view = 'buyer-cockpit'; await loadBootstrap(); render(); return; }
@@ -231,13 +236,14 @@ document.addEventListener('click', async (event) => {
   if (action === 'buyer-sources') { await loadSources(); state.view = 'buyer-vault'; render(); return; }
   if (action === 'buyer-expenses') { state.selectedModule = 'expenses'; state.view = 'buyer-module'; render(); return; }
   if (action === 'buyer-tap-flow') { state.view = 'buyer-tap'; render(); return; }
-  if (action === 'create-invoice') { const exchange = await post('/api/tap/exchange', { kTag: 'K-LUMA-001', buyerId: state.account?.id || 'buyer-maya', capabilities: ['memberships', 'rewards', 'promocodes', 'vouchers', 'cards', 'accounts'] }); if (exchange.error) return notify(exchange.error, 'error'); state.invoice = await post('/api/invoice/create'); if (state.invoice.error) return notify(state.invoice.error, 'error'); state.view = 'buyer-invoice'; notify('Approved signals priced. Invoice ready.', 'success'); render(); return; }
+  if (action === 'create-invoice') { await loadSources(); const capabilities = state.sources.filter((source) => source.status === 'connected').flatMap((source) => ({ memberships: ['memberships'], cards: ['cards'], email: ['promocodes', 'vouchers'], rewards: ['rewards'] }[source.id] || [])); const exchange = await post('/api/tap/exchange', { kTag: 'K-LUMA-001', buyerId: state.account?.id || 'buyer-maya', capabilities }); if (exchange.error) return notify(exchange.error, 'error'); state.invoice = await post('/api/invoice/create'); if (state.invoice.error) return notify(state.invoice.error, 'error'); state.view = 'buyer-invoice'; notify('Approved signals priced. Invoice ready.', 'success'); render(); return; }
   if (action === 'approve-invoice') { await post('/api/solver/preview'); state.receipt = await post('/api/checkout/approve'); if (state.receipt.error) return notify(state.receipt.error, 'error'); state.view = 'buyer-receipt'; notify('Payment approved. Gold is on its way.', 'success'); render(); return; }
   if (action === 'stop-invoice') { await post('/api/checkout/stop'); state.invoice = null; state.view = 'buyer-cockpit'; notify('Stopped. Nothing was paid.'); render(); return; }
   if (action === 'seller-install') { await post('/api/onboarding/permission', { role: 'seller', id: 'business-account', enabled: true }); state.view = 'seller-install'; render(); return; }
   if (action === 'seller-docs') { state.view = 'seller-docs'; render(); return; }
   if (action === 'seller-rules') { state.view = 'seller-rules'; render(); return; }
   if (action === 'seller-invoice') { state.view = 'seller-invoice'; render(); return; }
+  if (action === 'seller-share') { const exchange = await post('/api/tap/exchange', { kTag: 'K-LUMA-001', buyerId: 'buyer-maya', capabilities: ['memberships', 'cards'] }); if (exchange.error) return notify(exchange.error, 'error'); state.invoice = await post('/api/invoice/create'); if (state.invoice.error) return notify(state.invoice.error, 'error'); state.sellerInvoiceStatus = 'pending'; state.view = 'seller-status'; notify(`Invoice created and shared via ${element.dataset.channel === 'qr' ? 'print / QR' : 'K-Assistant'}.`, 'success'); render(); return; }
   if (action === 'seller-status') { state.view = 'seller-status'; render(); return; }
   if (action === 'select-status') { state.sellerInvoiceStatus = element.dataset.status; notify(`${element.dataset.status} status selected.`, 'success'); render(); return; }
   if (action === 'seller-cockpit') { state.role = 'seller'; state.view = 'seller-cockpit'; render(); return; }
