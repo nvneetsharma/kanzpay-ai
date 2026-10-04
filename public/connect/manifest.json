@@ -1,0 +1,10 @@
+{
+  "name":"KanzPay Connect",
+  "short_name":"KanzPay",
+  "start_url":"/connect",
+  "display":"standalone",
+  "background_color":"#090909",
+  "theme_color":"#090909",
+  "description":"KanzPay K-Tag, Value Vault, Visiting Card and Intelligence journeys.",
+  "icons":[]
+}
