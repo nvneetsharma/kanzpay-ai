@@ -183,6 +183,19 @@ html[data-theme="dark"] .chip { color: var(--gold-2); }
 .nfc-tag { width: 104px; height: 104px; border-radius: 30px; background: var(--gold-grad); display: grid; place-items: center; transform: rotate(-6deg); box-shadow: 0 16px 42px rgba(201,161,79,.55), inset 0 2px 0 rgba(255,255,255,.6); }
 .nfc-tag img { width: 62px; height: 62px; object-fit: contain; }
 
+/* ---------- splash ---------- */
+.splash { background-size: cover; background-position: center; }
+.splash-veil { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(6,6,8,.88) 22%, rgba(6,6,8,.25) 62%, transparent); }
+.splash-body { position: relative; z-index: 1; margin-top: auto; padding: 0 24px 34px; display: flex; flex-direction: column; gap: 22px; }
+.splash-copy { animation: rise .5s ease both; }
+.splash-copy h1 { color: #fff8e6; text-shadow: 0 2px 22px rgba(0,0,0,.6); }
+.splash-copy p { color: rgba(246,230,189,.85); font-size: 12.5px; margin-top: 8px; text-shadow: 0 1px 12px rgba(0,0,0,.6); }
+.splash-foot { display: flex; align-items: center; justify-content: space-between; }
+.splash-skip { background: none; border: none; color: rgba(246,230,189,.75); font-size: 12px; font-weight: 700; cursor: pointer; padding: 8px 0; }
+.ready { display: flex; flex-direction: column; gap: 7px; }
+.ready-lbl { font-size: 9.5px; color: var(--faint); letter-spacing: .04em; }
+.ready-lbl b { color: var(--gold-3); }
+
 /* ---------- motion ---------- */
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
 @keyframes pulse { 70% { box-shadow: 0 0 0 14px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }

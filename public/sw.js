@@ -1,10 +1,11 @@
-const CACHE = 'kanzpay-v1';
+const CACHE = 'kanzpay-v2';
 const ASSETS = [
-  '/', '/index.html', '/styles.css', '/app.js', '/manifest.webmanifest',
+  '/manifest.webmanifest',
   '/assets/kanzpay-mark.png', '/assets/kanzpay-mark-dark.png',
   '/assets/kanzpay-logo.png', '/assets/kanzpay-logo-dark.png',
   '/assets/scene-skyline.png', '/assets/scene-buyer-hero.png',
   '/assets/scene-seller-hero.png', '/assets/scene-tap-nfc.png',
+  '/assets/scene-payments.png', '/assets/scene-dashboard.png',
   '/assets/scene-coffee.png', '/assets/scene-gold-reward.png',
   '/assets/scene-card-exchange.png', '/assets/scene-catalogue.png'
 ];
@@ -23,6 +24,16 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(fetch(event.request).catch(() => new Response(JSON.stringify({ error: 'offline' }), { headers: { 'content-type': 'application/json' } })));
     return;
   }
+  // code & html: network-first so updates always reach installed apps
+  if (url.pathname === '/' || /\.(html|js|css)$/.test(url.pathname)) {
+    event.respondWith(fetch(event.request).then((res) => {
+      const copy = res.clone();
+      caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+      return res;
+    }).catch(() => caches.match(event.request)));
+    return;
+  }
+  // images: cache-first
   event.respondWith(caches.match(event.request).then((hit) => hit || fetch(event.request).then((res) => {
     const copy = res.clone();
     caches.open(CACHE).then((cache) => cache.put(event.request, copy));

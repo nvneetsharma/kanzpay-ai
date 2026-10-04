@@ -46,7 +46,7 @@ const state = {
   dash: null, alerts: null, customers: null,
   cardProfile: 'Professional', cardTemplate: 'aurum',
   kycStep: 0, kaceProgress: 0, sellerTab: 'focus',
-  buyerDone: [], sellerDone: [], praise: null
+  buyerDone: [], sellerDone: [], praise: null, splashIdx: 0
 };
 
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c]));
@@ -61,28 +61,17 @@ async function api(path, payload) {
   } catch { return { error: 'offline' }; }
 }
 
-/* ---------- journey flowchart (the gold thread) ---------- */
-const BUYER_FLOW = [['buyer-start', 'Tap or scan', 'find value instantly', 'tap'], ['buyer-verify', 'Verify you', 'mobile + email OTP', 'lock'], ['buyer-vault', 'Value Vault', 'connect what you own', 'vault'], ['buyer-account', 'Create account', 'Emirates ID + selfie', 'id'], ['cockpit', 'Your cockpit', 'everything earned', 'home']];
-const SELLER_FLOW = [['seller-onboard', 'Start onboarding', 'business basics', 'store'], ['seller-kace', 'Install K-Assistant', 'system · drivers · K-Tag', 'gear'], ['seller-sample', 'Sample invoice', 'teach it your bill', 'doc'], ['seller-adjust', 'Value rules', 'what buyers can apply', 'chip'], ['seller-share', 'Share invoice', 'before you print', 'share'], ['seller-dash', 'Dashboard', 'run the store', 'trend']];
+/* ---------- readiness bar: configuration progress ---------- */
+const BUYER_FLOW = [['buyer-start', 'Tap or scan', 'tap & pay', 'tap'], ['buyer-verify', 'Verify', 'secure sign-in', 'lock'], ['buyer-vault', 'Value Vault', 'savings apply', 'vault'], ['buyer-account', 'Account', 'gold & cards', 'id'], ['cockpit', 'Cockpit', 'full access', 'home']];
+const SELLER_FLOW = [['seller-onboard', 'Onboard', 'store live', 'store'], ['seller-kace', 'K-Assistant', 'auto catalogue', 'gear'], ['seller-sample', 'Invoice model', 'smart billing', 'doc'], ['seller-adjust', 'Value rules', 'loyalty runs', 'chip'], ['seller-share', 'Share', 'tap invoices', 'share'], ['seller-dash', 'Dashboard', 'full access', 'trend']];
 
-function rail(flow, extraClass = '') {
-  const done = state.role === 'seller' ? state.sellerDone : state.buyerDone;
-  const cur = route();
-  const curIdx = flow.findIndex(([r]) => r === cur);
-  const lastDone = done.length ? Math.max(...done.map((r) => flow.findIndex(([f]) => f[0] === r))) : -1;
-  const fillTo = Math.max(lastDone, curIdx);
-  const pct = fillTo <= 0 ? 0 : (fillTo / (flow.length - 1)) * 100;
-  return `<div class="rail ${extraClass}"><span class="goldline" style="height:${pct}%"></span>
-    ${flow.map(([r, t, d, ic], i) => {
-      const isDone = done.includes(r) || i < curIdx;
-      return `<div class="rail-step ${isDone ? 'done' : ''} ${r === cur ? '' : 'next'}">
-        <span class="rail-dot ${isDone ? 'done' : ''}">${ico(isDone ? 'check' : ic)}</span>
-        <span class="lbl"><b>${t}</b><small>${d}</small></span>
-        ${r === cur ? '<span class="pulse-dot"></span>' : ''}
-      </div>`;
-    }).join('')}</div>`;
-}
 const jrail = (flow) => { const cur = route(); const i = flow.findIndex(([r]) => r === cur); return `<div class="jrail">${flow.map((_, k) => `${k > 0 ? `<span class="jseg ${k <= i ? 'done' : ''}"></span>` : ''}<span class="jnode ${k <= i ? 'done' : ''}"></span>`).join('')}</div>`; };
+function readybar(flow) {
+  const done = state.role === 'seller' ? state.sellerDone : state.buyerDone;
+  const pct = Math.round((done.length / flow.length) * 100);
+  const unlocked = flow.slice(0, Math.max(done.length, 1)).map(([, , u]) => u).join(' · ');
+  return `<div class="ready">${jrail(flow)}<p class="ready-lbl"><b>${pct}% ready</b> — ${done.length ? `unlocked: ${unlocked}` : 'finish setup to unlock everything'}</p></div>`;
+}
 
 const applause = (title, sub, ic = 'star') => `<div class="applaud"><span class="icowell">${ico(ic)}</span><span><b>${title}</b><small>${sub}</small></span></div>`;
 const praiseBlock = () => state.praise ? applause(state.praise[0], state.praise[1], state.praise[2] || 'star') : '';
@@ -102,9 +91,8 @@ function welcome() {
     <div style="position:absolute;inset:0;background:url('/assets/scene-skyline.png') center/cover;opacity:${dark ? '.8' : '.35'}"></div>
     <div style="position:absolute;inset:0;background:linear-gradient(0deg,var(--bg) 8%,transparent 55%)"></div>
     <div class="body" style="position:relative;z-index:1;justify-content:flex-end;padding-top:60px">
-      <img src="/assets/kanzpay-mark-dark.png" style="width:76px;align-self:center" class="floaty" alt="" />
       <div class="glass" style="padding:24px;text-align:center">
-        <img src="${dark ? '/assets/kanzpay-logo-dark.png' : '/assets/kanzpay-logo.png'}" style="height:44px" alt="KanzPay" />
+        <img src="${dark ? '/assets/kanzpay-logo-dark.png' : '/assets/kanzpay-logo.png'}" style="height:42px" alt="KanzPay" />
         <h1 class="hero" style="margin:16px 0 8px">Everyday life rewards you.</h1>
         <p class="muted">Pay · Earn Gold · Save More · Discover · Live Better</p>
         <div style="display:grid;gap:10px;margin-top:20px">
@@ -118,27 +106,43 @@ function welcome() {
   </div>`;
 }
 
-/* ---------- journey map (the flowchart, live) ---------- */
-function jmap() {
-  const flow = state.role === 'seller' ? SELLER_FLOW : BUYER_FLOW;
-  const label = state.role === 'seller' ? 'SELLER JOURNEY' : 'BUYER JOURNEY';
-  const next = flow.find(([r]) => !(state.role === 'seller' ? state.sellerDone : state.buyerDone).includes(r));
-  return screen(`${topbar({ back: 'welcome' })}
-    <div class="body">
-      <div><span class="eyebrow">${label}</span><h1 class="hero">Your golden thread.</h1>
-      <p class="why" style="margin-top:10px">Every step hands value to the next — nothing wasted, everything connected.</p></div>
-      <div class="glass" style="padding:16px 14px">${rail(flow)}</div>
-      <button class="cta-gold" data-go="${next ? next[0] : (state.role === 'seller' ? 'seller-dash' : 'cockpit')}"><span>${next ? `Start: ${next[1]}` : 'Open your dashboard'}</span><span class="arr">→</span></button>
-    </div>`, false);
+/* ---------- capability splash (5–8s, per role) ---------- */
+const SPLASH = {
+  buyer: [
+    ['scene-tap-nfc', 'One tap opens the store', 'catalogue · offers · your invoice — before you queue'],
+    ['scene-payments', 'Your vault pays the smartest way', 'memberships, promocodes, points and gold — applied for you'],
+    ['scene-gold-reward', 'Real gold lands on every bill', 'milligrams that grow into wealth']
+  ],
+  seller: [
+    ['scene-seller-hero', "Customers tap — you're open", 'invoices, catalogue and offers reach their phone'],
+    ['scene-catalogue', 'K-Assistant builds your catalogue', 'from invoices, menus and inventory — quietly'],
+    ['scene-dashboard', 'Your whole business, one glance', 'trends · alerts · P&L · customers']
+  ]
+};
+function splash() {
+  const role = state.role === 'seller' ? 'seller' : 'buyer';
+  const slides = SPLASH[role];
+  const i = Math.min(state.splashIdx || 0, slides.length - 1);
+  const [img, title, sub] = slides[i];
+  return `<div class="screen no-nav splash" style="background-image:url('/assets/${img}.png')">
+    <div class="splash-veil"></div>
+    <div class="splash-body">
+      <div class="splash-copy"><h1 class="hero">${title}.</h1><p>${sub}</p></div>
+      <div class="splash-foot">
+        <div class="dots">${slides.map((_, k) => `<i class="${k <= i ? 'on' : ''}"></i>`).join('')}</div>
+        <button class="splash-skip" data-action="splash-skip">Skip intro →</button>
+      </div>
+    </div>
+  </div>`;
 }
 
 /* ---------- buyer steps ---------- */
 function buyerStart() {
-  return screen(`${topbar({ back: 'jmap' })}
+  return screen(`${topbar()}
     <div class="body">
       ${praiseBlock()}
-      <div><span class="eyebrow">STEP 1 · TAP OR SCAN</span><h1 class="hero">Bring your phone to a K-Tag.</h1></div>
-      ${jrail(BUYER_FLOW)}
+      <div><span class="eyebrow">STEP 1 · TAP OR SCAN</span><h1 class="hero">Meet your first K-Tag.</h1></div>
+      ${readybar(BUYER_FLOW)}
       <div class="card-hero" style="background-image:url('/assets/scene-tap-nfc.png');min-height:210px">
         <div class="nfc-ring"><div class="nfc-tag"><img src="/assets/kanzpay-mark.png" alt="" /></div></div>
       </div>
@@ -158,8 +162,8 @@ function buyerVerify() {
   return screen(`${topbar({ back: 'buyer-start' })}
     <div class="body">
       ${praiseBlock()}
-      <div><span class="eyebrow">STEP 2 · VERIFY</span><h1 class="hero">Prove it's you, once.</h1></div>
-      ${jrail(BUYER_FLOW)}
+      <div><span class="eyebrow">STEP 2 · VERIFY</span><h1 class="hero">A quick hello, securely.</h1></div>
+      ${readybar(BUYER_FLOW)}
       <div class="glass" style="padding:18px">
         <div class="check-row">${ico('phone')}<span style="flex:1">Mobile</span><input id="otp-mobile" inputmode="tel" value="${esc(state.mobile)}" style="background:none;border:none;color:var(--ink);text-align:right;width:130px;font-size:13px;outline:none"/></div>
         <div class="check-row" style="margin-top:7px">${ico('mail')}<span style="flex:1">Email</span><input id="otp-email" inputmode="email" value="${esc(state.email)}" style="background:none;border:none;color:var(--ink);text-align:right;width:160px;font-size:13px;outline:none"/></div>
@@ -178,8 +182,8 @@ function buyerVault() {
   return screen(`${topbar({ back: 'buyer-verify' })}
     <div class="body">
       ${praiseBlock()}
-      <div><span class="eyebrow">STEP 3 · VALUE VAULT</span><h1 class="hero">Gather what you own.</h1></div>
-      ${jrail(BUYER_FLOW)}
+      <div><span class="eyebrow">STEP 3 · VALUE VAULT</span><h1 class="hero">Bring your savings together.</h1></div>
+      ${readybar(BUYER_FLOW)}
       <div class="vault-door">
         ${sections.map((s) => `<div class="vault-row ${s.status === 'grey' ? 'grey' : ''}">
           <span class="icowell">${ico(s.id === 'memberships' ? 'card' : s.id === 'rewards' ? 'star' : s.id === 'promocodes' ? 'qr' : 'doc')}</span>
@@ -193,13 +197,31 @@ function buyerVault() {
     </div>`, false);
 }
 
+/* post-setup vault view (cockpit module — navigable, not a step) */
+function vaultView() {
+  const sections = state.vault?.sections || [];
+  return screen(`${topbar({ back: 'cockpit' })}
+    <div class="body">
+      <div><span class="eyebrow">MY VALUE VAULT</span><h1 class="hero">Everything you've earned.</h1></div>
+      <div class="vault-door">
+        ${sections.map((s) => `<div class="vault-row ${s.status === 'grey' ? 'grey' : ''}">
+          <span class="icowell">${ico(s.id === 'memberships' ? 'card' : s.id === 'rewards' ? 'star' : s.id === 'promocodes' ? 'qr' : 'doc')}</span>
+          <div><b style="font-size:13px">${esc(s.label)}</b><small class="tiny" style="display:block">${s.items.length ? esc(s.items[0].value) : 'Not connected yet'}</small></div>
+          ${s.status === 'connected' ? ico('check') : s.status === 'grey' ? '<span class="tiny">missing</span>' : `<button class="cta-mini" data-action="vault-connect" data-id="${s.id}">Connect</button>`}
+        </div>`).join('')}
+        <p class="why" style="margin-top:12px">Each connection is permissioned by you — saved with history, validity & encrypted credentials.</p>
+      </div>
+      <button class="cta-pill" data-go="stores" style="justify-content:center">Use it at a store →</button>
+    </div>`);
+}
+
 function buyerGoldAward() {
   return screen(`${topbar()}
     <div class="body" style="text-align:center">
       <div class="card-hero" style="background-image:url('/assets/scene-gold-reward.png');min-height:230px;justify-content:center">
         <div class="gold-coin-hero"><div><b>1</b><small>MG GOLD</small></div></div>
       </div>
-      <div><h1 class="hero">Congratulations.</h1><p class="muted">1 mg Gold cashback is yours.<br/>Earn more. Save more.</p></div>
+      <div><h1 class="hero">First gold, on us.</h1><p class="muted">1 mg Gold cashback is yours.<br/>Earn more. Save more.</p></div>
       <button class="cta-gold" data-action="gold-continue"><span>Build my Value Vault</span><span class="arr">→</span></button>
     </div>`, false);
 }
@@ -213,7 +235,7 @@ function account() {
     <div class="body">
       ${praiseBlock()}
       <div><span class="eyebrow">STEP 4 · CREATE ACCOUNT</span><h1 class="hero">${title}.</h1><p class="muted">${desc}.</p></div>
-      ${jrail(BUYER_FLOW)}
+      ${readybar(BUYER_FLOW)}
       ${i === 2
         ? `<div class="vault-door" style="text-align:center;padding:24px"><div class="kace-orb">${ico('cam', 'big')}</div><p class="tiny" style="margin-top:14px">Blink naturally · look left · look right · hold your Emirates ID beside your face</p></div>`
         : `<div class="id-frame"><div><span class="icowell solid" style="width:54px;height:54px;margin:auto">${ico(ic)}</span><p class="muted" style="margin-top:10px">Tap to upload — we crop & match automatically</p></div></div>`}
@@ -255,7 +277,7 @@ function cockpit() {
 function friends() {
   return screen(`${topbar({ back: 'cockpit' })}
     <div class="body">
-      <div><span class="eyebrow">EARN WITH FRIENDS</span><h1 class="hero">Value shared is value doubled.</h1></div>
+      <div><span class="eyebrow">EARN WITH FRIENDS</span><h1 class="hero">Better with company.</h1></div>
       <div class="share-banner"><b style="font-size:16px">Invite a friend → both earn Gold</b><p style="font-size:11.5px;opacity:.85;margin-top:6px">When they tap their first K-Tag, you each receive 1 mg.</p></div>
       <div class="card-hero" style="background-image:url('/assets/scene-card-exchange.png');min-height:140px">
         <div><b style="color:#fff">Share a link, tap phones, or send a QR</b></div>
@@ -276,7 +298,7 @@ function friends() {
 function gold() {
   return screen(`${topbar({ back: 'cockpit' })}
     <div class="body">
-      <div><span class="eyebrow">MY GOLD VAULT</span><h1 class="hero">Wealth in milligrams.</h1></div>
+      <div><span class="eyebrow">MY GOLD VAULT</span><h1 class="hero">Small weight. Real gold.</h1></div>
       <div class="vault-door" style="text-align:center;padding-top:24px">
         <div class="gold-coin-hero"><div><b>13.5</b><small>MG GOLD</small></div></div>
         <b style="display:block;font-size:16px">≈ AED 9.45 today</b>
@@ -299,7 +321,7 @@ function expenses() {
   const catIcons = ['coin', 'card', 'spark', 'pin', 'doc'];
   return screen(`${topbar({ back: 'cockpit' })}
     <div class="body">
-      <div><span class="eyebrow">MY EXPENSES</span><h1 class="hero">Where it goes.</h1></div>
+      <div><span class="eyebrow">MY EXPENSES</span><h1 class="hero">Where your money went.</h1></div>
       <div class="seg"><button class="on">Monthly</button><button>Weekly</button><button>Yearly</button></div>
       <div class="glass" style="padding:18px">
         <div style="display:flex;justify-content:space-between;margin-bottom:6px"><p class="tiny">SPEND TREND</p><b class="gold-text">${money0(ex?.totalMinor || 0)}</b></div>
@@ -314,7 +336,7 @@ function instruments() {
   const steps = [['Membership price', 'applied at bill'], ['Promocode KANZ10', '10% held in vault'], ['Reward points', '2,480 available'], ['Gold redeem', '13.5 mg in vault'], ['Instrument choice', 'Aani · Jaywan · card offers']];
   return screen(`${topbar({ back: 'cockpit' })}
     <div class="body">
-      <div><span class="eyebrow">PAYMENT INTELLIGENCE</span><h1 class="hero">The best way to pay, per bill.</h1>
+      <div><span class="eyebrow">PAYMENT INTELLIGENCE</span><h1 class="hero">Every bill, paid wisely.</h1>
       <p class="why" style="margin-top:10px">We evaluate every instrument's offers & benefits — you approve the logic once.</p></div>
       ${steps.map(([t, d], i) => `<div class="instr-chip"><span class="step-num ${i < 3 ? 'done' : ''}">${i + 1}</span><div style="flex:1"><b style="font-size:13px">${t}</b><small class="tiny" style="display:block">${d}</small></div></div>`).join('')}
       <div class="glass" style="padding:16px">
@@ -330,7 +352,7 @@ function instruments() {
 function stores() {
   return screen(`${topbar({ back: 'cockpit' })}
     <div class="body">
-      <div><span class="eyebrow">NAVIGATION · DUBAI MARINA</span><h1 class="hero">Stores near you.</h1><p class="muted">Sorted by your interests & patterns — not by ads.</p></div>
+      <div><span class="eyebrow">NAVIGATION · DUBAI MARINA</span><h1 class="hero">Around you right now.</h1><p class="muted">Sorted by your interests & patterns — not by ads.</p></div>
       ${state.stores.map((s) => `<button class="store-card" data-action="store-pick" style="text-align:left;color:var(--ink);cursor:pointer;width:100%">
         <span class="thumb" style="background-image:url('${s.image}')"></span>
         <span><b style="font-size:13.5px">${esc(s.name)}</b><small class="tiny" style="display:block;margin:3px 0">${esc(s.kind)} · ${s.distanceM}m · ★${s.rating} ${s.live ? '· live catalogue' : ''}</small>
@@ -358,7 +380,7 @@ function invoice() {
   const lines = (bv?.options || []).filter((o) => o.applies);
   return screen(`${topbar({ back: 'stores' })}
     <div class="body">
-      <div><span class="eyebrow">INVOICE · PRINT-SHARED VIA K-ASSIST</span><h1 class="hero">Review before you pay.</h1></div>
+      <div><span class="eyebrow">INVOICE · PRINT-SHARED VIA K-ASSIST</span><h1 class="hero">Look it over first.</h1></div>
       <div class="vault-door">
         <div style="display:flex;justify-content:space-between;align-items:center"><b>${esc(inv?.seller?.name || 'The Brew House')}</b><span class="chip">#${esc(inv?.reference || '1048')}</span></div>
         <div style="margin-top:12px">${(inv?.items || []).map((it) => `<div class="donut-row" style="margin-bottom:7px"><span style="flex:1">${it.quantity}× ${esc(it.name)}</span><b>${money(it.unitMinor * it.quantity)}</b></div>`).join('')}</div>
@@ -374,7 +396,7 @@ function invoice() {
 function success() {
   return screen(`${topbar()}
     <div class="body" style="text-align:center">
-      <div class="card-hero" style="background-image:url('/assets/scene-gold-reward.png');min-height:220px;justify-content:center"><h1 class="hero" style="color:#fff">Paid.<br/>Value kept.</h1></div>
+      <div class="card-hero" style="background-image:url('/assets/scene-gold-reward.png');min-height:220px;justify-content:center"><h1 class="hero" style="color:#fff">Done — and you earned.</h1></div>
       <div class="glass" style="padding:18px">
         <div style="display:flex;justify-content:space-around"><div><b class="gold-text" style="font-size:20px">+2 mg</b><p class="tiny">Gold earned</p></div><div><b class="gold-text" style="font-size:20px">+120</b><p class="tiny">points</p></div><div><b class="gold-text" style="font-size:20px">Food</b><p class="tiny">expense filed</p></div></div>
       </div>
@@ -389,7 +411,7 @@ function card() {
   const tpl = state.cardTemplate;
   return screen(`${topbar({ back: 'cockpit' })}
     <div class="body">
-      <div><span class="eyebrow">MY VISITING CARD</span><h1 class="hero">One sheet. Every profile.</h1>
+      <div><span class="eyebrow">MY VISITING CARD</span><h1 class="hero">One card, many faces.</h1>
       <p class="why" style="margin-top:10px">One data sheet feeds every profile — professional at work, warm with family.</p></div>
       <div class="card-face tpl-${tpl}">
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -418,11 +440,11 @@ function card() {
 
 /* ---------- seller journey ---------- */
 function sellerOnboard() {
-  return screen(`${topbar({ back: 'jmap' })}
+  return screen(`${topbar()}
     <div class="body">
       ${praiseBlock()}
-      <div><span class="eyebrow">STEP 1 · ONBOARDING</span><h1 class="hero">Open your store.</h1></div>
-      ${jrail(SELLER_FLOW)}
+      <div><span class="eyebrow">STEP 1 · ONBOARDING</span><h1 class="hero">Let's open your store.</h1></div>
+      ${readybar(SELLER_FLOW)}
       <div class="card-hero" style="background-image:url('/assets/scene-seller-hero.png');min-height:160px">
         <div><span class="eyebrow" style="color:#f3d98b">K-ASSISTANT WAITS</span><h2 class="sect" style="color:#fff;margin-top:6px">Five quiet minutes, then it runs itself.</h2></div>
       </div>
@@ -440,10 +462,10 @@ function sellerKace() {
   const tasks = [['System identified — Mac', 20], ['Drivers aligned', 45], ['K-Tag registered', 70], ['Floating assistant live', 90]];
   return screen(`${topbar()}
     <div class="body">
-      <div><span class="eyebrow">STEP 2 · K-ASSISTANT</span><h1 class="hero">Setting up quietly.</h1></div>
-      ${jrail(SELLER_FLOW)}
+      <div><span class="eyebrow">STEP 2 · K-ASSISTANT</span><h1 class="hero">Your assistant is moving in.</h1></div>
+      ${readybar(SELLER_FLOW)}
       <div class="vault-door" style="text-align:center;padding:24px">
-        <div class="kace-orb"><img src="/assets/kanzpay-mark.png" style="width:56px" alt=""/></div>
+        <div class="kace-orb"><span class="icowell solid" style="width:64px;height:64px">${ico('gear','big')}</span></div>
         <p class="eyebrow" style="margin-top:14px">${p}%</p>
         <div class="progress" style="margin-top:10px"><i style="width:${p}%"></i></div>
       </div>
@@ -456,8 +478,8 @@ function sellerSample() {
   return screen(`${topbar({ back: 'seller-kace' })}
     <div class="body">
       ${praiseBlock()}
-      <div><span class="eyebrow">STEP 3 · SAMPLE INVOICE</span><h1 class="hero">Teach it your bill.</h1><p class="muted">Share one invoice — K-Assistant reads your shop details.</p></div>
-      ${jrail(SELLER_FLOW)}
+      <div><span class="eyebrow">STEP 3 · SAMPLE INVOICE</span><h1 class="hero">Show it one bill.</h1><p class="muted">Share one invoice — K-Assistant reads your shop details.</p></div>
+      ${readybar(SELLER_FLOW)}
       <div class="vault-door">
         ${[['Shop name', 'The Brew House', true], ['Address', 'Marina Walk, Dubai', true], ['VAT No.', '1003 4488 2100 03', true], ['Mobile', '+971 4 555 0123', false]].map(([l, v, ok]) => `<div class="check-row" style="margin-bottom:7px">${ok ? '<span class="tick">✓</span>' : '<span class="step-num">!</span>'}<span style="flex:1"><b style="font-size:12.5px">${l}</b> · <span class="tiny">${v}</span></span>${ok ? '' : '<button class="cta-mini">Fix</button>'}</div>`).join('')}
       </div>
@@ -477,8 +499,8 @@ function sellerAdjust() {
   return screen(`${topbar({ back: 'seller-sample' })}
     <div class="body">
       ${praiseBlock()}
-      <div><span class="eyebrow">STEP 4 · VALUE VAULT CHECK</span><h1 class="hero">What buyers can apply.</h1><p class="muted">Buyer shared their vault — you approve which benefits apply.</p></div>
-      ${jrail(SELLER_FLOW)}
+      <div><span class="eyebrow">STEP 4 · VALUE VAULT CHECK</span><h1 class="hero">Decide what counts.</h1><p class="muted">Buyer shared their vault — you approve which benefits apply.</p></div>
+      ${readybar(SELLER_FLOW)}
       ${rows.map(([t, v, on]) => `<div class="instr-chip"><div style="flex:1"><b style="font-size:13px">${t}</b></div><b class="gold-text">${v}</b><button class="chip" style="cursor:pointer">${on ? 'On' : 'Add'}</button></div>`).join('')}
       <button class="cta-gold" data-action="gen-invoice"><span>Generate invoice</span><span class="arr">→</span></button>
     </div>`);
@@ -488,8 +510,8 @@ function sellerShare() {
   return screen(`${topbar({ back: 'seller-adjust' })}
     <div class="body">
       ${praiseBlock()}
-      <div><span class="eyebrow">STEP 5 · SHARE THE INVOICE</span><h1 class="hero">Send before you print.</h1></div>
-      ${jrail(SELLER_FLOW)}
+      <div><span class="eyebrow">STEP 5 · SHARE THE INVOICE</span><h1 class="hero">The bill, in their hands.</h1></div>
+      ${readybar(SELLER_FLOW)}
       <div class="vault-door">
         <div style="display:flex;justify-content:space-between"><b>Invoice #1048</b><b class="gold-text">${money(6600)}</b></div>
         <p class="tiny" style="margin-top:8px">Priced with buyer-approved signals · membership −AED 6 · voucher −AED 3</p>
@@ -512,7 +534,7 @@ function sellerDash() {
     <div class="body">
       ${praiseBlock()}
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
-        <div><span class="eyebrow">THE BREW HOUSE</span><h1 class="hero" style="font-size:24px">Today's picture.</h1></div>
+        <div><span class="eyebrow">THE BREW HOUSE</span><h1 class="hero" style="font-size:24px">Good morning.</h1></div>
         <div class="seg"><button class="${focus ? 'on' : ''}" data-stab="focus">Focus</button><button class="${focus ? '' : 'on'}" data-stab="intel">Intelligence</button></div>
       </div>
       ${focus ? `
@@ -545,7 +567,7 @@ function sellerAlerts() {
   const sect = (title, list) => list?.length ? `<div><p class="eyebrow" style="margin-bottom:8px">${title}</p>${list.map((a) => `<div class="card-list" style="margin-bottom:8px"><span class="icowell" style="width:36px;height:36px">${ico(a.severity === 'warn' ? 'bell' : 'check')}</span><div class="main"><b>${esc(a.title)}</b><small>${esc(a.detail)}</small></div><button class="cta-mini">${esc(a.action)}</button></div>`).join('')}</div>` : '';
   return screen(`${topbar()}
     <div class="body">
-      <div><span class="eyebrow">ALERTS</span><h1 class="hero">Needs your eye.</h1></div>
+      <div><span class="eyebrow">ALERTS</span><h1 class="hero">Worth a glance.</h1></div>
       ${sect('Inventory', g.inventory)}
       ${sect('Payables & receivables', g.payments)}
       ${sect('Business', g.business)}
@@ -557,7 +579,7 @@ function sellerCustomers() {
   const rw = state.customers?.rewards || {};
   return screen(`${topbar()}
     <div class="body">
-      <div><span class="eyebrow">CUSTOMERS</span><h1 class="hero">People who return.</h1></div>
+      <div><span class="eyebrow">CUSTOMERS</span><h1 class="hero">Your regulars.</h1></div>
       <div class="seg"><button class="on">All</button><button>Top</button><button>New</button><button>Needs attention</button></div>
       ${cs.map((c) => `<div class="card-list"><div class="avatar">${esc(c.name[0])}</div><div class="main"><b>${esc(c.name)}</b><small>${c.visits} visits · ${money0(c.spentMinor)}</small></div><div class="end"><span class="chip">${esc(c.segment)}</span><div class="tiny" style="margin-top:4px">${c.goldMg} mg</div></div></div>`).join('')}
       <div class="vault-door" style="display:flex;gap:18px;padding:16px"><div><b class="gold-text" style="font-size:20px">${(rw.pointsIssued || 0).toLocaleString()}</b><p class="tiny">points issued +${rw.pointsDeltaPct || 0}%</p></div><div><b class="gold-text" style="font-size:20px">${rw.goldIssuedMg || 0} mg</b><p class="tiny">gold issued +${rw.goldDeltaPct || 0}%</p></div></div>
@@ -570,7 +592,7 @@ function sellerInsights() {
   const pl = ins?.pl || {};
   return screen(`${topbar()}
     <div class="body">
-      <div><span class="eyebrow">INTELLIGENCE · P&L</span><h1 class="hero">The month's truth.</h1></div>
+      <div><span class="eyebrow">INTELLIGENCE · P&L</span><h1 class="hero">The month, honestly.</h1></div>
       <div class="vault-door">
         ${[['Revenue', pl.revenueMinor], ['Cost of goods', -(pl.cogsMinor || 0)], ['Gross profit', pl.grossMinor], ['Expenses', -(pl.expensesMinor || 0)], ['Net profit', pl.netMinor]].map(([l, v], i) => `<div class="donut-row" style="margin-bottom:8px;${i === 4 ? 'background:var(--chip);border-radius:10px;padding:8px 10px' : ''}"><span style="flex:1">${l}</span><b class="${i === 4 ? 'gold-text' : ''}">${money0(v)}</b></div>`).join('')}
       </div>
@@ -590,7 +612,7 @@ function praise(msg, sub, ic, next) {
 async function render() {
   const r = route();
   if (r.startsWith('seller')) state.role = 'seller';
-  else if (r !== 'welcome' && r !== 'jmap') state.role = 'buyer';
+  else if (r !== 'welcome' && r !== 'splash') state.role = 'buyer';
   if (r === 'stores' && !state.stores.length) state.stores = (await api('/api/stores')).stores || [];
   if (r === 'buyer-vault' && !state.vault) state.vault = await api('/api/vault');
   if (r === 'expenses' && !state.expenses) state.expenses = await api('/api/intelligence/expenses');
@@ -599,8 +621,8 @@ async function render() {
   if (r === 'seller-alerts' && !state.alerts) state.alerts = await api('/api/seller/alerts');
   if (r === 'seller-customers' && !state.customers) state.customers = await api('/api/seller/customers');
   const views = {
-    welcome, jmap, 'buyer-start': buyerStart, 'buyer-verify': buyerVerify, 'buyer-vault': buyerVault, 'buyer-gold': buyerGoldAward,
-    cockpit, vault: buyerVault, friends, gold, expenses, instruments, account, stores, invoice, success, card,
+    welcome, splash, 'buyer-start': buyerStart, 'buyer-verify': buyerVerify, 'buyer-vault': buyerVault, 'buyer-gold': buyerGoldAward,
+    cockpit, vault: vaultView, friends, gold, expenses, instruments, 'buyer-account': account, stores, invoice, success, card,
     'seller-onboard': sellerOnboard, 'seller-kace': sellerKace, 'seller-sample': sellerSample,
     'seller-adjust': sellerAdjust, 'seller-share': sellerShare, 'seller-dash': sellerDash,
     'seller-alerts': sellerAlerts, 'seller-customers': sellerCustomers, 'seller-insights': sellerInsights
@@ -609,6 +631,7 @@ async function render() {
   window.scrollTo(0, 0);
 }
 
+function endSplash() { clearInterval(state.splashTimer); go(state.role === 'seller' ? 'seller-onboard' : 'buyer-start'); }
 let kaceTimer;
 document.addEventListener('click', async (e) => {
   const el = e.target.closest('[data-go],[data-action],[data-profile],[data-tpl],[data-stab]');
@@ -620,12 +643,23 @@ document.addEventListener('click', async (e) => {
   const a = el.dataset.action;
   if (a === 'theme') { state.theme = state.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = state.theme; localStorage.setItem('kz-theme', state.theme); render(); return; }
   if (a === 'install') { toast('On mobile: browser menu → Add to Home Screen.'); return; }
-  if (a === 'pick') { state.role = el.dataset.role; go('jmap'); return; }
+  if (a === 'pick') {
+    state.role = el.dataset.role; state.splashIdx = 0; go('splash');
+    clearInterval(state.splashTimer);
+    const slides = SPLASH[state.role === 'seller' ? 'seller' : 'buyer'];
+    state.splashTimer = setInterval(() => {
+      state.splashIdx += 1;
+      if (state.splashIdx >= slides.length) { clearInterval(state.splashTimer); endSplash(); return; }
+      if (route() === 'splash') render();
+    }, 2400);
+    return;
+  }
+  if (a === 'splash-skip') { endSplash(); return; }
   if (a === 'start-tap') {
     toast('◉ Bring your phone to the K-Tag…');
     if (el.dataset.via === 'nfc' && 'NDEFReader' in window) { try { const r = new NDEFReader(); await r.scan(); r.onreading = () => proceed(); return; } catch {} }
     setTimeout(proceed, 900);
-    function proceed() { markDone(state.buyerDone, 'buyer-start'); state.mobile = document.querySelector('#existing-mobile')?.value || state.mobile; api('/api/otp/send', { mobile: state.mobile }); praise('K-Tag found', 'The Brew House says hello.', 'tap', 'buyer-verify'); }
+    function proceed() { markDone(state.buyerDone, 'buyer-start'); state.mobile = document.querySelector('#existing-mobile')?.value || state.mobile; api('/api/otp/send', { mobile: state.mobile }); praise('The Brew House says hello', 'K-Tag read — this store knows you now.', 'tap', 'buyer-verify'); }
     return;
   }
   if (a === 'verify-otp') {
@@ -633,18 +667,18 @@ document.addEventListener('click', async (e) => {
     state.email = document.querySelector('#otp-email')?.value || state.email;
     const r = await api('/api/otp/verify', { mobile: state.mobile, email: state.email });
     if (r.error) return toast(r.error, 'error');
-    markDone(state.buyerDone, 'buyer-verify');
+    markDone(state.buyerDone, 'buyer-start'); markDone(state.buyerDone, 'buyer-verify');
     go('buyer-gold'); return;
   }
   if (a === 'gold-continue') { go('buyer-vault'); return; }
   if (a === 'vault-connect') { await api('/api/vault/connect', { id: el.dataset.id }); state.vault = await api('/api/vault'); toast('Connected — value found.', 'success'); render(); return; }
-  if (a === 'vault-done' || a === 'vault-skip') { markDone(state.buyerDone, 'buyer-vault'); praise('Vault secured', 'Your savings travel with you now.', 'vault', 'buyer-account'); go('buyer-account'); return; }
-  if (a === 'kyc-step') { const step = ['emirates-id-front', 'emirates-id-back', 'live-camera', 'aml-check'][state.kycStep]; await api('/api/account/kyc', { step }); if (state.kycStep === 3) { markDone(state.buyerDone, 'buyer-account'); praise('Account created', 'Welcome to KanzPay.', 'home', 'cockpit'); } else { state.kycStep += 1; render(); } return; }
+  if (a === 'vault-done' || a === 'vault-skip') { markDone(state.buyerDone, 'buyer-vault'); praise('Vault secured', 'Every offer you own now works at checkout.', 'vault', 'buyer-account'); return; }
+  if (a === 'kyc-step') { const step = ['emirates-id-front', 'emirates-id-back', 'live-camera', 'aml-check'][state.kycStep]; await api('/api/account/kyc', { step }); if (state.kycStep === 3) { markDone(state.buyerDone, 'buyer-account'); praise('Welcome to KanzPay', 'Your account is ready, '+state.name.split(' ')[0]+'.', 'home', 'cockpit'); } else { state.kycStep += 1; render(); } return; }
   if (a === 'kyc-skip') { go('cockpit'); return; }
   if (a === 'store-pick') { toast('Opening live catalogue…'); doTap('store'); return; }
   if (a === 'navigate') { const r = await api('/api/ktag/navigate', {}); toast(`Route ready — ${r.destination?.walkMin || 4} min walk.`); return; }
-  if (a === 'pay') { await api('/api/solver/preview'); const res = await api('/api/checkout/approve'); if (res.error) return toast(res.error, 'error'); toast('Approved. Gold on its way.', 'success'); go('success'); return; }
-  if (a === 'stop-pay') { await api('/api/checkout/stop'); toast('Stopped. Nothing was paid.'); go('stores'); return; }
+  if (a === 'pay') { await api('/api/solver/preview', {}); const res = await api('/api/checkout/approve', {}); if (res.error) return toast(res.error, 'error'); toast('Approved. Gold on its way.', 'success'); go('success'); return; }
+  if (a === 'stop-pay') { await api('/api/checkout/stop', {}); toast('Stopped. Nothing was paid.'); go('stores'); return; }
   if (a === 'approve-logic') { toast('Logic approved — every bill gets the best route.', 'success'); go('cockpit'); return; }
   if (a?.startsWith('gold-')) { toast({ 'gold-buy': 'Buy gold from AED 5 — coming to your vault.', 'gold-sell': 'Sell instantly to AED.', 'gold-gift': 'Send gold as a gift card.', 'gold-pay': 'Pay any K-Tag with gold.' }[a], 'success'); return; }
   if (a === 'friend-send') { toast('Invite sent — you both earn 1 mg Gold on their first tap.', 'success'); return; }
@@ -655,13 +689,13 @@ document.addEventListener('click', async (e) => {
     kaceTimer = setInterval(async () => {
       state.kaceProgress = Math.min(100, state.kaceProgress + 9);
       if (route() === 'seller-kace') render();
-      if (state.kaceProgress >= 100) { clearInterval(kaceTimer); markDone(state.sellerDone, 'seller-kace'); praise('K-Assistant installed', 'It floats on your screen, ready.', 'gear', 'seller-sample'); }
+      if (state.kaceProgress >= 100) { clearInterval(kaceTimer); markDone(state.sellerDone, 'seller-kace'); praise('K-Assistant is in', 'Quietly running — you\'ll notice it only when it helps.', 'gear', 'seller-sample'); }
     }, 380);
     return;
   }
-  if (a === 'vault-check') { markDone(state.sellerDone, 'seller-sample'); praise('Bill understood', 'Shop details verified.', 'doc', 'seller-adjust'); return; }
-  if (a === 'gen-invoice') { markDone(state.sellerDone, 'seller-adjust'); await api('/api/seller/catalogue/import', { source: 'invoice' }); praise('Invoice priced', 'Signals applied · catalogue updated.', 'chip', 'seller-share'); return; }
-  if (a === 'dash-open') { markDone(state.sellerDone, 'seller-share'); praise('You\'re live', 'The Brew House is on the map.', 'home', 'seller-dash'); return; }
+  if (a === 'vault-check') { markDone(state.sellerDone, 'seller-sample'); praise('It knows your bill now', 'Name, address, VAT — all verified.', 'doc', 'seller-adjust'); return; }
+  if (a === 'gen-invoice') { markDone(state.sellerDone, 'seller-adjust'); await api('/api/seller/catalogue/import', { source: 'invoice' }); praise('Invoice priced fairly', 'Customer benefits applied · catalogue grew by itself.', 'chip', 'seller-share'); return; }
+  if (a === 'dash-open') { markDone(state.sellerDone, 'seller-share'); praise('You\'re on the map', 'The Brew House is discoverable from today.', 'home', 'seller-dash'); return; }
   if (a?.startsWith('share-')) { toast({ 'share-ktag': 'Invoice pushed to the buyer\'s tap.', 'share-mobile': 'Invoice link sent by SMS.', 'share-print': 'Printing with K-Assist QR.', 'share-qr2': 'Show this QR to the buyer.' }[a] || 'Shared.', 'success'); return; }
   if (a === 'grant-offer') { await api('/api/seller/offer/grant', { customerId: 'cu-sarah', points: 200, goldMg: 2 }); toast('Sent: 200 pts + 2 mg Gold to Sarah.', 'success'); return; }
 });
