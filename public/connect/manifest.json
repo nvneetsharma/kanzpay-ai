@@ -1,13 +1,1 @@
-{
-  "name":"KanzPay · AI Commerce",
-  "short_name":"KanzPay",
-  "start_url":"/connect",
-  "scope":"/connect",
-  "display":"standalone",
-  "background_color":"#090807",
-  "theme_color":"#090807",
-  "description":"KanzPay standalone buyer and seller demo PWA.",
-  "icons":[
-    {"src":"/assets/kanzpay-mark.png","sizes":"165x165","type":"image/png","purpose":"any maskable"}
-  ]
-}
+{"name":"KanzPay · Approved Phase 2","short_name":"KanzPay","start_url":"/connect","scope":"/connect","display":"standalone","background_color":"#050505","theme_color":"#050505","description":"KanzPay PWA using the approved connected buyer and seller journeys.","icons":[{"src":"/assets/kanzpay-mark.png","sizes":"165x165","type":"image/png","purpose":"any maskable"}]}
