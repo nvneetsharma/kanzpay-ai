@@ -78,7 +78,7 @@ const praiseBlock = () => state.praise ? applause(state.praise[0], state.praise[
 
 /* ---------- chrome ---------- */
 const logoImg = () => `<img class="logo" src="${state.theme === 'dark' ? '/assets/kanzpay-logo-dark.png' : '/assets/kanzpay-logo.png'}" alt="KanzPay" style="height:30px" />`;
-const topbar = (o = {}) => `<header class="topbar">${o.back ? `<button class="icon-btn" data-go="${o.back}">←</button>` : logoImg()}<span class="grow"></span><button class="icon-btn" data-action="theme">${state.theme === 'dark' ? '☀' : '☾'}</button></header>`;
+const topbar = (o = {}) => `<header class="topbar">${o.back ? `<button class="icon-btn" data-go="${o.back}">←</button>` : logoImg()}<span class="grow"></span>${o.admin ? `<button class="icon-btn" data-go="admin">${ico('gear')}</button>` : ''}<button class="icon-btn" data-action="theme">${state.theme === 'dark' ? '☀' : '☾'}</button></header>`;
 const BUYER_TABS = [['cockpit', 'home', 'Cockpit'], ['vault', 'vault', 'Vault'], ['buyer-start', 'tap', 'Pay'], ['card', 'card', 'Card'], ['stores', 'store', 'Stores']];
 const SELLER_TABS = [['seller-dash', 'home', 'Today'], ['seller-share', 'doc', 'Invoice'], ['seller-alerts', 'bell', 'Alerts'], ['seller-customers', 'users', 'People'], ['seller-insights', 'trend', 'Intel']];
 const tabbar = () => `<div class="tabbar"><nav>${(state.role === 'seller' ? SELLER_TABS : BUYER_TABS).map(([r, i, l]) => `<button class="${route() === r ? 'on' : ''}" data-go="${r}">${ico(i)}<span>${l}</span></button>`).join('')}</nav></div>`;
@@ -88,20 +88,18 @@ const screen = (inner, nav = true) => `<div class="screen${nav ? '' : ' no-nav'}
 function welcome() {
   const dark = state.theme === 'dark';
   return `<div class="screen no-nav">
-    <div style="position:absolute;inset:0;background:url('/assets/scene-skyline.png') center/cover;opacity:${dark ? '.8' : '.35'}"></div>
-    <div style="position:absolute;inset:0;background:linear-gradient(0deg,var(--bg) 8%,transparent 55%)"></div>
+    <div style="position:absolute;inset:0;background:url('/assets/scene-skyline.png') center/cover"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,8,4,.94) 28%,rgba(10,8,4,.38) 58%,rgba(10,8,4,.15))"></div>
     <div class="body" style="position:relative;z-index:1;justify-content:flex-end;padding-top:60px">
-      <div class="glass" style="padding:24px;text-align:center">
-        <img src="${dark ? '/assets/kanzpay-logo-dark.png' : '/assets/kanzpay-logo.png'}" style="height:42px" alt="KanzPay" />
-        <h1 class="hero" style="margin:16px 0 8px">Everyday life rewards you.</h1>
-        <p class="muted">Pay · Earn Gold · Save More · Discover · Live Better</p>
-        <div style="display:grid;gap:10px;margin-top:20px">
-          <button class="cta-gold" data-action="pick" data-role="buyer"><span>I'm a Buyer</span><span class="arr">→</span></button>
-          <button class="cta-pill" data-action="pick" data-role="seller" style="justify-content:center">I'm a Seller →</button>
-          <button class="cta-ghost" data-action="install">⤓ Get the app — tap, NFC & more</button>
-        </div>
+      <img src="/assets/kanzpay-logo-dark.png" style="height:40px;object-fit:contain;margin-bottom:14px;filter:drop-shadow(0 4px 18px rgba(0,0,0,.5))" alt="KanzPay" />
+      <h1 class="hero" style="color:#fff8e6;text-shadow:0 2px 22px rgba(0,0,0,.6)">Everyday life rewards you.</h1>
+      <p style="color:rgba(246,230,189,.85);font-size:12.5px;margin-top:8px;text-shadow:0 1px 12px rgba(0,0,0,.6)">Pay · Earn Gold · Save More · Discover · Live Better</p>
+      <div style="display:grid;gap:10px;margin-top:22px">
+        <button class="cta-gold" data-action="pick" data-role="buyer"><span>I'm a Buyer</span><span class="arr">→</span></button>
+        <button class="cta-pill" data-action="pick" data-role="seller" style="justify-content:center;background:rgba(20,16,8,.55);color:#f3d98b;border-color:rgba(232,197,106,.4)">I'm a Seller →</button>
+        <button class="cta-ghost" data-action="install" style="color:rgba(246,230,189,.7)">⤓ Install the app — tap, NFC & more</button>
       </div>
-      <p class="tiny" style="text-align:center">Sandbox preview · no real money moves</p>
+      <p class="tiny" style="text-align:center;color:rgba(246,230,189,.45)">Sandbox preview · no real money moves</p>
     </div>
   </div>`;
 }
@@ -150,6 +148,9 @@ function buyerStart() {
       <div style="display:grid;gap:9px">
         <button class="cta-gold" data-action="start-tap" data-via="nfc"><span>${ico('tap')} Tap the K-Tag</span><span class="arr">→</span></button>
         <button class="cta-pill" data-action="start-tap" data-via="qr" style="justify-content:center">${ico('qr')} Scan the QR instead</button>
+      </div>
+      <div class="glass" style="padding:15px">
+        ${[['perm-location','pin','Location','nearest stores & offers'],['perm-notify','bell','Notifications','gold arrivals & receipts']].map(([a,i,t,d])=>`<div class="check-row" style="margin-bottom:7px;background:transparent;border:none;padding:6px 2px"><span class="icowell" style="width:34px;height:34px">${ico(i)}</span><div style="flex:1"><b style="font-size:12.5px">${t}</b><p class="tiny">${d}</p></div><button class="cta-mini" data-action="perm" data-perm="${a}">Allow</button></div>`).join('')}
       </div>
       <div class="glass" style="padding:15px">
         <div style="display:flex;gap:10px;align-items:center"><span class="icowell">${ico('phone')}</span><div style="flex:1"><b style="font-size:12.5px">Existing user?</b><p class="tiny">Mobile number finds your vault instantly</p></div></div>
@@ -255,7 +256,7 @@ function cockpit() {
     ['expenses', 'chart', 'My Expenses', 'categories · patterns'],
     ['instruments', 'chip', 'Payment Intelligence', 'best way, per bill']
   ];
-  return screen(`${topbar()}
+  return screen(`${topbar({ admin: true })}
     <div class="body">
       ${praiseBlock()}
       <div style="display:flex;align-items:center;gap:12px">
@@ -530,7 +531,7 @@ function sellerDash() {
   const f = state.dash?.focus;
   const intel = state.dash?.intelligence;
   const focus = state.sellerTab === 'focus';
-  return screen(`${topbar()}
+  return screen(`${topbar({ admin: true })}
     <div class="body">
       ${praiseBlock()}
       <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
@@ -601,6 +602,63 @@ function sellerInsights() {
     </div>`);
 }
 
+/* ---------- admin controls ---------- */
+const ADMIN_DEFS = {
+  buyer: [
+    ['SHARING ON TAP', [
+      ['shareVaultOnTap', 'Share Value Vault on tap', 'sellers see offers you qualify for'],
+      ['shareLocation', 'Share location', 'stores & offers near you'],
+      ['shareExpenses', 'Share expense categories', 'powers lifestyle-matched offers']
+    ]],
+    ['INTELLIGENCE', [
+      ['allowLifestyleIntel', 'Lifestyle intelligence', 'spend-pattern recommendations'],
+      ['autoApplyMembership', 'Auto-apply memberships', 'member pricing without asking'],
+      ['autoApplyPoints', 'Auto-apply reward points', 'redeem points at every bill']
+    ]],
+    ['SYSTEM', [
+      ['notifications', 'Notifications', 'offers, gold arrivals, receipts'],
+      ['dataSync', 'Sync with partner apps', 'keeps vault & gold in step everywhere']
+    ]]
+  ],
+  seller: [
+    ['CATALOGUE', [
+      ['autoCatalogueFromInvoice', 'Build from invoices', 'K-Assist reads print-share bills'],
+      ['autoCatalogueFromMenu', 'Build from menus', 'upload once, SKUs forever'],
+      ['autoCatalogueFromInventory', 'Build from inventory', 'stock sheets become listings']
+    ]],
+    ['ALERTS', [
+      ['inventoryAlerts', 'Inventory alerts', 'low & over stock'],
+      ['payableAlerts', 'Payables alerts', 'what you owe, before it is due'],
+      ['receivableAlerts', 'Receivables alerts', 'money owed to you'],
+      ['businessAlerts', 'Business alerts', 'orders, trends, P&L']
+    ]],
+    ['REWARDS & OPERATION', [
+      ['allowPointsRewards', 'Points rewards', 'buyers earn your points'],
+      ['allowGoldRewards', 'Gold rewards', 'buyers earn mg gold'],
+      ['kaceEnabled', 'K-Assistant active', 'floating logo, print-share'],
+      ['shareInvoicesBeforePrint', 'Share before print', 'invoice reaches phone first'],
+      ['dataSync', 'Sync with partner apps', 'catalogue & sales flow both ways']
+    ]]
+  ]
+};
+function adminView() {
+  const role = state.role === 'seller' ? 'seller' : 'buyer';
+  const settings = state.admin?.[role] || {};
+  return screen(`${topbar({ back: role === 'seller' ? 'seller-dash' : 'cockpit' })}
+    <div class="body">
+      <div><span class="eyebrow">${role === 'seller' ? 'STORE' : 'MY'} CONTROLS</span><h1 class="hero">You're in charge.</h1>
+      <p class="why" style="margin-top:10px">Every switch is honoured instantly — sync & permissions apply from the next tap.</p></div>
+      ${ADMIN_DEFS[role].map(([group, rows]) => `
+        <div class="vault-door"><p class="tiny" style="margin-bottom:8px">${group}</p>
+          ${rows.map(([key, label, desc]) => `<div class="check-row" style="margin-bottom:7px">
+            <span class="icowell" style="width:34px;height:34px">${ico('chip')}</span>
+            <div style="flex:1"><b style="font-size:12.5px">${label}</b><p class="tiny">${desc}</p></div>
+            <button class="chip" style="cursor:pointer;min-width:46px;${settings[key] ? 'background:var(--gold-grad);color:#453006' : ''}" data-setting="${key}">${settings[key] ? 'On' : 'Off'}</button>
+          </div>`).join('')}
+        </div>`).join('')}
+    </div>`);
+}
+
 /* ---------- router ---------- */
 const route = () => (location.hash || '#/welcome').slice(2) || 'welcome';
 const markDone = (list, r) => { if (!list.includes(r)) list.push(r); };
@@ -619,13 +677,15 @@ async function render() {
   if (r === 'seller-dash' && !state.dash) state.dash = await api('/api/seller/dashboard');
   if (r === 'seller-insights' && !state.insights) state.insights = await api('/api/seller/insights');
   if (r === 'seller-alerts' && !state.alerts) state.alerts = await api('/api/seller/alerts');
+  if (r === 'admin' && !state.admin) state.admin = await api('/api/admin/settings');
   if (r === 'seller-customers' && !state.customers) state.customers = await api('/api/seller/customers');
   const views = {
     welcome, splash, 'buyer-start': buyerStart, 'buyer-verify': buyerVerify, 'buyer-vault': buyerVault, 'buyer-gold': buyerGoldAward,
     cockpit, vault: vaultView, friends, gold, expenses, instruments, 'buyer-account': account, stores, invoice, success, card,
     'seller-onboard': sellerOnboard, 'seller-kace': sellerKace, 'seller-sample': sellerSample,
     'seller-adjust': sellerAdjust, 'seller-share': sellerShare, 'seller-dash': sellerDash,
-    'seller-alerts': sellerAlerts, 'seller-customers': sellerCustomers, 'seller-insights': sellerInsights
+    'seller-alerts': sellerAlerts, 'seller-customers': sellerCustomers, 'seller-insights': sellerInsights,
+    admin: adminView
   };
   app.innerHTML = (views[r] || welcome)();
   window.scrollTo(0, 0);
@@ -634,12 +694,19 @@ async function render() {
 function endSplash() { clearInterval(state.splashTimer); go(state.role === 'seller' ? 'seller-onboard' : 'buyer-start'); }
 let kaceTimer;
 document.addEventListener('click', async (e) => {
-  const el = e.target.closest('[data-go],[data-action],[data-profile],[data-tpl],[data-stab]');
+  const el = e.target.closest('[data-go],[data-action],[data-profile],[data-tpl],[data-stab],[data-setting],[data-perm]');
   if (!el) return;
   if (el.dataset.go) { go(el.dataset.go); return; }
   if (el.dataset.profile) { state.cardProfile = el.dataset.profile; render(); return; }
   if (el.dataset.tpl) { state.cardTemplate = el.dataset.tpl; render(); return; }
   if (el.dataset.stab) { state.sellerTab = el.dataset.stab; render(); return; }
+  if (el.dataset.setting) {
+    const key = el.dataset.setting; const role = state.role === 'seller' ? 'seller' : 'buyer';
+    const cur = !!state.admin?.[role]?.[key];
+    state.admin = state.admin || {}; state.admin[role] = { ...state.admin[role], [key]: !cur };
+    api('/api/admin/settings', { scope: role, settings: { [key]: !cur } });
+    render(); return;
+  }
   const a = el.dataset.action;
   if (a === 'theme') { state.theme = state.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = state.theme; localStorage.setItem('kz-theme', state.theme); render(); return; }
   if (a === 'install') { toast('On mobile: browser menu → Add to Home Screen.'); return; }
@@ -673,7 +740,20 @@ document.addEventListener('click', async (e) => {
   if (a === 'gold-continue') { go('buyer-vault'); return; }
   if (a === 'vault-connect') { await api('/api/vault/connect', { id: el.dataset.id }); state.vault = await api('/api/vault'); toast('Connected — value found.', 'success'); render(); return; }
   if (a === 'vault-done' || a === 'vault-skip') { markDone(state.buyerDone, 'buyer-vault'); praise('Vault secured', 'Every offer you own now works at checkout.', 'vault', 'buyer-account'); return; }
-  if (a === 'kyc-step') { const step = ['emirates-id-front', 'emirates-id-back', 'live-camera', 'aml-check'][state.kycStep]; await api('/api/account/kyc', { step }); if (state.kycStep === 3) { markDone(state.buyerDone, 'buyer-account'); praise('Welcome to KanzPay', 'Your account is ready, '+state.name.split(' ')[0]+'.', 'home', 'cockpit'); } else { state.kycStep += 1; render(); } return; }
+  if (a === 'perm') {
+    const id = el.dataset.perm; let granted = false;
+    if (id === 'perm-location') {
+      try { await new Promise((res) => navigator.geolocation.getCurrentPosition(() => { granted = true; res(); }, () => res(), { timeout: 4000 })); } catch {}
+    } else {
+      try { granted = (await Notification.requestPermission()) === 'granted'; } catch { granted = true; }
+    }
+    api('/api/onboarding/permission', { role: state.role || 'buyer', id, enabled: granted });
+    el.textContent = granted ? 'On ✓' : 'Later';
+    toast(granted ? 'Permission granted — thank you.' : 'No pressure — you can enable it anytime.', granted ? 'success' : '');
+    return;
+  }
+  if (a === 'kyc-step') {
+    if (state.kycStep === 2) { try { const st = await navigator.mediaDevices.getUserMedia({ video: true }); st.getTracks().forEach((t) => t.stop()); toast('Camera verified — liveness captured.', 'success'); } catch { toast('Camera unavailable here — sandbox continues.', ''); } } const step = ['emirates-id-front', 'emirates-id-back', 'live-camera', 'aml-check'][state.kycStep]; await api('/api/account/kyc', { step }); if (state.kycStep === 3) { markDone(state.buyerDone, 'buyer-account'); praise('Welcome to KanzPay', 'Your account is ready, '+state.name.split(' ')[0]+'.', 'home', 'cockpit'); } else { state.kycStep += 1; render(); } return; }
   if (a === 'kyc-skip') { go('cockpit'); return; }
   if (a === 'store-pick') { toast('Opening live catalogue…'); doTap('store'); return; }
   if (a === 'navigate') { const r = await api('/api/ktag/navigate', {}); toast(`Route ready — ${r.destination?.walkMin || 4} min walk.`); return; }

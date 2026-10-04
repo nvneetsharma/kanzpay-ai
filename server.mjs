@@ -138,6 +138,20 @@ const state = {
       customers: { walkins: 62, avgTicketMinor: 4600, repeatPct: 34 }
     }
   },
+  adminSettings: {
+    buyer: {
+      shareVaultOnTap: true, shareLocation: true, shareExpenses: true,
+      allowLifestyleIntel: true, autoApplyMembership: true, autoApplyPoints: false,
+      goldFloorMinor: 500, notifications: true, dataSync: true
+    },
+    seller: {
+      autoCatalogueFromInvoice: true, autoCatalogueFromMenu: true, autoCatalogueFromInventory: true,
+      inventoryAlerts: true, payableAlerts: true, receivableAlerts: true, businessAlerts: true,
+      allowPointsRewards: true, allowGoldRewards: true, maxDiscountPct: 30,
+      kaceEnabled: true, shareInvoicesBeforePrint: true, dataSync: true
+    }
+  },
+  ssoTokens: [],
   audit: []
 };
 
@@ -667,6 +681,64 @@ async function api(req, res, pathname) {
       destination: { name: state.seller.name, address: 'Marina Walk, Dubai Marina', distanceM: 280, walkMin: 4 },
       mapUrl: 'https://maps.google.com/?q=Dubai+Marina+Walk'
     });
+  }
+
+  // --- Admin & connector surface ---
+  if (req.method === 'GET' && pathname === '/api/admin/settings') {
+    return json(res, 200, state.adminSettings);
+  }
+  if (req.method === 'POST' && pathname === '/api/admin/settings') {
+    const payload = await body(req);
+    const scope = payload.scope === 'seller' ? 'seller' : 'buyer';
+    state.adminSettings[scope] = { ...state.adminSettings[scope], ...(payload.settings || {}) };
+    state.audit.push({ event: 'ADMIN_SETTINGS_UPDATED', scope, at: new Date().toISOString() });
+    return json(res, 200, state.adminSettings[scope]);
+  }
+  if (req.method === 'POST' && pathname === '/api/sso/token') {
+    const payload = await body(req);
+    if (!payload.externalUserId || !payload.provider) return json(res, 422, { error: 'externalUserId and provider are required.' });
+    const token = {
+      token: `kzsso-${randomUUID()}`,
+      issuedTo: String(payload.externalUserId),
+      provider: String(payload.provider),
+      scopes: Array.isArray(payload.scopes) && payload.scopes.length ? payload.scopes : ['profile:read', 'vault:read', 'pay:execute'],
+      expiresInSec: 900,
+      issuedAt: new Date().toISOString()
+    };
+    state.ssoTokens.push(token);
+    state.audit.push({ event: 'SSO_TOKEN_ISSUED', provider: token.provider, at: token.issuedAt });
+    return json(res, 201, token);
+  }
+  if (req.method === 'GET' && pathname === '/api/sync/export') {
+    return json(res, 200, {
+      exportedAt: new Date().toISOString(),
+      buyer: state.buyer, seller: state.seller, vault: state.vault,
+      catalogue: state.catalogue, cards: state.cards, adminSettings: state.adminSettings,
+      auditTail: state.audit.slice(-50)
+    });
+  }
+  if (req.method === 'POST' && pathname === '/api/sync/import') {
+    const payload = await body(req);
+    const applied = [];
+    if (payload.buyer && typeof payload.buyer === 'object') { state.buyer = { ...state.buyer, ...payload.buyer }; applied.push('buyer'); }
+    if (Array.isArray(payload.vault)) { for (const sec of payload.vault) { const s = state.vault.find((x) => x.id === sec.id); if (s) Object.assign(s, sec); } applied.push('vault'); }
+    if (Array.isArray(payload.catalogue)) { state.catalogue.push(...payload.catalogue.filter((i) => i?.name)); applied.push('catalogue'); }
+    if (payload.sellerSettings && typeof payload.sellerSettings === 'object') { state.adminSettings.seller = { ...state.adminSettings.seller, ...payload.sellerSettings }; applied.push('sellerSettings'); }
+    if (payload.buyerSettings && typeof payload.buyerSettings === 'object') { state.adminSettings.buyer = { ...state.adminSettings.buyer, ...payload.buyerSettings }; applied.push('buyerSettings'); }
+    if (!applied.length) return json(res, 422, { error: 'Nothing recognised to import.' });
+    state.audit.push({ event: 'SYNC_IMPORT', applied, at: new Date().toISOString() });
+    return json(res, 200, { status: 'APPLIED', applied });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/events') {
+    const payload = await body(req);
+    if (!payload.type) return json(res, 422, { error: 'Event type is required.' });
+    const type = String(payload.type);
+    if (type === 'alert.raised' && payload.payload?.title) {
+      state.alerts.push({ id: `al-${randomUUID().slice(0, 6)}`, type: payload.payload.kind || 'business', severity: payload.payload.severity || 'info', title: String(payload.payload.title), detail: String(payload.payload.detail || ''), action: String(payload.payload.action || 'View') });
+    }
+    state.audit.push({ event: 'EXTERNAL_EVENT', type, at: new Date().toISOString() });
+    return json(res, 202, { status: 'ACCEPTED', type });
   }
 
   return json(res, 404, { error: 'Not found' });
