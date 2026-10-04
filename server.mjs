@@ -117,6 +117,27 @@ const state = {
     { id: 'cu-rohan', name: 'Rohan Mehta', segment: 'Regular', visits: 6, spentMinor: 11000, goldMg: 1.1 },
     { id: 'cu-fatima', name: 'Fatima Khan', segment: 'New Customer', visits: 1, spentMinor: 3600, goldMg: 0.2 }
   ],
+  stores: [
+    { id: 'st-brew', name: 'The Brew House', kind: 'Café', distanceM: 280, rating: 4.8, live: true, offers: ['20% member price', '2 mg Gold'], image: '/assets/scene-coffee.png' },
+    { id: 'st-luma', name: 'Luma Market', kind: 'Grocery', distanceM: 450, rating: 4.6, live: true, offers: ['Membership price', '12 points'], image: '/assets/scene-catalogue.png' },
+    { id: 'st-kona', name: 'Kona Roast', kind: 'Café', distanceM: 640, rating: 4.6, live: false, offers: ['Stamp card'], image: '/assets/scene-coffee.png' },
+    { id: 'st-date', name: 'Date & Grain', kind: 'Bakery', distanceM: 900, rating: 4.9, live: true, offers: ['Free gift on AED 50'], image: '/assets/scene-catalogue.png' }
+  ],
+  vault: [
+    { id: 'memberships', label: 'My Memberships', icon: '◆', status: 'connected', items: [{ name: 'Brew House Club', value: '20% member price', valid: 'Dec 2026' }], expectedMinor: 480 },
+    { id: 'rewards', label: 'My Reward Points', icon: '✦', status: 'connected', items: [{ name: 'KanzPay Points', value: '2,480 pts', valid: 'No expiry' }], expectedMinor: 240 },
+    { id: 'promocodes', label: 'My Promocodes', icon: '⌗', status: 'discoverable', items: [{ name: 'KANZ10', value: '10% off', valid: 'Nov 2026' }], expectedMinor: 300 },
+    { id: 'vouchers', label: 'My Vouchers & Coupons', icon: '▤', status: 'grey', items: [], expectedMinor: 160 }
+  ],
+  sellerDashboard: {
+    focus: {
+      commission: { pendingMinor: 12400, paidMinor: 84200 },
+      tickets: [{ kind: 'Complaint', text: 'Cold coffee served late', status: 'open' }, { kind: 'Query', text: 'Do you take gold?', status: 'open' }, { kind: 'Rating', text: '★ 4.8 this week', status: 'good' }],
+      rewards: { repeatPct: 34, goldPctOfBill: 2, rules: '200 AED = 100 pts; 1,000 AED = 5 mg Gold' },
+      trends: { valuePct: 18, volumePct: 12 },
+      customers: { walkins: 62, avgTicketMinor: 4600, repeatPct: 34 }
+    }
+  },
   audit: []
 };
 
@@ -435,6 +456,64 @@ async function api(req, res, pathname) {
         { label: 'Grocery', minor: 3600, color: '#5f9f87' },
         { label: 'Membership', minor: 1200, color: '#8c7cf0' }
       ]
+    });
+  }
+
+  // --- Journey: OTP, stores, vault, KYC ---
+  if (req.method === 'POST' && pathname === '/api/otp/send') {
+    const payload = await body(req);
+    if (!payload.mobile && !payload.email) return json(res, 422, { error: 'Mobile or email required.' });
+    state.audit.push({ event: 'OTP_SENT', mobile: payload.mobile, email: payload.email, at: new Date().toISOString() });
+    return json(res, 200, { status: 'SENT', channels: [payload.mobile ? 'sms' : null, payload.email ? 'email' : null].filter(Boolean), expiresInSec: 120 });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/otp/verify') {
+    return json(res, 200, { status: 'VERIFIED', goldAward: { amount: 1, unit: 'mg', status: 'processing' }, message: 'Congratulations! 1 mg Gold cashback — earn more, save more.' });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/stores') {
+    return json(res, 200, { location: 'Dubai Marina', stores: state.stores });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/vault') {
+    return json(res, 200, { sections: state.vault });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/vault/connect') {
+    const payload = await body(req);
+    const section = state.vault.find((s) => s.id === payload.id);
+    if (!section) return json(res, 404, { error: 'Vault section not found.' });
+    section.status = 'connected';
+    if (!section.items.length) section.items.push({ name: `${section.label.replace('My ', '')} link`, value: `~${money(section.expectedMinor)} expected`, valid: 'Pending sync' });
+    state.audit.push({ event: 'VAULT_SECTION_CONNECTED', id: section.id, at: new Date().toISOString() });
+    return json(res, 200, section);
+  }
+
+  if (req.method === 'POST' && pathname === '/api/account/kyc') {
+    const payload = await body(req);
+    const steps = ['emirates-id-front', 'emirates-id-back', 'live-camera', 'aml-check'];
+    const step = String(payload.step || '');
+    if (!steps.includes(step)) return json(res, 422, { error: 'Unknown KYC step.' });
+    state.audit.push({ event: 'KYC_STEP', step, at: new Date().toISOString() });
+    const done = step === 'aml-check';
+    if (done && !state.onboarding.account) {
+      state.onboarding.account = { id: `acct-${randomUUID().slice(0, 8)}`, name: 'Navneet Sharma', status: 'ACTIVE_SANDBOX', createdAt: new Date().toISOString() };
+    }
+    return json(res, 200, { step, status: done ? 'ACCOUNT_CREATED' : 'STEP_OK', account: state.onboarding.account });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/seller/dashboard') {
+    const ins = state.sellerInsights;
+    const f = state.sellerDashboard.focus;
+    return json(res, 200, {
+      focus: f,
+      intelligence: {
+        catalogue: { skus: state.catalogue.length, editableMenu: true, templates: 3, competitionAlerts: 2 },
+        inventory: { low: state.catalogue.filter((i) => i.stock > 0 && i.stock <= 6).map((i) => ({ name: i.name, stock: i.stock })), over: state.catalogue.filter((i) => i.daysStock > 10).map((i) => ({ name: i.name, daysStock: i.daysStock })) },
+        finance: { payablesMinor: 124000, receivablesMinor: 88000, pl: ins.pl, balanceSheetMinor: 421000 },
+        instruments: [{ name: 'Account to Account (Aani)', status: 'active' }, { name: 'Cards', status: 'active' }, { name: 'Settlement T+1', status: 'scheduled' }],
+        view: { cycle: 'monthly', plan: 'Growth' }
+      }
     });
   }
 
