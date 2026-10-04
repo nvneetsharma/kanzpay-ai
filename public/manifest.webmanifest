@@ -1,0 +1,20 @@
+{
+  "name": "KanzPay · Life Rewards You",
+  "short_name": "KanzPay",
+  "description": "Tap, pay, earn gold. Buyer and seller value journeys.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0d10",
+  "theme_color": "#caa14f",
+  "icons": [
+    { "src": "/assets/kanzpay-mark-dark.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/kanzpay-mark-dark.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "/assets/kanzpay-mark.png", "sizes": "1024x1024", "type": "image/png" }
+  ],
+  "shortcuts": [
+    { "name": "Tap to Pay", "url": "/#/buyer-tap" },
+    { "name": "My Card", "url": "/#/buyer-card" }
+  ]
+}
