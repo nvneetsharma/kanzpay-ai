@@ -7,6 +7,8 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/[...path].mjs" },
     { "src": "/assets/(.*)", "dest": "/public/assets/$1" },
+    { "src": "/phase2-approved", "dest": "/public/phase2-approved/index.html" },
+    { "src": "/phase2-approved/(.*)", "dest": "/public/phase2-approved/$1" },
     { "src": "/app.js", "dest": "/public/app.js" },
     { "src": "/styles.css", "dest": "/public/styles.css" },
     { "src": "/visual-overrides.css", "dest": "/public/visual-overrides.css" },
