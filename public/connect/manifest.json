@@ -1,10 +1,13 @@
 {
-  "name":"KanzPay Connect",
+  "name":"KanzPay · AI Commerce",
   "short_name":"KanzPay",
   "start_url":"/connect",
+  "scope":"/connect",
   "display":"standalone",
-  "background_color":"#090909",
-  "theme_color":"#090909",
-  "description":"KanzPay K-Tag, Value Vault, Visiting Card and Intelligence journeys.",
-  "icons":[]
+  "background_color":"#090807",
+  "theme_color":"#090807",
+  "description":"KanzPay standalone buyer and seller demo PWA.",
+  "icons":[
+    {"src":"/assets/kanzpay-mark.png","sizes":"165x165","type":"image/png","purpose":"any maskable"}
+  ]
 }
