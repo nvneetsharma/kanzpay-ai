@@ -258,3 +258,26 @@ html[data-theme="dark"] .chip { color: var(--gold-2); }
 @keyframes pulseSoft{0%,100%{opacity:1}50%{opacity:.55}}
 .card-tile.live::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(246,227,165,.18),transparent);animation:tileSweep 4.5s ease-in-out infinite;pointer-events:none}
 @keyframes tileSweep{0%,55%{left:-80%}90%,100%{left:130%}}
+
+/* ===== v6 fixes ===== */
+.pos-dock{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:16px;background:linear-gradient(140deg,#1a1508,#241c0a);border:1px solid rgba(232,197,106,.35);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+[data-theme="light"] .pos-dock{background:linear-gradient(140deg,#2b2416,#3a3118);color:#fff8e2}
+.pos-dock .tiny{color:rgba(246,230,189,.7)}
+.kace-orb.mini{width:auto;height:auto;box-shadow:none;background:none;border:none;padding:0;animation:none}
+.tpl-previews{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.tpl-mini{aspect-ratio:16/10;border-radius:14px;border:1.6px solid var(--stroke-soft);cursor:pointer;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;padding:10px;text-align:left;color:#fff}
+.tpl-mini b{font-size:12px}
+.tpl-mini small{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;opacity:.75}
+.tpl-mini.on{border-color:var(--gold-2);box-shadow:0 0 0 2px rgba(212,166,50,.4)}
+.tpl-mini.tpl-aurum{background:linear-gradient(150deg,#3a2c10,#120d05)}
+.tpl-mini.tpl-pearl{background:linear-gradient(150deg,#efe6cf,#cbbf9e);color:#3a2c10}
+.tpl-mini.tpl-onyx{background:linear-gradient(150deg,#1c1c22,#0a0a0e)}
+.icon-btn .ico{width:17px;height:17px}
+/* light theme → white + grey + metallic gold */
+[data-theme="light"]{--bg:#fcfcfa;--bg-2:#f4f4f0;--card:rgba(255,255,255,.72);--glass:rgba(255,255,255,.62);--chip:rgba(60,60,65,.06);--ink:#1d2126;--muted:#5d6470;--faint:#9aa0a8;--stroke:rgba(60,60,70,.22);--stroke-soft:rgba(60,60,70,.1);--gold-grad:linear-gradient(140deg,#f0d080 0%,#c99b35 55%,#9a7320 100%);--gold-glass:linear-gradient(140deg,rgba(212,166,50,.16),rgba(160,120,30,.08));--gold-2:#b8901f;--gold-3:#8a6520}
+[data-theme="light"] .topbar{background:linear-gradient(180deg,rgba(252,252,250,.95),rgba(252,252,250,.6))}
+[data-theme="light"] .vault-door{background:var(--glass);border-color:rgba(160,120,30,.28)}
+[data-theme="light"] .card-metric,[data-theme="light"] .card-tile,[data-theme="light"] .card-list{background:rgba(255,255,255,.66)}
+[data-theme="light"] .field-tick{background:rgba(255,255,255,.6)}
+.theme-fab{position:absolute;top:16px;right:16px;z-index:10}
+.logo-glass img{mix-blend-mode:normal}

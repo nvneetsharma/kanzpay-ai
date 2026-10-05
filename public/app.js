@@ -39,6 +39,9 @@ const ICONS = {
   trend: '<path d="m4 17 5-6 4 3 6-8M15 6.5h4V11"/>',
   truck: '<path d="M3 16.5V6h11v10.5M14 9.5h4.5l2.5 3.5v3.5h-2M3 16.5h14.5"/><circle cx="7.5" cy="18" r="1.8"/><circle cx="16.5" cy="18" r="1.8"/>',
   clock: '<circle cx="12" cy="12" r="8.4"/><path d="M12 7.5V12l3 2"/>',
+  back: '<path d="M19 12H5m6-6-6 6 6 6"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/>',
+  moon: '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
   shield: '<path d="M12 3.5 19 6v5.5c0 4.4-3 8-7 9.5-4-1.5-7-5.1-7-9.5V6z"/><path d="m9 11.8 2.2 2.2 4-4.4"/>'
 };
 const ico = (name, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 24 24"><g>${ICONS[name] || ICONS.spark}</g></svg>`;
@@ -51,6 +54,7 @@ const state = {
   cardProfile: 'Professional', cardTemplate: 'aurum',
   cardFields: { name: true, title: true, company: true, mobile: true, email: true, location: true, website: false },
   cardOpen: null, kycStep: 0, kaceProgress: 0, sellerTab: 'focus',
+  customFields: { title: '', company: '', website: '' },
   expPeriod: 'Monthly', expView: 'bar', trendPeriod: 'month',
   calcAmount: 6600, calcOn: { membership: true, points: true, voucher: true, gold: true },
   buyerDone: [], sellerDone: [], praise: null, splashIdx: 0, storeOpen: null
@@ -95,20 +99,22 @@ const goldCoin = (mg, size = 150) => `<div class="coin-breathe" style="width:${s
     <circle cx="60" cy="60" r="57" fill="none" stroke="#6b4a12" stroke-width="1.4" opacity=".5"/>
     <circle cx="60" cy="60" r="49" fill="none" stroke="#fff4ba" stroke-width="1" opacity=".55"/>
     <circle cx="60" cy="60" r="53" fill="none" stroke="#6b4a12" stroke-width="3.5" stroke-dasharray="1.6 3.2" opacity=".4"/>
-    <text font-size="7.6" font-weight="800" fill="#5c3d0e" letter-spacing="1.6"><textPath href="#rim" startOffset="1.5%">999.99 DIGITAL GOLD · SAFEGOLD · 999.99 DIGITAL GOLD · SAFEGOLD ·</textPath></text>
+    <text font-size="6" font-weight="800" fill="#5c3d0e" letter-spacing="0.9"><textPath href="#rim" startOffset="0.5%">999.99 DIGITAL GOLD · SAFEGOLD · 999.99 DIGITAL GOLD · SAFEGOLD ·</textPath></text>
     <text x="60" y="62" text-anchor="middle" font-size="27" font-weight="900" fill="#4a340c">${mg}<tspan font-size="9" dy="-8" dx="2">mg</tspan></text>
     <text x="60" y="76" text-anchor="middle" font-size="7" font-weight="700" fill="#5c3d0e" letter-spacing="2">FINE GOLD</text>
   </svg>
 </div>`;
 
 /* ---------- chrome ---------- */
-const logoImg = () => `<img class="logo" src="${state.theme === 'dark' ? '/assets/kanzpay-logo-dark.png' : '/assets/kanzpay-logo.png'}" alt="KanzPay" />`;
-const topbar = (o = {}) => `<header class="topbar">${o.back ? `<button class="icon-btn" data-go="${o.back}">←</button>` : logoImg()}<span class="grow"></span>${o.admin ? `<button class="icon-btn" data-go="admin">${ico('gear')}</button>` : ''}<button class="icon-btn" data-action="theme">${state.theme === 'dark' ? '☀' : '☾'}</button></header>`;
+// logo.png is gold-on-transparent — works on both themes; the -dark variant carries a baked dark box
+const logoImg = () => `<img class="logo" src="/assets/kanzpay-logo.png" alt="KanzPay" />`;
+const topbar = (o = {}) => `<header class="topbar">${o.back ? `<button class="icon-btn" data-go="${o.back}">${ico('back')}</button>` : logoImg()}<span class="grow"></span>${o.admin ? `<button class="icon-btn" data-go="admin" title="Controls">${ico('gear')}</button>` : ''}<button class="icon-btn" data-action="theme" title="Theme">${ico(state.theme === 'dark' ? 'sun' : 'moon')}</button></header>`;
 const BUYER_TABS = [['cockpit', 'home', 'Cockpit'], ['vault', 'vault', 'Vault'], ['pay', 'tap', 'Pay'], ['card', 'card', 'Card'], ['stores', 'store', 'Stores']];
 const SELLER_TABS = [['seller-dash', 'home', 'Today'], ['seller-share', 'doc', 'Invoice'], ['seller-alerts', 'bell', 'Alerts'], ['seller-customers', 'users', 'People'], ['seller-insights', 'trend', 'Intel']];
 const tabbar = () => `<div class="tabbar"><nav>${(state.role === 'seller' ? SELLER_TABS : BUYER_TABS).map(([r, i, l]) => `<button class="${route() === r ? 'on' : ''}" data-go="${r}">${ico(i)}<span>${l}</span></button>`).join('')}</nav></div>`;
-const kaceFab = () => state.role === 'seller' ? `<button class="fab" data-action="kace-share" title="K-Assistant — print & share">${ico('printer')}</button>` : '';
-const screen = (inner, nav = true) => `<div class="screen${nav ? '' : ' no-nav'}">${inner}</div>${kaceFab()}${nav ? tabbar() : ''}`;
+// K-Assist lives on the counter/POS screen — shown as a desktop dock, not a phone FAB
+const posDock = () => `<div class="pos-dock"><span class="icowell solid" style="width:36px;height:36px;flex-shrink:0">${ico('printer')}</span><div style="flex:1;min-width:0"><b style="font-size:12px">K-Assistant · POS screen</b><p class="tiny">capture invoice / inventory → share to customer or mark as stock purchased</p></div><button class="cta-mini" data-action="kace-share">Share</button><button class="cta-mini" data-action="kace-stock">Stock in</button></div>`;
+const screen = (inner, nav = true) => `<div class="screen${nav ? '' : ' no-nav'}">${inner}</div>${nav ? tabbar() : ''}`;
 
 /* ---------- welcome ---------- */
 function welcome() {
@@ -116,7 +122,8 @@ function welcome() {
     <div style="position:absolute;inset:0;background:url('/assets/scene-skyline.png') center/cover"></div>
     <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,8,4,.94) 28%,rgba(10,8,4,.38) 58%,rgba(10,8,4,.15))"></div>
     <div class="body" style="position:relative;z-index:1;justify-content:flex-end;padding-top:60px">
-      <div class="logo-glass"><img src="/assets/kanzpay-logo-dark.png" alt="KanzPay" /></div>
+      <div class="logo-glass"><img src="/assets/kanzpay-logo.png" alt="KanzPay" /></div>
+      <button class="icon-btn theme-fab" data-action="theme" title="Theme">${ico(state.theme === 'dark' ? 'sun' : 'moon')}</button>
       <h1 class="hero" style="color:#fff8e6;text-shadow:0 2px 22px rgba(0,0,0,.6);margin-top:4px">Everyday life rewards you.</h1>
       <p style="color:rgba(246,230,189,.85);font-size:12.5px;margin-top:8px;text-shadow:0 1px 12px rgba(0,0,0,.6)">Pay · Earn Gold · Save More · Discover · Live Better</p>
       <div style="display:grid;gap:10px;margin-top:22px">
@@ -137,9 +144,9 @@ const SPLASH = {
     ['scene-gold-reward', 'Gold lands.', 'real gold, every bill']
   ],
   seller: [
-    ['scene-seller-hero', "You're open.", 'taps become customers'],
-    ['scene-catalogue', 'It builds itself.', 'invoices → catalogue'],
-    ['scene-dashboard', 'One glance.', 'your whole business']
+    ['scene-seller-hero', 'K-Tag on the counter.', 'a tap brings the buyer in'],
+    ['scene-catalogue', 'Prints build shelves.', 'invoices & menus → live catalogue'],
+    ['scene-dashboard', 'Every dirham, tallied.', 'sales · stock · money — live']
   ]
 };
 function splash() {
@@ -312,8 +319,9 @@ function vaultView() {
       <div><span class="eyebrow">MY VALUE VAULT</span><h1 class="hero">Everything you've earned.</h1></div>
       <div class="vault-door" style="text-align:center;padding:22px">
         <p class="tiny">TOTAL VAULT VALUE</p>
-        <b class="gold-text" style="font-size:36px">${money0(total)}</b>
+        <b class="gold-text" style="font-size:36px">${money0(total + 945)}</b>
         <div class="progress" style="margin-top:12px"><i style="width:${Math.min(100, total / 20)}%"></i></div>
+        <div class="check-row" style="margin-top:12px">${goldCoin('13.5', 34)}<span style="flex:1;font-size:12px">Gold inside: <b>13.5 mg</b> ≈ AED 9.45</span><b style="color:var(--gold-3)">+15.2%</b></div>
         <p class="tiny" style="margin-top:8px">Connect the missing lanes — every dirham counts at checkout.</p>
       </div>
       ${sections.map((s, k) => `<div class="vault-row ${s.status === 'grey' ? 'grey' : ''} card-list" style="animation-delay:${k * 50}ms">
@@ -555,7 +563,9 @@ const PROFILE_DATA = {
 const FIELDS = [['name', 'Full name'], ['title', 'Title'], ['company', 'Company'], ['mobile', 'Mobile'], ['email', 'Email'], ['location', 'Location'], ['website', 'Website / social']];
 function card() {
   const tpl = state.cardTemplate;
-  const pd = PROFILE_DATA[state.cardProfile] || PROFILE_DATA.Professional;
+  const pd = state.cardProfile === 'Custom'
+    ? { title: state.customFields.title, company: state.customFields.company, location: '', website: state.customFields.website }
+    : (PROFILE_DATA[state.cardProfile] || PROFILE_DATA.Professional);
   const f = state.cardFields;
   const lines = [];
   if (f.name) lines.push(`<h2 class="sect" style="margin:0">${esc(state.name)}</h2>`);
@@ -567,23 +577,27 @@ function card() {
       <div><span class="eyebrow">MY VISITING CARD</span><h1 class="hero">One card, many faces.</h1>
       <p class="why" style="margin-top:10px">Build the profile once — tick what each circle sees. A tap on any phone shares it.</p></div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">${PROFILES.map((p) => `<button class="chip" style="cursor:pointer;${p === state.cardProfile ? 'background:var(--gold-grad);color:#171004' : ''}" data-profile="${p}">${p}</button>`).join('')}</div>
+      <div class="vault-door">
+        <p class="tiny" style="margin-bottom:8px">TEMPLATE — pick a look</p>
+        <div class="tpl-previews">
+          ${['aurum', 'pearl', 'onyx'].map((t) => `<button class="tpl-mini tpl-${t} ${tpl === t ? 'on' : ''}" data-tpl="${t}"><b>${esc(state.name.split(' ')[0])}</b><small>${t}</small></button>`).join('')}
+        </div>
+      </div>
       <div class="vault-door" style="padding:14px">
-        <p class="tiny" style="margin-bottom:8px">ON THIS CARD</p>
+        <p class="tiny" style="margin-bottom:8px">ON THIS CARD — tick to include</p>
         ${FIELDS.map(([k, l]) => `<button class="field-tick ${f[k] ? 'on' : ''}" data-field="${k}"><span class="tickbox">${f[k] ? ico('check') : ''}</span>${l}</button>`).join('')}
       </div>
+      ${state.cardProfile === 'Custom' ? `<div class="vault-door" style="padding:14px">
+        <p class="tiny" style="margin-bottom:8px">CUSTOM FIELDS — type what this circle sees</p>
+        <div class="field"><input id="cf-title" placeholder="Title (e.g. Weekend me)" value="${esc(state.customFields?.title || '')}" /></div>
+        <div class="field" style="margin-top:7px"><input id="cf-company" placeholder="Company / group" value="${esc(state.customFields?.company || '')}" /></div>
+        <div class="field" style="margin-top:7px"><input id="cf-website" placeholder="Social / link" value="${esc(state.customFields?.website || '')}" /></div>
+      </div>` : ''}
       <div class="card-face tpl-${tpl}" data-action="share-nfc" style="cursor:pointer" title="Tap to share this card">
         <div>${lines.join('')}</div>
         <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px">
           <div class="tiny">${f.mobile ? esc(state.mobile) : ''}${f.mobile && f.email ? '<br/>' : ''}${f.email ? esc(state.email) : ''}${(f.mobile || f.email) && f.website && pd.website ? '<br/>' : ''}${f.website && pd.website ? esc(pd.website) : ''}</div>
           <div class="qr"></div>
-        </div>
-      </div>
-      <div class="vault-door">
-        <p class="tiny" style="margin-bottom:8px">TEMPLATE</p>
-        <div class="tpl-pick">
-          <button class="tpl-a ${tpl === 'aurum' ? 'on' : ''}" data-tpl="aurum"><span>AURUM</span></button>
-          <button class="tpl-p ${tpl === 'pearl' ? 'on' : ''}" data-tpl="pearl"><span>PEARL</span></button>
-          <button class="tpl-o ${tpl === 'onyx' ? 'on' : ''}" data-tpl="onyx"><span>ONYX</span></button>
         </div>
       </div>
       <div class="grid2">
@@ -684,6 +698,7 @@ function sellerShare() {
         <div style="display:flex;justify-content:space-between"><b>Invoice #1048</b><b class="gold-text">${money(6600)}</b></div>
         <p class="tiny" style="margin-top:8px">Priced with buyer-approved signals · membership −AED 6 · voucher −AED 3</p>
       </div>
+      ${posDock()}
       <div class="glass" style="padding:14px">
         <p class="tiny" style="margin-bottom:8px">PRINT → SHARE — the invoice reaches them any way they like</p>
         ${[['share-mobile', 'phone', 'Mobile number', 'sms / whatsapp link'], ['share-ktag', 'tap', 'Via K-Tag', 'they tap to receive'], ['share-qr2', 'qr', 'Show QR', 'they scan you']].map(([a, i, t, d]) => `<div class="check-row" style="margin-bottom:7px;cursor:pointer" data-action="${a}"><span class="icowell" style="width:34px;height:34px">${ico(i)}</span><div style="flex:1"><b style="font-size:12.5px">${t}</b><p class="tiny">${d}</p></div><span class="end">→</span></div>`).join('')}
@@ -713,7 +728,8 @@ function sellerDash() {
           <div class="card-metric"><small>Repeat cust.</small><strong>${f?.rewards?.repeatPct || 0}%</strong></div>
         </div>
         <div class="vault-door"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><p class="tiny">TICKETS</p><span class="badge-balloon">${openTickets}</span></div>${(f?.tickets || []).map((t) => `<div class="card-list" style="margin-bottom:7px"><span class="icowell" style="width:36px;height:36px">${ico(t.kind === 'Complaint' ? 'bell' : t.kind === 'Query' ? 'mail' : 'star')}</span><div class="main"><b>${esc(t.kind)}</b><small>${esc(t.text)}</small></div><span class="chip">${t.status}</span></div>`).join('')}</div>
-        <div style="display:flex;gap:8px;align-items:center"><p class="tiny">TRENDS vs last</p><div class="seg">${['day', 'week', 'month', 'year'].map((p) => `<button class="${p === state.trendPeriod ? 'on' : ''}" data-trend="${p}">${p[0].toUpperCase() + p.slice(1)}</button>`).join('')}</div></div>
+        ${posDock()}
+      <div style="display:flex;gap:8px;align-items:center"><p class="tiny">TRENDS vs last</p><div class="seg">${['day', 'week', 'month', 'year'].map((p) => `<button class="${p === state.trendPeriod ? 'on' : ''}" data-trend="${p}">${p[0].toUpperCase() + p.slice(1)}</button>`).join('')}</div></div>
         <div class="grid2">
           <div class="card-metric"><small>Value trend</small><strong class="gold-text">+${trendVal}%</strong><span class="delta">vs last ${state.trendPeriod}</span></div>
           <div class="card-metric"><small>Volume trend</small><strong class="gold-text">+${trendVol}%</strong><span class="delta">vs last ${state.trendPeriod}</span></div>
@@ -724,8 +740,15 @@ function sellerDash() {
           <button class="card-tile" data-action="cat-import" data-src="inventory"><span class="icowell">${ico('box')}</span><b>Upload inventory</b><small>stock → listings</small></button>
         </div>
         <div class="grid2">
-          <div class="card-metric"><small>Catalogue SKUs</small><strong>${intel?.catalogue?.skus || 0}</strong><span class="delta">menu editable · ${intel?.catalogue?.templates || 0} templates</span></div>
+          <div class="card-metric"><small>Catalogue SKUs</small><strong>${intel?.catalogue?.skus || 0}</strong><span class="delta">menu editable</span></div>
           <div class="card-metric"><small>Competition alerts</small><strong>${intel?.catalogue?.competitionAlerts || 0}</strong><span class="delta">price diff SKUs</span></div>
+        </div>
+        <div class="vault-door">
+          <p class="tiny" style="margin-bottom:8px">CATALOGUE TEMPLATES</p>
+          <div class="tpl-previews">
+            ${['aurum', 'pearl', 'onyx'].map((t) => `<button class="tpl-mini tpl-${t} ${state.catTpl === t ? 'on' : ''}" data-cattpl="${t}"><b>${t === 'aurum' ? 'Menu board' : t === 'pearl' ? 'Grid cards' : 'List view'}</b><small>${t}</small></button>`).join('')}
+          </div>
+          <p class="tiny" style="margin-top:8px">Your catalogue opens on the buyer's phone in this layout.</p>
         </div>
         <div class="vault-door"><p class="tiny" style="margin-bottom:10px">INVENTORY</p>
           ${(intel?.inventory?.low || []).map((i) => `<div class="check-row" style="margin-bottom:6px"><span class="step-num">!</span><span style="flex:1">${esc(i.name)}</span><b>${i.stock} left</b></div>`).join('')}
@@ -848,8 +871,10 @@ function praise(msg, sub, ic, next) {
 }
 async function render() {
   const r = route();
+  // role is set only by explicit entry — 'admin' and neutral routes keep the current role
   if (r.startsWith('seller')) state.role = 'seller';
-  else if (!['welcome', 'splash'].includes(r)) state.role = 'buyer';
+  else if (!['welcome', 'splash', 'admin'].includes(r) && !state.role) state.role = 'buyer';
+  else if (!['welcome', 'splash', 'admin'].includes(r) && state.role !== 'seller') state.role = 'buyer';
   if (r === 'stores' && !state.stores.length) state.stores = (await api('/api/stores')).stores || [];
   if (r === 'stores' && !state.txns) state.txns = await api('/api/transactions');
   if (r === 'pay' && !state.txns) state.txns = await api('/api/transactions');
@@ -886,11 +911,12 @@ function startSplash() {
 
 let kaceTimer;
 document.addEventListener('click', async (e) => {
-  const el = e.target.closest('[data-go],[data-action],[data-profile],[data-tpl],[data-stab],[data-setting],[data-perm],[data-field],[data-expand],[data-exp-period],[data-exp-view],[data-trend],[data-calc],[data-store]');
+  const el = e.target.closest('[data-go],[data-action],[data-profile],[data-tpl],[data-stab],[data-setting],[data-perm],[data-field],[data-expand],[data-exp-period],[data-exp-view],[data-trend],[data-calc],[data-store],[data-cattpl]');
   if (!el) return;
   if (el.dataset.go) { go(el.dataset.go); return; }
   if (el.dataset.profile) { state.cardProfile = el.dataset.profile; render(); return; }
   if (el.dataset.tpl) { state.cardTemplate = el.dataset.tpl; render(); return; }
+  if (el.dataset.cattpl) { state.catTpl = el.dataset.cattpl; render(); return; }
   if (el.dataset.stab) { state.sellerTab = el.dataset.stab; render(); return; }
   if (el.dataset.field) { state.cardFields[el.dataset.field] = !state.cardFields[el.dataset.field]; render(); return; }
   if (el.dataset.expand) { state.cardOpen = state.cardOpen === el.dataset.expand ? null : el.dataset.expand; render(); return; }
@@ -989,6 +1015,7 @@ document.addEventListener('click', async (e) => {
   if (a === 'gen-invoice') { markDone(state.sellerDone, 'seller-adjust'); await api('/api/seller/catalogue/import', { source: 'invoice' }); praise('Invoice priced fairly', 'Customer benefits applied · catalogue grew by itself.', 'chip', 'seller-share'); return; }
   if (a === 'dash-open') { markDone(state.sellerDone, 'seller-share'); praise("You're on the map", 'The Brew House is discoverable from today.', 'home', 'seller-dash'); return; }
   if (a === 'kace-share') { go('seller-share'); toast('K-Assistant — pick how the bill reaches them.'); return; }
+  if (a === 'kace-stock') { toast('Marked as stock purchased — inventory & payables updated.', 'success'); return; }
   if (a?.startsWith('share-')) { toast({ 'share-ktag': "Invoice pushed to the buyer's tap.", 'share-mobile': 'Invoice link sent by SMS.', 'share-print': 'Printing with K-Assist QR.', 'share-qr2': 'Show this QR to the buyer.' }[a] || 'Shared.', 'success'); return; }
   if (a === 'cat-import') {
     const src = el.dataset.src;
@@ -1010,6 +1037,7 @@ document.addEventListener('click', async (e) => {
 
 document.addEventListener('input', (e) => {
   if (e.target.id === 'calc-amt') { state.calcAmount = Math.max(100, Math.round(Number(e.target.value || 0) * 100)); render(); }
+  if (e.target.id?.startsWith('cf-')) { state.customFields[e.target.id.slice(3)] = e.target.value; const cf = document.querySelector('.card-face'); }
 });
 
 window.addEventListener('hashchange', render);
