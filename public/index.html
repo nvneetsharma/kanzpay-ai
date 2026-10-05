@@ -1,18 +1,24 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#07110f" />
-    <title>Kanzpay · your rewarding money life</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0d10" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>KanzPay · Life Rewards You</title>
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/assets/kanzpay-mark.png" />
     <link rel="stylesheet" href="/styles.css" />
-    <link rel="stylesheet" href="/visual-overrides.css" />
+    <script>
+      const savedTheme = localStorage.getItem('kz-theme');
+      if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+      if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+    </script>
   </head>
   <body>
-    <div class="ambient ambient-one"></div>
-    <div class="ambient ambient-two"></div>
-    <main id="app" aria-live="polite"></main>
+    <div class="phone" id="app"></div>
     <div id="toast" class="toast" role="status"></div>
     <script type="module" src="/app.js"></script>
   </body>

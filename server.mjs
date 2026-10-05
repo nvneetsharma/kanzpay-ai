@@ -65,6 +65,100 @@ const state = {
     { id: 'sms', label: 'SMS offers', icon: '◌', benefit: 'Read time-limited merchant offers.', status: 'locked', expectedMinor: 90 },
     { id: 'notifications', label: 'App notifications', icon: '⌁', benefit: 'Catch offers from installed apps.', status: 'locked', expectedMinor: 110 }
   ],
+  cards: [],
+  cardCounter: 0,
+  alerts: [
+    { id: 'al-stock-1', type: 'inventory', severity: 'warn', title: 'Granola cup low', detail: '4 units left · ~1 day of stock', action: 'Restock' },
+    { id: 'al-stock-2', type: 'inventory', severity: 'info', title: 'Still water overstock', detail: '148 units · 12 days of cover', action: 'Bundle offer' },
+    { id: 'al-pay-1', type: 'payable', severity: 'warn', title: 'Supplier payable due', detail: 'Al Ain Dairy · AED 1,240 in 2 days', action: 'Schedule' },
+    { id: 'al-pay-2', type: 'receivable', severity: 'good', title: 'Receivable cleared', detail: 'Catering partner paid AED 3,800', action: 'View' },
+    { id: 'al-biz-1', type: 'business', severity: 'good', title: 'Sales up 18%', detail: 'Beverages led the week · Fri peak 2pm', action: 'Insights' },
+    { id: 'al-biz-2', type: 'business', severity: 'warn', title: 'Order #1048 pending', detail: 'Buyer approval waiting 14 min', action: 'Nudge' }
+  ],
+  offers: [
+    { id: 'of-brew', store: 'The Brew House', distanceM: 280, rating: 4.8, item: 'Cafe Latte', priceMinor: 2400, offer: 'Earn 20 mg Gold', category: 'Food', image: '/assets/scene-coffee.png', perks: ['20% OFF', '50 points', '2 mg Gold'] },
+    { id: 'of-croissant', store: 'The Brew House', distanceM: 280, rating: 4.8, item: 'Butter Croissant', priceMinor: 1800, offer: 'Membership price', category: 'Food', image: '/assets/scene-catalogue.png', perks: ['Membership', '12 points'] },
+    { id: 'of-iced', store: 'Kona Roast', distanceM: 640, rating: 4.6, item: 'Iced Coffee', priceMinor: 2200, offer: '2 mg Gold', category: 'Food', image: '/assets/scene-coffee.png', perks: ['2 mg Gold'] }
+  ],
+  expenses: {
+    month: 'October', totalMinor: 124000, deltaPct: 9,
+    categories: [
+      { label: 'Food & Dining', minor: 47120, pct: 38, icon: '☕' },
+      { label: 'Shopping', minor: 27280, pct: 22, icon: '🛍' },
+      { label: 'Others', minor: 17360, pct: 14, icon: '◈' },
+      { label: 'Transport', minor: 14880, pct: 12, icon: '➤' },
+      { label: 'Bills', minor: 17360, pct: 14, icon: '⚡' }
+    ],
+    trend: [22, 34, 18, 42, 30, 55, 38, 47, 26, 60, 33, 44],
+    lifestyle: { profile: 'Mindful urbanite', note: 'AED 30 coffee fits your lifestyle. AED 5 karak is a find — 3 spots near you.', insight: 'Coffee at AED 30 is normal for you. Dining above AED 90 flags as costly.' }
+  },
+  sellerInsights: {
+    salesMinor: 284000, salesDeltaPct: 18, orders: 84, ordersDeltaPct: 18, customers: 62, customersDeltaPct: 15,
+    trend: [12, 22, 18, 30, 42, 26, 55, 38, 60, 33, 44, 28],
+    categories: [
+      { label: 'Beverages', pct: 38, items: 62 },
+      { label: 'Food', pct: 32, items: 46 },
+      { label: 'Desserts', pct: 18, items: 18 },
+      { label: 'Others', pct: 12, items: 42 }
+    ],
+    pl: { revenueMinor: 284000, cogsMinor: 159000, grossMinor: 125000, expensesMinor: 61500, netMinor: 63500 },
+    expenseHeads: [
+      { head: 'Rent', minor: 28000 }, { head: 'Staff', minor: 18500 },
+      { head: 'Supplies', minor: 9800 }, { head: 'Utilities', minor: 5200 }
+    ],
+    topProducts: [
+      { name: 'Cappuccino', priceMinor: 1800, tag: 'Popular' },
+      { name: 'Club Sandwich', priceMinor: 3200, tag: '' },
+      { name: 'Cold Coffee', priceMinor: 2200, tag: '' }
+    ]
+  },
+  customers: [
+    { id: 'cu-sarah', name: 'Sarah Ahmed', segment: 'Top Customer', visits: 12, spentMinor: 48000, goldMg: 2.4 },
+    { id: 'cu-rohan', name: 'Rohan Mehta', segment: 'Regular', visits: 6, spentMinor: 11000, goldMg: 1.1 },
+    { id: 'cu-fatima', name: 'Fatima Khan', segment: 'New Customer', visits: 1, spentMinor: 3600, goldMg: 0.2 }
+  ],
+  stores: [
+    { id: 'st-brew', name: 'The Brew House', kind: 'Café', distanceM: 280, rating: 4.8, live: true, offers: ['20% member price', '2 mg Gold'], image: '/assets/scene-coffee.png' },
+    { id: 'st-luma', name: 'Luma Market', kind: 'Grocery', distanceM: 450, rating: 4.6, live: true, offers: ['Membership price', '12 points'], image: '/assets/scene-catalogue.png' },
+    { id: 'st-kona', name: 'Kona Roast', kind: 'Café', distanceM: 640, rating: 4.6, live: false, offers: ['Stamp card'], image: '/assets/scene-coffee.png' },
+    { id: 'st-date', name: 'Date & Grain', kind: 'Bakery', distanceM: 900, rating: 4.9, live: true, offers: ['Free gift on AED 50'], image: '/assets/scene-catalogue.png' }
+  ],
+  vault: [
+    { id: 'memberships', label: 'My Memberships', icon: '◆', status: 'connected', items: [{ name: 'Brew House Club', value: '20% member price', valid: 'Dec 2026' }], expectedMinor: 480 },
+    { id: 'rewards', label: 'My Reward Points', icon: '✦', status: 'connected', items: [{ name: 'KanzPay Points', value: '2,480 pts', valid: 'No expiry' }], expectedMinor: 240 },
+    { id: 'promocodes', label: 'My Promocodes', icon: '⌗', status: 'discoverable', items: [{ name: 'KANZ10', value: '10% off', valid: 'Nov 2026' }], expectedMinor: 300 },
+    { id: 'vouchers', label: 'My Vouchers & Coupons', icon: '▤', status: 'grey', items: [], expectedMinor: 160 }
+  ],
+  sellerDashboard: {
+    focus: {
+      commission: { pendingMinor: 12400, paidMinor: 84200 },
+      tickets: [{ kind: 'Complaint', text: 'Cold coffee served late', status: 'open' }, { kind: 'Query', text: 'Do you take gold?', status: 'open' }, { kind: 'Rating', text: '★ 4.8 this week', status: 'good' }],
+      rewards: { repeatPct: 34, goldPctOfBill: 2, rules: '200 AED = 100 pts; 1,000 AED = 5 mg Gold' },
+      trends: { valuePct: 18, volumePct: 12 },
+      customers: { walkins: 62, avgTicketMinor: 4600, repeatPct: 34 }
+    }
+  },
+  adminSettings: {
+    buyer: {
+      shareVaultOnTap: true, shareLocation: true, shareExpenses: true,
+      allowLifestyleIntel: true, autoApplyMembership: true, autoApplyPoints: false,
+      goldFloorMinor: 500, notifications: true, dataSync: true
+    },
+    seller: {
+      autoCatalogueFromInvoice: true, autoCatalogueFromMenu: true, autoCatalogueFromInventory: true,
+      inventoryAlerts: true, payableAlerts: true, receivableAlerts: true, businessAlerts: true,
+      allowPointsRewards: true, allowGoldRewards: true, maxDiscountPct: 30,
+      kaceEnabled: true, shareInvoicesBeforePrint: true, dataSync: true
+    }
+  },
+  ssoTokens: [],
+  transactions: [
+    { id: 'txn-8f3a', store: 'The Brew House', amountMinor: 6600, savedMinor: 1750, goldMg: 2, points: 120, status: 'SETTLED', at: 'Today, 09:41' },
+    { id: 'txn-7c2b', store: 'Luma Market', amountMinor: 12400, savedMinor: 800, goldMg: 1.4, points: 88, status: 'SETTLED', at: 'Yesterday, 18:02' },
+    { id: 'txn-5e9c', store: 'The Brew House', amountMinor: 2400, savedMinor: 480, goldMg: 0.8, points: 36, status: 'SETTLED', at: 'Tue, 08:15' },
+    { id: 'txn-2d4f', store: 'Kona Roast', amountMinor: 4400, savedMinor: 0, goldMg: 0, points: 0, status: 'STOPPED', at: 'Sun, 11:26' }
+  ],
+  plSnapshots: [],
   audit: []
 };
 
@@ -386,6 +480,294 @@ async function api(req, res, pathname) {
     });
   }
 
+  // --- Journey: OTP, stores, vault, KYC ---
+  if (req.method === 'POST' && pathname === '/api/otp/send') {
+    const payload = await body(req);
+    if (!payload.mobile && !payload.email) return json(res, 422, { error: 'Mobile or email required.' });
+    state.audit.push({ event: 'OTP_SENT', mobile: payload.mobile, email: payload.email, at: new Date().toISOString() });
+    return json(res, 200, { status: 'SENT', channels: [payload.mobile ? 'sms' : null, payload.email ? 'email' : null].filter(Boolean), expiresInSec: 120 });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/otp/verify') {
+    return json(res, 200, { status: 'VERIFIED', goldAward: { amount: 1, unit: 'mg', status: 'processing' }, message: 'Congratulations! 1 mg Gold cashback — earn more, save more.' });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/stores') {
+    return json(res, 200, { location: 'Dubai Marina', stores: state.stores });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/vault') {
+    return json(res, 200, { sections: state.vault });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/vault/connect') {
+    const payload = await body(req);
+    const section = state.vault.find((s) => s.id === payload.id);
+    if (!section) return json(res, 404, { error: 'Vault section not found.' });
+    section.status = 'connected';
+    if (!section.items.length) section.items.push({ name: `${section.label.replace('My ', '')} link`, value: `~${money(section.expectedMinor)} expected`, valid: 'Pending sync' });
+    state.audit.push({ event: 'VAULT_SECTION_CONNECTED', id: section.id, at: new Date().toISOString() });
+    return json(res, 200, section);
+  }
+
+  if (req.method === 'POST' && pathname === '/api/account/kyc') {
+    const payload = await body(req);
+    const steps = ['emirates-id-front', 'emirates-id-back', 'live-camera', 'aml-check'];
+    const step = String(payload.step || '');
+    if (!steps.includes(step)) return json(res, 422, { error: 'Unknown KYC step.' });
+    state.audit.push({ event: 'KYC_STEP', step, at: new Date().toISOString() });
+    const done = step === 'aml-check';
+    if (done && !state.onboarding.account) {
+      state.onboarding.account = { id: `acct-${randomUUID().slice(0, 8)}`, name: 'Navneet Sharma', status: 'ACTIVE_SANDBOX', createdAt: new Date().toISOString() };
+    }
+    return json(res, 200, { step, status: done ? 'ACCOUNT_CREATED' : 'STEP_OK', account: state.onboarding.account });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/seller/dashboard') {
+    const ins = state.sellerInsights;
+    const f = state.sellerDashboard.focus;
+    return json(res, 200, {
+      focus: f,
+      intelligence: {
+        catalogue: { skus: state.catalogue.length, editableMenu: true, templates: 3, competitionAlerts: 2 },
+        inventory: { low: state.catalogue.filter((i) => i.stock > 0 && i.stock <= 6).map((i) => ({ name: i.name, stock: i.stock })), over: state.catalogue.filter((i) => i.daysStock > 10).map((i) => ({ name: i.name, daysStock: i.daysStock })) },
+        finance: { payablesMinor: 124000, receivablesMinor: 88000, pl: ins.pl, balanceSheetMinor: 421000 },
+        instruments: [{ name: 'Account to Account (Aani)', status: 'active' }, { name: 'Cards', status: 'active' }, { name: 'Settlement T+1', status: 'scheduled' }],
+        view: { cycle: 'monthly', plan: 'Growth' }
+      }
+    });
+  }
+
+  // --- Visiting cards ---
+  if (req.method === 'POST' && pathname === '/api/card/create') {
+    const payload = await body(req);
+    if (!payload.name || !payload.profile) {
+      return json(res, 422, { error: 'Name and profile are required.' });
+    }
+    const card = {
+      id: `card-${++state.cardCounter}${randomUUID().slice(0, 4)}`,
+      name: String(payload.name).trim(),
+      title: String(payload.title || '').trim(),
+      company: String(payload.company || '').trim(),
+      location: String(payload.location || 'Abu Dhabi, UAE').trim(),
+      mobile: String(payload.mobile || '').trim(),
+      profile: String(payload.profile),
+      template: String(payload.template || 'aurum'),
+      createdAt: new Date().toISOString(),
+      shared: 0
+    };
+    state.cards.push(card);
+    state.audit.push({ event: 'VISITING_CARD_CREATED', id: card.id, profile: card.profile, at: card.createdAt });
+    return json(res, 201, card);
+  }
+
+  if (req.method === 'GET' && pathname === '/api/cards') {
+    return json(res, 200, { cards: state.cards });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/card/exchange') {
+    const payload = await body(req);
+    const card = state.cards.find((item) => item.id === payload.cardId) || state.cards[0];
+    if (!card) return json(res, 409, { error: 'Create a visiting card first.' });
+    card.shared += 1;
+    state.audit.push({ event: 'CARD_EXCHANGED', id: card.id, via: String(payload.via || 'nfc'), at: new Date().toISOString() });
+    return json(res, 200, {
+      status: 'EXCHANGED',
+      via: payload.via === 'qr' ? 'qr' : 'nfc',
+      card,
+      received: { name: 'Rashid Al Mansoori', title: 'Founder, Marina Retail Group', profile: 'Professional' },
+      message: 'Card exchanged. Their card arrived in your contacts.'
+    });
+  }
+
+  // --- Buyer intelligence ---
+  if (req.method === 'GET' && pathname === '/api/offers/nearby') {
+    return json(res, 200, { location: 'Dubai Marina', offers: state.offers });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/intelligence/expenses') {
+    return json(res, 200, state.expenses);
+  }
+
+  if (req.method === 'POST' && pathname === '/api/intelligence/best-value') {
+    const payload = await body(req);
+    const grossMinor = Math.max(0, Number(payload.amountMinor || 3000));
+    const options = [
+      { id: 'bv-membership', label: 'Membership price', savingMinor: Math.round(grossMinor * 0.2), applies: true },
+      { id: 'bv-points', label: 'Use 150 reward points', savingMinor: 300, applies: state.buyer.points >= 150 },
+      { id: 'bv-voucher', label: 'Promo voucher KANZ10', savingMinor: Math.round(grossMinor * 0.1), applies: true },
+      { id: 'bv-gold', label: 'Redeem Gold', savingMinor: Math.min(state.buyer.goldMinor, Math.round(grossMinor * 0.08)), applies: state.buyer.goldMinor > 0 }
+    ];
+    const best = options.filter((o) => o.applies).sort((a, b) => b.savingMinor - a.savingMinor)[0];
+    const netMinor = grossMinor - (best?.savingMinor ?? 0);
+    const rails = [...state.rails].sort((a, b) => a.feeMinor - b.feeMinor);
+    return json(res, 200, {
+      grossMinor,
+      options,
+      best,
+      netMinor,
+      effectiveMinor: netMinor,
+      pointsEarned: Math.floor(netMinor / 100) * 2,
+      goldEarnedMg: +(netMinor * 0.0008).toFixed(1),
+      recommendedRail: rails[0],
+      reason: 'Membership beats voucher this time. ADCB card adds 5% cashback.'
+    });
+  }
+
+  // --- Seller intelligence ---
+  if (req.method === 'GET' && pathname === '/api/seller/insights') {
+    return json(res, 200, { store: state.seller, ...state.sellerInsights });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/seller/alerts') {
+    const grouped = {
+      inventory: state.alerts.filter((a) => a.type === 'inventory'),
+      payments: state.alerts.filter((a) => a.type === 'payable' || a.type === 'receivable'),
+      business: state.alerts.filter((a) => a.type === 'business')
+    };
+    return json(res, 200, { alerts: state.alerts, grouped });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/seller/customers') {
+    return json(res, 200, {
+      customers: state.customers,
+      rewards: { pointsIssued: 12420, pointsDeltaPct: 18, goldIssuedMg: 248, goldDeltaPct: 22 }
+    });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/seller/offer/grant') {
+    const payload = await body(req);
+    const grant = {
+      id: `grant-${randomUUID().slice(0, 8)}`,
+      customerId: String(payload.customerId || ''),
+      points: Math.max(0, Number(payload.points || 0)),
+      goldMg: Math.max(0, Number(payload.goldMg || 0)),
+      at: new Date().toISOString()
+    };
+    state.audit.push({ event: 'OFFER_GRANTED', ...grant });
+    return json(res, 201, { status: 'GRANTED', grant });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/seller/catalogue/import') {
+    const payload = await body(req);
+    const source = ['invoice', 'menu', 'inventory'].includes(payload.source) ? payload.source : 'invoice';
+    const presets = {
+      invoice: [
+        { barcode: '6291100003310', name: 'Cappuccino', category: 'Beverages', priceMinor: 1800, stock: 999 },
+        { barcode: '6291100003327', name: 'Club Sandwich', category: 'Food', priceMinor: 3200, stock: 60 },
+        { barcode: '6291100003334', name: 'Cold Coffee', category: 'Beverages', priceMinor: 2200, stock: 80 }
+      ],
+      menu: [
+        { barcode: '6291100004409', name: 'Butter Croissant', category: 'Food', priceMinor: 1800, stock: 40 },
+        { barcode: '6291100004416', name: 'Date Cake', category: 'Desserts', priceMinor: 2100, stock: 18 }
+      ],
+      inventory: [
+        { barcode: '6291100005508', name: 'Granola Cup XL', category: 'Grocery', priceMinor: 2100, stock: 24 }
+      ]
+    };
+    const items = (Array.isArray(payload.items) && payload.items.length ? payload.items : presets[source])
+      .filter((item) => item?.name)
+      .map((item) => ({
+        id: `sku-${randomUUID().slice(0, 8)}`,
+        barcode: String(item.barcode || `6291${Math.floor(Math.random() * 1e7)}`),
+        name: String(item.name),
+        category: String(item.category || 'General'),
+        priceMinor: Math.max(0, Number(item.priceMinor || 0)),
+        stock: Math.max(0, Number(item.stock || 0)),
+        daysStock: Math.max(0, Number(item.daysStock || Math.ceil(Number(item.stock || 0) / 6))),
+        image: String(item.image || '/assets/scene-catalogue.png')
+      }));
+    state.catalogue.push(...items);
+    state.audit.push({ event: 'CATALOGUE_AUTO_CREATED', source, count: items.length, at: new Date().toISOString() });
+    return json(res, 201, { source, imported: items, total: state.catalogue.length, categories: [...new Set(state.catalogue.map((i) => i.category))] });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/ktag/navigate') {
+    return json(res, 200, {
+      status: 'ROUTE_READY',
+      destination: { name: state.seller.name, address: 'Marina Walk, Dubai Marina', distanceM: 280, walkMin: 4 },
+      mapUrl: 'https://maps.google.com/?q=Dubai+Marina+Walk'
+    });
+  }
+
+  // --- Admin & connector surface ---
+  if (req.method === 'GET' && pathname === '/api/admin/settings') {
+    return json(res, 200, state.adminSettings);
+  }
+  if (req.method === 'POST' && pathname === '/api/admin/settings') {
+    const payload = await body(req);
+    const scope = payload.scope === 'seller' ? 'seller' : 'buyer';
+    state.adminSettings[scope] = { ...state.adminSettings[scope], ...(payload.settings || {}) };
+    state.audit.push({ event: 'ADMIN_SETTINGS_UPDATED', scope, at: new Date().toISOString() });
+    return json(res, 200, state.adminSettings[scope]);
+  }
+  if (req.method === 'POST' && pathname === '/api/sso/token') {
+    const payload = await body(req);
+    if (!payload.externalUserId || !payload.provider) return json(res, 422, { error: 'externalUserId and provider are required.' });
+    const token = {
+      token: `kzsso-${randomUUID()}`,
+      issuedTo: String(payload.externalUserId),
+      provider: String(payload.provider),
+      scopes: Array.isArray(payload.scopes) && payload.scopes.length ? payload.scopes : ['profile:read', 'vault:read', 'pay:execute'],
+      expiresInSec: 900,
+      issuedAt: new Date().toISOString()
+    };
+    state.ssoTokens.push(token);
+    state.audit.push({ event: 'SSO_TOKEN_ISSUED', provider: token.provider, at: token.issuedAt });
+    return json(res, 201, token);
+  }
+  if (req.method === 'GET' && pathname === '/api/sync/export') {
+    return json(res, 200, {
+      exportedAt: new Date().toISOString(),
+      buyer: state.buyer, seller: state.seller, vault: state.vault,
+      catalogue: state.catalogue, cards: state.cards, adminSettings: state.adminSettings,
+      auditTail: state.audit.slice(-50)
+    });
+  }
+  if (req.method === 'POST' && pathname === '/api/sync/import') {
+    const payload = await body(req);
+    const applied = [];
+    if (payload.buyer && typeof payload.buyer === 'object') { state.buyer = { ...state.buyer, ...payload.buyer }; applied.push('buyer'); }
+    if (Array.isArray(payload.vault)) { for (const sec of payload.vault) { const s = state.vault.find((x) => x.id === sec.id); if (s) Object.assign(s, sec); } applied.push('vault'); }
+    if (Array.isArray(payload.catalogue)) { state.catalogue.push(...payload.catalogue.filter((i) => i?.name)); applied.push('catalogue'); }
+    if (payload.sellerSettings && typeof payload.sellerSettings === 'object') { state.adminSettings.seller = { ...state.adminSettings.seller, ...payload.sellerSettings }; applied.push('sellerSettings'); }
+    if (payload.buyerSettings && typeof payload.buyerSettings === 'object') { state.adminSettings.buyer = { ...state.adminSettings.buyer, ...payload.buyerSettings }; applied.push('buyerSettings'); }
+    if (!applied.length) return json(res, 422, { error: 'Nothing recognised to import.' });
+    state.audit.push({ event: 'SYNC_IMPORT', applied, at: new Date().toISOString() });
+    return json(res, 200, { status: 'APPLIED', applied });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/transactions') {
+    return json(res, 200, { transactions: state.transactions });
+  }
+  if (req.method === 'POST' && pathname === '/api/seller/pl/save') {
+    const payload = await body(req);
+    const snap = {
+      id: `pl-${randomUUID().slice(0, 8)}`,
+      month: String(payload.month || 'October 2026'),
+      revenueMinor: Math.max(0, Number(payload.revenueMinor || 0)),
+      cogsMinor: Math.max(0, Number(payload.cogsMinor || 0)),
+      expensesMinor: Math.max(0, Number(payload.expensesMinor || 0)),
+      netMinor: Math.max(0, Number(payload.revenueMinor || 0)) - Math.max(0, Number(payload.cogsMinor || 0)) - Math.max(0, Number(payload.expensesMinor || 0)),
+      savedAt: new Date().toISOString()
+    };
+    state.plSnapshots = state.plSnapshots.filter((s) => s.month !== snap.month).concat(snap);
+    state.sellerInsights.pl = { revenueMinor: snap.revenueMinor, cogsMinor: snap.cogsMinor, grossMinor: snap.revenueMinor - snap.cogsMinor, expensesMinor: snap.expensesMinor, netMinor: snap.netMinor };
+    state.audit.push({ event: 'PL_SAVED', month: snap.month, at: snap.savedAt });
+    return json(res, 201, { status: 'SAVED', snapshot: snap, count: state.plSnapshots.length });
+  }
+
+  if (req.method === 'POST' && pathname === '/api/events') {
+    const payload = await body(req);
+    if (!payload.type) return json(res, 422, { error: 'Event type is required.' });
+    const type = String(payload.type);
+    if (type === 'alert.raised' && payload.payload?.title) {
+      state.alerts.push({ id: `al-${randomUUID().slice(0, 6)}`, type: payload.payload.kind || 'business', severity: payload.payload.severity || 'info', title: String(payload.payload.title), detail: String(payload.payload.detail || ''), action: String(payload.payload.action || 'View') });
+    }
+    state.audit.push({ event: 'EXTERNAL_EVENT', type, at: new Date().toISOString() });
+    return json(res, 202, { status: 'ACCEPTED', type });
+  }
+
   return json(res, 404, { error: 'Not found' });
 }
 
@@ -400,7 +782,9 @@ const server = createServer(async (req, res) => {
     return;
   }
 
-  const requested = url.pathname === '/' ? 'index.html' : normalize(url.pathname).replace(/^[/\\]+/, '');
+  // SPA entry paths — buyer and seller each have their own landing URL
+  const spaPaths = ['/', '/buyer', '/seller'];
+  const requested = spaPaths.includes(url.pathname) ? 'index.html' : normalize(url.pathname).replace(/^[/\\]+/, '');
   const file = join(publicRoot, requested);
   if (!file.startsWith(publicRoot)) {
     res.writeHead(403);
