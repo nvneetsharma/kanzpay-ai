@@ -782,7 +782,9 @@ const server = createServer(async (req, res) => {
     return;
   }
 
-  const requested = url.pathname === '/' ? 'index.html' : normalize(url.pathname).replace(/^[/\\]+/, '');
+  // SPA entry paths — buyer and seller each have their own landing URL
+  const spaPaths = ['/', '/buyer', '/seller'];
+  const requested = spaPaths.includes(url.pathname) ? 'index.html' : normalize(url.pathname).replace(/^[/\\]+/, '');
   const file = join(publicRoot, requested);
   if (!file.startsWith(publicRoot)) {
     res.writeHead(403);

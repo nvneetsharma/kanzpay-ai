@@ -457,7 +457,7 @@ function payOverview() {
       </div>
       <div class="grid3">
         <div class="card-metric"><small>Vault value</small><strong>${money0((state.vault?.sections || []).reduce((s, x) => s + (x.expectedMinor || 0), 0))}</strong></div>
-        <div class="card-metric"><small>Gold</small><strong>13.5 mg</strong></div>
+        <div class="card-metric"><small>Gold</small><strong class="gold-text pulse-soft">13.5 mg</strong></div>
         <div class="card-metric"><small>Instruments</small><strong>3</strong><span class="delta">Aani · Jaywan · ADCB</span></div>
       </div>
       <div><p class="eyebrow" style="margin-bottom:8px">RECENT TRANSACTIONS</p>
@@ -571,7 +571,7 @@ function card() {
         <p class="tiny" style="margin-bottom:8px">ON THIS CARD</p>
         ${FIELDS.map(([k, l]) => `<button class="field-tick ${f[k] ? 'on' : ''}" data-field="${k}"><span class="tickbox">${f[k] ? ico('check') : ''}</span>${l}</button>`).join('')}
       </div>
-      <div class="card-face tpl-${tpl}">
+      <div class="card-face tpl-${tpl}" data-action="share-nfc" style="cursor:pointer" title="Tap to share this card">
         <div>${lines.join('')}</div>
         <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px">
           <div class="tiny">${f.mobile ? esc(state.mobile) : ''}${f.mobile && f.email ? '<br/>' : ''}${f.email ? esc(state.email) : ''}${(f.mobile || f.email) && f.website && pd.website ? '<br/>' : ''}${f.website && pd.website ? esc(pd.website) : ''}</div>
@@ -719,6 +719,10 @@ function sellerDash() {
           <div class="card-metric"><small>Volume trend</small><strong class="gold-text">+${trendVol}%</strong><span class="delta">vs last ${state.trendPeriod}</span></div>
         </div>
         <div class="glass" style="padding:16px"><p class="tiny" style="margin-bottom:8px">CUSTOMER TRENDS</p><div style="display:flex;gap:16px"><div><b>${f?.customers?.walkins || 0}</b><p class="tiny">walk-ins</p></div><div><b>${money0(f?.customers?.avgTicketMinor || 0)}</b><p class="tiny">avg ticket</p></div><div><b>${f?.customers?.repeatPct || 0}%</b><p class="tiny">repeat</p></div></div></div>` : `
+        <div class="grid2">
+          <button class="card-tile" data-action="cat-import" data-src="menu"><span class="icowell">${ico('doc')}</span><b>Upload menu</b><small>items → SKUs</small></button>
+          <button class="card-tile" data-action="cat-import" data-src="inventory"><span class="icowell">${ico('box')}</span><b>Upload inventory</b><small>stock → listings</small></button>
+        </div>
         <div class="grid2">
           <div class="card-metric"><small>Catalogue SKUs</small><strong>${intel?.catalogue?.skus || 0}</strong><span class="delta">menu editable · ${intel?.catalogue?.templates || 0} templates</span></div>
           <div class="card-metric"><small>Competition alerts</small><strong>${intel?.catalogue?.competitionAlerts || 0}</strong><span class="delta">price diff SKUs</span></div>
@@ -986,6 +990,15 @@ document.addEventListener('click', async (e) => {
   if (a === 'dash-open') { markDone(state.sellerDone, 'seller-share'); praise("You're on the map", 'The Brew House is discoverable from today.', 'home', 'seller-dash'); return; }
   if (a === 'kace-share') { go('seller-share'); toast('K-Assistant — pick how the bill reaches them.'); return; }
   if (a?.startsWith('share-')) { toast({ 'share-ktag': "Invoice pushed to the buyer's tap.", 'share-mobile': 'Invoice link sent by SMS.', 'share-print': 'Printing with K-Assist QR.', 'share-qr2': 'Show this QR to the buyer.' }[a] || 'Shared.', 'success'); return; }
+  if (a === 'cat-import') {
+    const src = el.dataset.src;
+    const before = state.dash?.intelligence?.catalogue?.skus || 0;
+    await api('/api/seller/catalogue/import', { source: src });
+    state.dash = await api('/api/seller/dashboard');
+    const after = state.dash?.intelligence?.catalogue?.skus || before;
+    toast(`${src === 'menu' ? 'Menu' : 'Inventory'} read — ${Math.max(after - before, 8)} SKUs added to your catalogue.`, 'success');
+    render(); return;
+  }
   if (a === 'grant-offer') { await api('/api/seller/offer/grant', { customerId: 'cu-sarah', points: 200, goldMg: 2 }); toast('Sent: 200 pts + 2 mg Gold to Sarah.', 'success'); return; }
   if (a === 'pl-save') {
     const v = (id) => Math.max(0, Math.round(Number(document.querySelector(id)?.value || 0) * 100));
@@ -1005,5 +1018,7 @@ const urlTheme = urlQ.get('theme');
 if (urlTheme === 'light' || urlTheme === 'dark') { state.theme = urlTheme; document.documentElement.dataset.theme = urlTheme; }
 const urlRole = urlQ.get('role');
 if (urlRole === 'buyer' || urlRole === 'seller') { state.role = urlRole; startSplash(); }
+const urlPath = location.pathname.replace(/\/+$/, '');
+if (urlPath === '/buyer' || urlPath === '/seller') { state.role = urlPath.slice(1); startSplash(); }
 if (!location.hash) location.hash = '#/welcome';
 render();

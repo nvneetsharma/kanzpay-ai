@@ -254,3 +254,7 @@ html[data-theme="dark"] .chip { color: var(--gold-2); }
 [data-theme="light"] .topbar{background:linear-gradient(180deg,rgba(242,236,221,.95),rgba(242,236,221,.55))}
 [data-theme="light"] .field-tick{background:rgba(255,255,255,.5)}
 [data-theme="light"] .perm-row .chip{border-color:rgba(140,110,45,.35)}
+.pulse-soft{animation:pulseSoft 2.6s ease-in-out infinite}
+@keyframes pulseSoft{0%,100%{opacity:1}50%{opacity:.55}}
+.card-tile.live::after{content:'';position:absolute;top:0;left:-80%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(246,227,165,.18),transparent);animation:tileSweep 4.5s ease-in-out infinite;pointer-events:none}
+@keyframes tileSweep{0%,55%{left:-80%}90%,100%{left:130%}}
