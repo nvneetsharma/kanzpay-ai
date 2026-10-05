@@ -152,6 +152,13 @@ const state = {
     }
   },
   ssoTokens: [],
+  transactions: [
+    { id: 'txn-8f3a', store: 'The Brew House', amountMinor: 6600, savedMinor: 1750, goldMg: 2, points: 120, status: 'SETTLED', at: 'Today, 09:41' },
+    { id: 'txn-7c2b', store: 'Luma Market', amountMinor: 12400, savedMinor: 800, goldMg: 1.4, points: 88, status: 'SETTLED', at: 'Yesterday, 18:02' },
+    { id: 'txn-5e9c', store: 'The Brew House', amountMinor: 2400, savedMinor: 480, goldMg: 0.8, points: 36, status: 'SETTLED', at: 'Tue, 08:15' },
+    { id: 'txn-2d4f', store: 'Kona Roast', amountMinor: 4400, savedMinor: 0, goldMg: 0, points: 0, status: 'STOPPED', at: 'Sun, 11:26' }
+  ],
+  plSnapshots: [],
   audit: []
 };
 
@@ -728,6 +735,26 @@ async function api(req, res, pathname) {
     if (!applied.length) return json(res, 422, { error: 'Nothing recognised to import.' });
     state.audit.push({ event: 'SYNC_IMPORT', applied, at: new Date().toISOString() });
     return json(res, 200, { status: 'APPLIED', applied });
+  }
+
+  if (req.method === 'GET' && pathname === '/api/transactions') {
+    return json(res, 200, { transactions: state.transactions });
+  }
+  if (req.method === 'POST' && pathname === '/api/seller/pl/save') {
+    const payload = await body(req);
+    const snap = {
+      id: `pl-${randomUUID().slice(0, 8)}`,
+      month: String(payload.month || 'October 2026'),
+      revenueMinor: Math.max(0, Number(payload.revenueMinor || 0)),
+      cogsMinor: Math.max(0, Number(payload.cogsMinor || 0)),
+      expensesMinor: Math.max(0, Number(payload.expensesMinor || 0)),
+      netMinor: Math.max(0, Number(payload.revenueMinor || 0)) - Math.max(0, Number(payload.cogsMinor || 0)) - Math.max(0, Number(payload.expensesMinor || 0)),
+      savedAt: new Date().toISOString()
+    };
+    state.plSnapshots = state.plSnapshots.filter((s) => s.month !== snap.month).concat(snap);
+    state.sellerInsights.pl = { revenueMinor: snap.revenueMinor, cogsMinor: snap.cogsMinor, grossMinor: snap.revenueMinor - snap.cogsMinor, expensesMinor: snap.expensesMinor, netMinor: snap.netMinor };
+    state.audit.push({ event: 'PL_SAVED', month: snap.month, at: snap.savedAt });
+    return json(res, 201, { status: 'SAVED', snapshot: snap, count: state.plSnapshots.length });
   }
 
   if (req.method === 'POST' && pathname === '/api/events') {
