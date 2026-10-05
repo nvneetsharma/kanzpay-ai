@@ -26,7 +26,7 @@ const ICONS = {
   id: '<rect x="3" y="5" width="18" height="14" rx="2.4"/><circle cx="8.5" cy="11" r="2"/><path d="M5.8 16c.6-1.6 1.6-2.4 2.7-2.4s2.1.8 2.7 2.4M14 10h5M14 14h5"/>',
   share: '<circle cx="6" cy="12" r="2.4"/><circle cx="17" cy="6" r="2.4"/><circle cx="17" cy="18" r="2.4"/><path d="m8 10.8 6.6-3.6M8 13.2l6.6 3.6"/>',
   gift: '<rect x="4" y="9" width="16" height="4" rx="1.2"/><path d="M12 9v12M6 13v7h12v-7M12 9c-1.8 0-4-1-4-2.8 0-1.2 1-2.2 2.2-2.2C11.5 4 12 6 12 9zm0 0c1.8 0 4-1 4-2.8 0-1.2-1-2.2-2.2-2.2C12.5 4 12 6 12 9z"/>',
-  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8"/>',
+  gear: '<path d="M3.5 6.5h17M3.5 12h17M3.5 17.5h17"/><circle cx="9.5" cy="6.5" r="2.1" fill="var(--bg)"/><circle cx="14.5" cy="12" r="2.1" fill="var(--bg)"/><circle cx="7.5" cy="17.5" r="2.1" fill="var(--bg)"/>',
   home: '<path d="m4 11 8-7 8 7M6 9.5V20h12V9.5"/>',
   wallet: '<rect x="3" y="6" width="18" height="13" rx="2.6"/><path d="M3 10h18M16 15h2"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
@@ -88,20 +88,27 @@ const applause = (title, sub, ic = 'star') => `<div class="applaud"><span class=
 const praiseBlock = () => state.praise ? applause(state.praise[0], state.praise[1], state.praise[2] || 'star') : '';
 const confetti = () => `<div class="confetti">${Array.from({ length: 26 }, (_, i) => `<i style="--x:${(i * 37) % 100}%;--d:${(i * 0.13) % 1.6}s;--r:${(i * 67) % 360}deg;--c:${['#f6e3a5', '#e8c56a', '#c9a24f', '#fff8e2'][i % 4]}"></i>`).join('')}</div>`;
 
-/* ---------- real gold coin ---------- */
+/* ---------- real gold coin — engraved, not printed ---------- */
 const goldCoin = (mg, size = 150) => `<div class="coin-breathe" style="width:${size}px;height:${size}px;margin:auto">
   <svg viewBox="0 0 120 120" style="width:100%;height:100%">
     <defs>
       <radialGradient id="cg" cx="38%" cy="30%"><stop offset="0%" stop-color="#fff4ba"/><stop offset="55%" stop-color="#d9a83e"/><stop offset="100%" stop-color="#7e5415"/></radialGradient>
-      <path id="rim" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"/>
+      <path id="rimT" d="M14,60 a46,46 0 0 1 92,0"/>
+      <path id="rimB" d="M14,60 a46,46 0 0 0 92,0"/>
     </defs>
     <circle cx="60" cy="60" r="57" fill="url(#cg)"/>
     <circle cx="60" cy="60" r="57" fill="none" stroke="#6b4a12" stroke-width="1.4" opacity=".5"/>
-    <circle cx="60" cy="60" r="49" fill="none" stroke="#fff4ba" stroke-width="1" opacity=".55"/>
-    <circle cx="60" cy="60" r="53" fill="none" stroke="#6b4a12" stroke-width="3.5" stroke-dasharray="1.6 3.2" opacity=".4"/>
-    <text font-size="6" font-weight="800" fill="#5c3d0e" letter-spacing="0.9"><textPath href="#rim" startOffset="0.5%">999.99 DIGITAL GOLD · SAFEGOLD · 999.99 DIGITAL GOLD · SAFEGOLD ·</textPath></text>
-    <text x="60" y="62" text-anchor="middle" font-size="27" font-weight="900" fill="#4a340c">${mg}<tspan font-size="9" dy="-8" dx="2">mg</tspan></text>
-    <text x="60" y="76" text-anchor="middle" font-size="7" font-weight="700" fill="#5c3d0e" letter-spacing="2">FINE GOLD</text>
+    <circle cx="60" cy="60" r="52.5" fill="none" stroke="#6b4a12" stroke-width="3.5" stroke-dasharray="1.4 3" opacity=".45"/>
+    <circle cx="60" cy="60" r="42" fill="none" stroke="#6b4a12" stroke-width="1" opacity=".5"/>
+    <circle cx="60" cy="60" r="41.2" fill="none" stroke="#fff4ba" stroke-width=".8" opacity=".5"/>
+    <!-- engraving bevel: light copy sits lower-right behind dark recessed text -->
+    <g transform="translate(.7,.9)" opacity=".55"><text font-size="7.2" font-weight="800" fill="#fff0b0" letter-spacing="1.2"><textPath href="#rimT" startOffset="50%" text-anchor="middle">999.99 DIGITAL GOLD</textPath></text></g>
+    <text font-size="7.2" font-weight="800" fill="#452e08" letter-spacing="1.2"><textPath href="#rimT" startOffset="50%" text-anchor="middle">999.99 DIGITAL GOLD</textPath></text>
+    <g transform="translate(.7,.9)" opacity=".55"><text font-size="7.6" font-weight="900" fill="#fff0b0" letter-spacing="2.4"><textPath href="#rimB" startOffset="50%" text-anchor="middle">SAFEGOLD</textPath></text></g>
+    <text font-size="7.6" font-weight="900" fill="#452e08" letter-spacing="2.4"><textPath href="#rimB" startOffset="50%" text-anchor="middle">SAFEGOLD</textPath></text>
+    <text x="60" y="63.6" text-anchor="middle" font-size="27" font-weight="900" fill="#fff0b0" opacity=".5">${mg}<tspan font-size="9" dy="-8" dx="2">mg</tspan></text>
+    <text x="60" y="62" text-anchor="middle" font-size="27" font-weight="900" fill="#3f2b07">${mg}<tspan font-size="9" dy="-8" dx="2">mg</tspan></text>
+    <text x="60" y="77.5" text-anchor="middle" font-size="7" font-weight="700" fill="#452e08" letter-spacing="2.2" opacity=".95">FINE GOLD</text>
   </svg>
 </div>`;
 
@@ -285,12 +292,12 @@ function account() {
 function cockpit() {
   const vaultTotal = (state.vault?.sections || []).filter((s) => s.status === 'connected').reduce((sum, s) => sum + (s.expectedMinor || 0), 0);
   const mods = [
-    ['vault', 'vault', 'My Value Vault', vaultTotal ? `${money0(vaultTotal)} inside` : 'memberships · points · codes'],
-    ['card', 'card', 'My Visiting Card', 'profiles · templates · share'],
-    ['friends', 'users', 'Earn with friends', 'gold, both ways'],
-    ['gold', 'coin', 'My Gold Vault', '13.5 mg · ≈ AED 9.45'],
-    ['expenses', 'chart', 'My Expenses', `${money0(state.expenses?.totalMinor || 124000)} this month`],
-    ['instruments', 'chip', 'Payment Intelligence', 'best way, per bill']
+    ['vault', 'vault', 'My Value Vault', 'memberships · vouchers · codes', vaultTotal ? money0(vaultTotal) : 'AED 18.65', '+12% this month'],
+    ['card', 'card', 'My Visiting Card', 'profiles · templates · share', '6 profiles', '2 updated this week'],
+    ['friends', 'users', 'Earn with friends', 'gold, both ways', '+2 mg', 'pending this month'],
+    ['gold', 'coin', 'My Gold Vault', 'earned, growing, real', '13.5 mg', '+15.2% vs lock-in'],
+    ['expenses', 'chart', 'My Expenses', 'trends & categories', money0(state.expenses?.totalMinor || 124000), '+9% vs last month'],
+    ['instruments', 'chip', 'Payment Intelligence', 'best way, per bill', '~18% saved', 'vs paying blind']
   ];
   return screen(`${topbar({ admin: true })}
     <div class="body">
@@ -301,7 +308,7 @@ function cockpit() {
         <span class="grow"></span><span class="chip">13.5 mg Gold</span>
       </div>
       <div class="grid2">
-        ${mods.map(([r, i, t, d], k) => `<button class="card-tile live" style="animation-delay:${k * 60}ms" data-go="${r}"><span class="icowell">${ico(i)}</span><b>${t}</b><small>${d}</small><span class="tile-glow"></span></button>`).join('')}
+        ${mods.map(([r, i, t, d, v, dl], k) => `<button class="card-tile live" style="animation-delay:${k * 60}ms" data-go="${r}"><span class="icowell">${ico(i)}</span><b>${t}</b><small>${d}</small><span class="tile-val">${v}</span><span class="tile-delta">${dl}</span><span class="tile-glow"></span></button>`).join('')}
       </div>
       <div class="share-banner" style="display:flex;align-items:center;gap:12px">
         <div style="flex:1"><b>All set to earn more</b><p style="font-size:11px;opacity:.85;margin-top:4px">Value + wealth building, together.</p></div>
@@ -327,7 +334,7 @@ function vaultView() {
       ${sections.map((s, k) => `<div class="vault-row ${s.status === 'grey' ? 'grey' : ''} card-list" style="animation-delay:${k * 50}ms">
           <span class="icowell">${ico(s.id === 'memberships' ? 'card' : s.id === 'rewards' ? 'star' : s.id === 'promocodes' ? 'qr' : 'doc')}</span>
           <div><b style="font-size:13px">${esc(s.label)}</b><small class="tiny" style="display:block">${s.items.length ? esc(s.items[0].value) + ' · ' + esc(s.items[0].valid) : 'Not connected yet'}</small></div>
-          ${s.status === 'connected' ? `<b class="gold-text" style="font-size:12px">~${money0(s.expectedMinor)}</b>` : s.status === 'grey' ? '<span class="tiny">missing</span>' : `<button class="cta-mini" data-action="vault-connect" data-id="${s.id}">Connect</button>`}
+          ${s.status === 'connected' ? `<span style="text-align:right"><b class="gold-text" style="font-size:12px">~${money0(s.expectedMinor)}</b><span class="delta up">+${[8, 5, 14, 6][k % 4]}% vs last</span></span>` : s.status === 'grey' ? '<span class="tiny">missing</span>' : `<button class="cta-mini" data-action="vault-connect" data-id="${s.id}">Connect</button>`}
         </div>`).join('')}
       <button class="cta-pill" data-go="stores" style="justify-content:center">Use it at a store →</button>
     </div>`);
@@ -361,6 +368,7 @@ function gold() {
   const vaultIn = 820; const now = 945; const pct = (((now - vaultIn) / vaultIn) * 100).toFixed(1);
   return screen(`${topbar({ back: 'cockpit' })}
     <div class="body">
+      ${praiseBlock()}
       <div><span class="eyebrow">MY GOLD VAULT</span><h1 class="hero">Small weight. Real gold.</h1></div>
       <div class="vault-door" style="text-align:center;padding-top:24px">
         ${goldCoin('13.5', 150)}
@@ -368,19 +376,19 @@ function gold() {
         <p class="tiny" style="margin-top:4px">Locked in at AED 8.20 · <b style="color:var(--gold-3)">+${pct}%</b> since you earned it</p>
       </div>
       <div class="grid2">
-        <button class="card-tile" data-action="gold-buy"><span class="icowell">${ico('plus')}</span><b>Buy gold</b><small>from AED 5</small></button>
-        <button class="card-tile" data-action="gold-sell"><span class="icowell">${ico('minus')}</span><b>Sell gold</b><small>instant AED</small></button>
-        <button class="card-tile" data-action="gold-gift"><span class="icowell">${ico('gift')}</span><b>Gift card</b><small>send as gold</small></button>
-        <button class="card-tile" data-action="gold-deliver"><span class="icowell">${ico('truck')}</span><b>Physical gold</b><small>home delivery</small></button>
+        <button class="card-tile live" data-action="gold-buy"><span class="icowell">${ico('plus')}</span><b>Buy gold</b><small>from AED 5</small><span class="tile-delta">rate +0.8% today</span></button>
+        <button class="card-tile live" data-action="gold-sell"><span class="icowell">${ico('minus')}</span><b>Sell gold</b><small>instant AED</small><span class="tile-delta">≈ AED 9.45 out</span></button>
+        <button class="card-tile live" data-action="gold-gift"><span class="icowell">${ico('gift')}</span><b>Gift card</b><small>send as gold</small><span class="tile-delta">3 sent so far</span></button>
+        <button class="card-tile live" data-action="gold-deliver"><span class="icowell">${ico('truck')}</span><b>Physical gold</b><small>home delivery</small><span class="tile-delta">${state.deliveryOpen ? 'booking…' : 'from AED 15'}</span></button>
       </div>
-      <div class="vault-door">
-        <div style="display:flex;gap:10px;align-items:center"><span class="icowell">${ico('truck')}</span><div><b style="font-size:13px">Deliver to your door</b><p class="tiny">Choose address · pick a slot · approve charges</p></div></div>
+      ${state.deliveryOpen ? `<div class="vault-door" style="animation:rise .35s both">
+        <div style="display:flex;gap:10px;align-items:center"><span class="icowell">${ico('truck')}</span><div><b style="font-size:13px">Deliver to your door</b><p class="tiny">Choose address · pick a slot · approve charges</p></div><button class="chip" style="cursor:pointer;margin-left:auto" data-action="gold-deliver-close">close</button></div>
         <div class="check-row" style="margin-top:10px">${ico('pin')}<span style="flex:1">Home · Marina, Dubai</span><button class="chip" style="cursor:pointer">Change</button></div>
         <div class="check-row" style="margin-top:7px">${ico('clock')}<span style="flex:1">Tomorrow · 10 AM – 1 PM</span><button class="chip" style="cursor:pointer">Slots</button></div>
         <div class="donut-row" style="margin-top:10px"><span style="flex:1">Delivery + convenience fee</span><b>AED 15.00</b></div>
         <div class="donut-row" style="margin-top:5px"><span style="flex:1">Gold to deliver</span><b class="gold-text">13.5 mg ≈ AED 9.45</b></div>
         <button class="cta-gold" style="margin-top:12px" data-action="gold-deliver-confirm"><span>Approve & schedule delivery</span><span class="arr">→</span></button>
-      </div>
+      </div>` : ''}
     </div>`);
 }
 
@@ -594,9 +602,9 @@ function card() {
         <div class="field" style="margin-top:7px"><input id="cf-website" placeholder="Social / link" value="${esc(state.customFields?.website || '')}" /></div>
       </div>` : ''}
       <div class="card-face tpl-${tpl}" data-action="share-nfc" style="cursor:pointer" title="Tap to share this card">
-        <div>${lines.join('')}</div>
+        <div class="cl lines">${lines.join('')}</div>
         <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:10px">
-          <div class="tiny">${f.mobile ? esc(state.mobile) : ''}${f.mobile && f.email ? '<br/>' : ''}${f.email ? esc(state.email) : ''}${(f.mobile || f.email) && f.website && pd.website ? '<br/>' : ''}${f.website && pd.website ? esc(pd.website) : ''}</div>
+          <div class="tiny cl">${f.mobile ? esc(state.mobile) : ''}${f.mobile && f.email ? '<br/>' : ''}${f.email ? esc(state.email) : ''}${(f.mobile || f.email) && f.website && pd.website ? '<br/>' : ''}${f.website && pd.website ? esc(pd.website) : ''}</div>
           <div class="qr"></div>
         </div>
       </div>
@@ -975,7 +983,7 @@ document.addEventListener('click', async (e) => {
     go('buyer-gold'); return;
   }
   if (a === 'gold-continue') { go('buyer-vault'); return; }
-  if (a === 'vault-connect') { await api('/api/vault/connect', { id: el.dataset.id }); state.vault = await api('/api/vault'); toast('Connected — value found.', 'success'); render(); return; }
+  if (a === 'vault-connect') { const cr = await api('/api/vault/connect', { id: el.dataset.id }); if (cr.error) { toast('Could not connect right now — try again.', 'error'); return; } state.vault = await api('/api/vault'); state.praise = ['Value found', 'another lane feeds your checkout', 'vault']; render(); setTimeout(() => { state.praise = null; if (route() === 'vault') render(); }, 4500); return; }
   if (a === 'vault-done' || a === 'vault-skip') { markDone(state.buyerDone, 'buyer-vault'); praise('Vault secured', 'Every offer you own now works at checkout.', 'vault', 'buyer-account'); return; }
   if (a === 'kyc-step') {
     if (state.kycStep === 2) { try { const st = await navigator.mediaDevices.getUserMedia({ video: true }); st.getTracks().forEach((t) => t.stop()); toast('Camera verified — liveness captured.', 'success'); } catch {} }
@@ -993,8 +1001,10 @@ document.addEventListener('click', async (e) => {
   if (a === 'approve-logic') { toast('Logic approved — every bill gets the best route.', 'success'); go('cockpit'); return; }
   if (a === 'calc-amt-change') return;
   if (a?.startsWith('gold-')) {
-    if (a === 'gold-deliver-confirm') { toast('Delivery scheduled — charges approved. Track it in your vault.', 'success'); return; }
-    toast({ 'gold-buy': 'Buy gold from AED 5 — straight to your vault.', 'gold-sell': 'Sell instantly to AED.', 'gold-gift': 'Send gold as a gift card.', 'gold-deliver': 'Delivery panel below — pick address & slot.' }[a] || 'Done.', 'success'); return;
+    if (a === 'gold-deliver') { state.deliveryOpen = true; render(); return; }
+    if (a === 'gold-deliver-close') { state.deliveryOpen = false; render(); return; }
+    if (a === 'gold-deliver-confirm') { state.deliveryOpen = false; state.praise = ['Delivery booked', '13.5 mg arrives tomorrow, 10 AM – 1 PM', 'truck']; render(); setTimeout(() => { state.praise = null; if (route() === 'gold') render(); }, 5000); return; }
+    toast({ 'gold-buy': 'Buy gold from AED 5 — straight to your vault.', 'gold-sell': 'Sell instantly to AED.', 'gold-gift': 'Send gold as a gift card.' }[a] || 'Done.', 'success'); return;
   }
   if (a === 'friend-share') { const t = el.dataset.text || 'Join me on KanzPay'; try { await navigator.share?.({ title: 'KanzPay invite', text: t }); } catch { toast('Invite copied — share anywhere.', 'success'); } return; }
   if (a === 'friend-wa') { location.href = `https://wa.me/?text=${encodeURIComponent('Join me on KanzPay — we both earn gold ' + location.origin)}`; return; }
